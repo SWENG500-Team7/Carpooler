@@ -9,11 +9,6 @@ public class TripTest extends TestCase {
 
     private Trip trip;
     private CarpoolUser user;
-    private static final int PENDING = 1;
-    private static final int CONFIRMED = 2;
-    private static final int PICKED_UP = 3;
-    private static final int DROPPED_OFF = 4;
-    private static final int NO_SHOW = 5;
 
     public void setUp() throws Exception {
         super.setUp();
@@ -28,36 +23,36 @@ public class TripTest extends TestCase {
     public void testAddCarpoolUser() {
         trip.addCarpoolUser(user);
         assertEquals(1, trip.getCarpoolUsers().size());
-        assertEquals(CONFIRMED, user.CarpoolUserStatus);
+        assertEquals(CarpoolUserStatus.CONFIRMED, user.getStatus());
     }
 
     public void testRemoveCarpoolUser() {
         trip.addCarpoolUser(user);
         assertEquals(1, trip.getCarpoolUsers().size());
-        assertEquals(CONFIRMED, user.CarpoolUserStatus);
+        assertEquals(CarpoolUserStatus.CONFIRMED, user.getStatus());
         trip.removeCarpoolUser(user);
         assertEquals(0, trip.getCarpoolUsers().size());
-        assertEquals(0, user.CarpoolUserStatus);
+        assertEquals(CarpoolUserStatus.UNLISTED, user.getStatus());
     }
 
     public void testPickupCarpoolUser() {
         trip.pickupCarpoolUser(user);
-        assertEquals(PICKED_UP, user.CarpoolUserStatus);
+        assertEquals(CarpoolUserStatus.PICKED_UP, user.getStatus());
     }
 
     public void testDropoffCarpoolUser() {
         trip.dropoffCarpoolUser(user);
-        assertEquals(DROPPED_OFF, user.CarpoolUserStatus);
+        assertEquals(CarpoolUserStatus.DROPPED_OFF, user.getStatus());
     }
 
     public void testSkipNoShow() {
         trip.skipNoShow(user);
-        assertEquals(NO_SHOW, user.CarpoolUserStatus);
+        assertEquals(CarpoolUserStatus.NO_SHOW, user.getStatus());
     }
 
     public void testRequestPickup() {
         trip.requestPickup(user);
-        assertEquals(PENDING, user.CarpoolUserStatus);
+        assertEquals(CarpoolUserStatus.PENDING, user.getStatus());
     }
 
     public void testSplitFuelCost() {
