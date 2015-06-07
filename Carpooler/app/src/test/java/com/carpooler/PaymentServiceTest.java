@@ -3,20 +3,14 @@ package com.carpooler;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
+import org.junit.Test;
+
 /**
  * Created by Kevin on 6/4/2015.
  */
-public class PaymentServiceTest extends TestCase {
+public class PaymentServiceTest {
 
-    public void setUp() throws Exception {
-        super.setUp();
-
-    }
-
-    public void tearDown() throws Exception {
-
-    }
-
+    @Test
     public void testPayUserToUser() {
         try {
             //ARRANGE
@@ -29,11 +23,12 @@ public class PaymentServiceTest extends TestCase {
 
             //ASSERT
             Assert.assertTrue(result);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             Assert.fail(ex.getMessage());
         }
     }
 
+    @Test
     public void testRefundUserToUser() {
         try {
             //ARRANGE
@@ -47,7 +42,7 @@ public class PaymentServiceTest extends TestCase {
 
             //ASSERT
             Assert.assertTrue(result);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             Assert.fail(ex.getMessage());
         }
     }

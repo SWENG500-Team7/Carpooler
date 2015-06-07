@@ -12,18 +12,9 @@ import java.util.Iterator;
 /**
  * Created by Aidos on 07.06.2015.
  */
-public class CarpoolHostTest extends TestCase {
-    public void setUp() throws Exception {
-        super.setUp();
-
-    }
-
-    public void tearDown() throws Exception {
-
-    }
+public class CarpoolHostTest {
 
     @Test
-
     public void testAddRating() {
         CarpoolHost ch = new CarpoolHost();
         ch.addRating(Rating.B);
@@ -57,7 +48,7 @@ public class CarpoolHostTest extends TestCase {
         Trip t = new Trip();
         CarpoolHost ch = new CarpoolHost();
         ch.saveTrip(t);
-        assertTrue(ch.getTrips(TripStatus.COMPLETED).contains(t));
+        Assert.assertTrue(ch.getTrips(TripStatus.COMPLETED).contains(t));
 
     }
     @Test
@@ -65,7 +56,7 @@ public class CarpoolHostTest extends TestCase {
         Trip t = new Trip();
         CarpoolHost ch = new CarpoolHost();
         ch.cancelTrip(t);
-        assertFalse(ch.getTrips(TripStatus.CANCELLED).contains(t));
+        Assert.assertFalse(ch.getTrips(TripStatus.CANCELLED).contains(t));
     }
     @Test
     public void testGetTrips() {
@@ -80,6 +71,6 @@ public class CarpoolHostTest extends TestCase {
         String review = "Crazy Schumacher!";
         User u = new User("speed_racer");
         ch.addRating(u, Rating.F, review);
-        assertTrue(ch.getReviews().containsKey(u));
+        Assert.assertTrue(ch.getReviews().containsKey(u));
     }
 }
