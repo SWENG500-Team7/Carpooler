@@ -33,10 +33,6 @@ public class CarpoolUser {
         return status;
     }
 
-    public void setStatus(CarpoolUserStatus status) {
-        this.status = status;
-    }
-
     public double getPaymentAmount() {
         return paymentAmount;
     }
