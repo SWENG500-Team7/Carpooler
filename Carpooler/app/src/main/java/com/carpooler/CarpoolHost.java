@@ -14,6 +14,14 @@ public class CarpoolHost {
         return this.rating;
     }
 
+    public Map<User, String> getReviews(){
+        return this.reviews;
+    }
+
+    public List<Vehicle> getVehicles() {
+        return vehicles;
+    }
+
     public void addRating (User u, Rating r, String s) {
         reviews.put(u, s);
         this.rating = r;
