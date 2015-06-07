@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({CarpoolHostTest.class,CarpoolUserTest.class,PaymentServiceTest.class})
+@Suite.SuiteClasses({CarpoolHostTest.class,CarpoolUserTest.class,PaymentServiceTest.class,TripTest.class})
 public class CarpoolerTestSuite {
 
 }
