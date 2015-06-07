@@ -62,7 +62,7 @@ public class CarpoolUser {
     }
 
     public void confirmPickup(){
-        changeStatus(CarpoolUserStatus.CONFIRMED_PICK_UP);
+        changeStatus(CarpoolUserStatus.CONFIRMED_FOR_PICKUP);
     }
 
     public void changeStatus(CarpoolUserStatus nextStatus){
