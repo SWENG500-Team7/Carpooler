@@ -18,7 +18,7 @@ public enum CarpoolUserStatus {
     PICKED_UP {
         @Override
         protected CarpoolUserStatus[] getAllowedNextStates() {
-            return new CarpoolUserStatus[]{CONFIRMED_PICK_UP,CANCELLED};
+            return new CarpoolUserStatus[]{CONFIRMED_PICK_UP};
         }
     },
     CONFIRMED_PICK_UP {
