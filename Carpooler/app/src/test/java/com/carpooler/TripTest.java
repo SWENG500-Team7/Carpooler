@@ -23,16 +23,16 @@ public class TripTest extends TestCase {
     public void testAddCarpoolUser() {
         trip.addCarpoolUser(user);
         assertEquals(1, trip.getCarpoolUsers().size());
-        assertEquals(CarpoolUserStatus.CONFIRMED, user.getStatus());
+        assertEquals(CarpoolUserStatus.CONFIRMED_FOR_PICKUP, user.getStatus());
     }
 
     public void testRemoveCarpoolUser() {
         trip.addCarpoolUser(user);
         assertEquals(1, trip.getCarpoolUsers().size());
-        assertEquals(CarpoolUserStatus.CONFIRMED, user.getStatus());
+        assertEquals(CarpoolUserStatus.CONFIRMED_FOR_PICKUP, user.getStatus());
         trip.removeCarpoolUser(user);
         assertEquals(0, trip.getCarpoolUsers().size());
-        assertEquals(CarpoolUserStatus.UNLISTED, user.getStatus());
+        assertEquals(CarpoolUserStatus.CANCELLED, user.getStatus());
     }
 
     public void testPickupCarpoolUser() {

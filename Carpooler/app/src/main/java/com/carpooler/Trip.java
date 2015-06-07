@@ -7,6 +7,7 @@ import java.util.List;
  */
 public class Trip {
 
+    private TripStatus status;
     private List<CarpoolUser> users;
     private double fuel_split = 0.00;
 
@@ -76,6 +77,22 @@ public class Trip {
      */
     public List<CarpoolUser> getCarpoolUsers() {
         return users;
+    }
+
+    /**
+     * Sets the current trip status
+     * @param status - the trip status
+     */
+    public void setStatus(TripStatus status) {
+        this.status = status;
+    }
+
+    /**
+     * Gets the current trip status
+     * @return status - the trip status
+     */
+    public TripStatus getStatus() {
+        return status;
     }
 
 }
