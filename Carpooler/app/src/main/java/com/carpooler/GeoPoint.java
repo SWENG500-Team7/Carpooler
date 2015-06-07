@@ -7,19 +7,18 @@ public class GeoPoint {
     private double longititude;
     private double latitude;
 
+    public GeoPoint(double longititude, double latitude) {
+        this.longititude = longititude;
+        this.latitude = latitude;
+    }
+
     public double getLongititude() {
         return longititude;
     }
 
-    public void setLongititude(double longititude) {
-        this.longititude = longititude;
-    }
 
     public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
 }

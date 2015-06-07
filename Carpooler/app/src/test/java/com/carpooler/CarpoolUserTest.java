@@ -17,7 +17,7 @@ public class CarpoolUserTest {
     public void pickupDropOffTest() {
         CarpoolUser user = new CarpoolUser();
         user.changeStatus(CarpoolUserStatus.PICKED_UP);
-        user.changeStatus(CarpoolUserStatus.CONFIRMED_PICK_UP);
+        user.changeStatus(CarpoolUserStatus.CONFIRMED_FOR_PICKUP);
         user.changeStatus(CarpoolUserStatus.DROPPED_OFF);
         user.changeStatus(CarpoolUserStatus.PAID);
     }
@@ -46,7 +46,7 @@ public class CarpoolUserTest {
     public void cancelConfirmedPickupTest() {
         CarpoolUser user = new CarpoolUser();
         user.changeStatus(CarpoolUserStatus.PICKED_UP);
-        user.changeStatus(CarpoolUserStatus.CONFIRMED_PICK_UP);
+        user.changeStatus(CarpoolUserStatus.CONFIRMED_FOR_PICKUP);
         user.changeStatus(CarpoolUserStatus.CANCELLED);
     }
 
@@ -54,7 +54,7 @@ public class CarpoolUserTest {
     public void cancelDroppedOffTest() {
         CarpoolUser user = new CarpoolUser();
         user.changeStatus(CarpoolUserStatus.PICKED_UP);
-        user.changeStatus(CarpoolUserStatus.CONFIRMED_PICK_UP);
+        user.changeStatus(CarpoolUserStatus.CONFIRMED_FOR_PICKUP);
         user.changeStatus(CarpoolUserStatus.DROPPED_OFF);
         user.changeStatus(CarpoolUserStatus.CANCELLED);
     }
@@ -63,7 +63,7 @@ public class CarpoolUserTest {
     public void cancelPaidTest() {
         CarpoolUser user = new CarpoolUser();
         user.changeStatus(CarpoolUserStatus.PICKED_UP);
-        user.changeStatus(CarpoolUserStatus.CONFIRMED_PICK_UP);
+        user.changeStatus(CarpoolUserStatus.CONFIRMED_FOR_PICKUP);
         user.changeStatus(CarpoolUserStatus.DROPPED_OFF);
         user.changeStatus(CarpoolUserStatus.PAID);
         user.changeStatus(CarpoolUserStatus.CANCELLED);
