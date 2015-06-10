@@ -7,6 +7,14 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <uses-permission android:name="android.permission.INTERNET" />
+        <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+        <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+
         <activity
             android:name=".CarpoolerActivity"
             android:label="@string/app_name" >
@@ -15,6 +23,14 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".GoogleActivity"
+            android:label="@string/title_activity_google"
+            android:parentActivityName=".CarpoolerActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.carpooler.CarpoolerActivity" />
         </activity>
     </application>
 
