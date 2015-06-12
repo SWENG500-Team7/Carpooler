@@ -1,7 +1,12 @@
 <resources>
     <string name="app_name">Carpooler</string>
 
-    <string name="hello_world">Hello world!</string>
+    <string name="register_instruction">Please sign in with your google account:</string>
+    <string name="register_host_question">Would you like to host carpools?</string>
+    <string name="register_yes_host">Yes, I\'d like to host!</string>
+    <string name="register_no_host">No thanks!</string>
+    <string name="register_signed_in">Signed in as:</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_google">GoogleActivity</string>
+    <string name="title_activity_register">RegisterActivity</string>
 </resources>
