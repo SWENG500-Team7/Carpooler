@@ -1,4 +1,4 @@
-package com.carpooler.vehicles;
+package com.carpooler.trips;
 
 /**
  * Created by Aidos on 07.06.2015.

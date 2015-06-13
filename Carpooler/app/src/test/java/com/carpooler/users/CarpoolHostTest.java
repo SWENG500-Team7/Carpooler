@@ -2,10 +2,7 @@ package com.carpooler.users;
 
 import com.carpooler.trips.Trip;
 import com.carpooler.trips.TripStatus;
-import com.carpooler.users.CarpoolHost;
-import com.carpooler.users.Rating;
-import com.carpooler.users.User;
-import com.carpooler.vehicles.Vehicle;
+import com.carpooler.trips.Vehicle;
 
 import junit.framework.Assert;
 
