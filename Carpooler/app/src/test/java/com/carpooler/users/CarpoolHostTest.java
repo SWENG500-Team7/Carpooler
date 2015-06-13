@@ -1,13 +1,17 @@
-package com.carpooler;
-import android.support.annotation.NonNull;
+package com.carpooler.users;
 
-import junit.framework.TestCase;
+import com.carpooler.trips.Trip;
+import com.carpooler.trips.TripStatus;
+import com.carpooler.users.CarpoolHost;
+import com.carpooler.users.Rating;
+import com.carpooler.users.User;
+import com.carpooler.vehicles.Vehicle;
+
 import junit.framework.Assert;
 
 import org.junit.Test;
 
 import java.util.*;
-import java.util.Iterator;
 
 /**
  * Created by Aidos on 07.06.2015.

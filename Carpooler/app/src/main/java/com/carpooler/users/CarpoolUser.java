@@ -1,4 +1,4 @@
-package com.carpooler;
+package com.carpooler.users;
 
 import java.util.Date;
 

@@ -1,4 +1,7 @@
-package com.carpooler;
+package com.carpooler.trips;
+
+import com.carpooler.users.CarpoolUser;
+import com.carpooler.users.CarpoolUserStatus;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,6 +1,4 @@
-package com.carpooler;
-
-import android.webkit.CookieManager;
+package com.carpooler.users;
 
 import java.util.Arrays;
 import java.util.Collection;

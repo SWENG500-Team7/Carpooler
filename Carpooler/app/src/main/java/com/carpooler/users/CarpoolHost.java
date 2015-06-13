@@ -1,4 +1,8 @@
-package com.carpooler;
+package com.carpooler.users;
+import com.carpooler.vehicles.Vehicle;
+import com.carpooler.trips.Trip;
+import com.carpooler.trips.TripStatus;
+
 import java.util.*;
 
 /**

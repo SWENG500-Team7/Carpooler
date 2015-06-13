@@ -1,4 +1,6 @@
-package com.carpooler;
+package com.carpooler.trips;
+
+import com.carpooler.users.Address;
 
 import java.util.Collection;
 

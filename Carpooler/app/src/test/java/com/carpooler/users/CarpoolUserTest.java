@@ -1,4 +1,7 @@
-package com.carpooler;
+package com.carpooler.users;
+
+import com.carpooler.users.CarpoolUser;
+import com.carpooler.users.CarpoolUserStatus;
 
 import org.junit.Test;
 

@@ -1,7 +1,9 @@
-package com.carpooler;
+package com.carpooler.payment;
+
+import com.carpooler.payment.PaymentService;
+import com.carpooler.users.User;
 
 import junit.framework.Assert;
-import junit.framework.TestCase;
 
 import org.junit.Test;
 

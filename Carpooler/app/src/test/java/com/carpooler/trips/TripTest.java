@@ -1,4 +1,8 @@
-package com.carpooler;
+package com.carpooler.trips;
+
+import com.carpooler.trips.Trip;
+import com.carpooler.users.CarpoolUser;
+import com.carpooler.users.CarpoolUserStatus;
 
 import junit.framework.TestCase;
 
