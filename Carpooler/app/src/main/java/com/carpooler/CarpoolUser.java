@@ -8,7 +8,7 @@ import java.util.Date;
 public class CarpoolUser {
     private Address pickupLocation;
     private Address dropoffLocation;
-    private CarpoolUserStatus status = CarpoolUserStatus.PENDING;
+    private CarpoolUserStatus status = CarpoolUserStatus.UNLISTED;
     private double paymentAmount;
     private Date pickupDate;
     private Date dropoffDate;

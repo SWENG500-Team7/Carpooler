@@ -9,22 +9,28 @@ import java.util.Collection;
  * Created by raymond on 6/6/15.
  */
 public enum CarpoolUserStatus {
+    UNLISTED{
+        @Override
+        protected CarpoolUserStatus[] getAllowedNextStates() {
+            return new CarpoolUserStatus[]{PENDING, CONFIRMED_FOR_PICKUP};
+        }
+    },
     PENDING{
         @Override
         protected CarpoolUserStatus[] getAllowedNextStates() {
-            return new CarpoolUserStatus[]{PICKED_UP,CANCELLED, NO_SHOW};
+            return new CarpoolUserStatus[]{CONFIRMED_FOR_PICKUP, CANCELLED};
         }
     },
     PICKED_UP {
         @Override
         protected CarpoolUserStatus[] getAllowedNextStates() {
-            return new CarpoolUserStatus[]{CONFIRMED_FOR_PICKUP};
+            return new CarpoolUserStatus[]{DROPPED_OFF};
         }
     },
     CONFIRMED_FOR_PICKUP {
         @Override
         protected CarpoolUserStatus[] getAllowedNextStates() {
-            return new CarpoolUserStatus[]{DROPPED_OFF};
+            return new CarpoolUserStatus[]{PICKED_UP, NO_SHOW, CANCELLED};
         }
     },
     DROPPED_OFF {
