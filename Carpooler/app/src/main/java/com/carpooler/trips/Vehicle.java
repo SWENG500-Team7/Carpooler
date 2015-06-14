@@ -10,4 +10,13 @@ public class Vehicle {
     private int year;
     private String color;
     private String plateNumber;
+
+    public Vehicle(int seats, String pN) {
+        this.seats = seats;
+        this.plateNumber = pN;
+    }
+
+    public String getPlateNumber() {
+        return this.plateNumber;
+    }
 }
