@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Trip manages the number of CarpoolUsers and their individual statuses
+ * as well as the fuel split for each CarpoolUser's trip segment.
+ *
  * Created by jcsax on 6/2/15.
  */
 public class Trip {
