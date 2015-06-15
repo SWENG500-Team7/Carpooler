@@ -9,6 +9,7 @@ import com.carpooler.dao.DatabaseService;
 import com.carpooler.dao.GetRequest;
 import com.carpooler.dao.UserDataService;
 import com.carpooler.dao.dto.UserData;
+import com.carpooler.dao.dto.Vehicle;
 
 import java.util.concurrent.TimeUnit;
 
@@ -23,6 +24,9 @@ public class UserDataServiceTest extends DatabaseServiceTest {
     public void testCreateUser() throws RemoteException, InterruptedException {
         UserData data = new UserData();
         data.setUserId(TEST_ID);
+        Vehicle vehicle = new Vehicle();
+        vehicle.setPlateNumber("ABCDE");
+        data.getVehicle().add(vehicle);
         userDataService.createUser(data, conn);
         checkResponse();
     }

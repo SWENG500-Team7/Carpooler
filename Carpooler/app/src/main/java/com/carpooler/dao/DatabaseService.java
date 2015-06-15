@@ -21,19 +21,23 @@ import com.carpooler.dao.handlers.PutMappingHandler;
 import com.searchly.jestdroid.DroidClientConfig;
 import com.searchly.jestdroid.JestClientFactory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.searchbox.client.JestClient;
 
 /**
  * Created by raymond on 6/12/15.
  */
 public class DatabaseService extends Service implements SharedPreferences.OnSharedPreferenceChangeListener {
+    private final static Logger log = LoggerFactory.getLogger(JestClientFactory.class);
     public static final String DATABASE_URL = "database.url";
     public static final String DATABASE_USER = "database.user";
     public static final String DATABASE_PASSWORD = "database.password";
     private JestClient jestClient;
-    public static final int EXCEPTION=-2;
-    public static final int ERROR=-1;
-    public static final int CREATE_INDEX=0;
+    public static final int EXCEPTION = -2;
+    public static final int ERROR = -1;
+    public static final int CREATE_INDEX = 0;
     public static final int PUT_MAPPING = 1;
     public static final int GET_INDEX = 2;
     private Messenger serviceMessenger;
@@ -65,24 +69,30 @@ public class DatabaseService extends Service implements SharedPreferences.OnShar
             String user = sharedPreferences.getString(DATABASE_USER, null);
             String password = sharedPreferences.getString(DATABASE_PASSWORD, null);
 
-            DroidClientConfig config = new DroidClientConfig.Builder(url)
-                    .defaultCredentials(user, password)
-                    .multiThreaded(true)
-                    .build();
-            JestClientFactory jestClientFactory = new CustomJestClientFactory();
-            jestClientFactory.setDroidClientConfig(config);
-            jestClient = jestClientFactory.getObject();
+            if (url != null && user != null && password != null) {
+                DroidClientConfig config = new DroidClientConfig.Builder(url)
+                        .defaultCredentials(user, password)
+                        .multiThreaded(true)
+                        .build();
+                JestClientFactory jestClientFactory = new CustomJestClientFactory();
+                jestClientFactory.setDroidClientConfig(config);
+                jestClient = jestClientFactory.getObject();
+            } else {
+                log.error("Credentials not set");
+            }
         }
 
     }
 
-    private class DatabaseHandler extends Handler{
+    private class DatabaseHandler extends Handler {
         private IndexDataHandler indexDataHandler = new IndexDataHandler();
         private PutMappingHandler putMappingHandler = new PutMappingHandler();
         private GetDataHandler getDataHandler = new GetDataHandler();
-        DatabaseHandler(Looper looper){
+
+        DatabaseHandler(Looper looper) {
             super(looper);
         }
+
         @Override
         public void handleMessage(Message msg) {
             try {
@@ -97,8 +107,7 @@ public class DatabaseService extends Service implements SharedPreferences.OnShar
                         handleGet(msg);
                         break;
                 }
-            }catch (RemoteException ex){
-
+            } catch (RemoteException ex) {
             }
 
         }
@@ -106,14 +115,17 @@ public class DatabaseService extends Service implements SharedPreferences.OnShar
         private void handleCreateIndex(Message msg) throws RemoteException {
             indexDataHandler.process(jestClient, msg);
         }
+
         private void handlePutMapping(Message msg) throws RemoteException {
             putMappingHandler.process(jestClient, msg);
         }
+
         private void handleGet(Message msg) throws RemoteException {
             getDataHandler.process(jestClient, msg);
         }
     }
-    public static class Connection implements ServiceConnection{
+
+    public static class Connection implements ServiceConnection {
         private Messenger sendMessenger;
         private Messenger replyTo;
 
@@ -132,17 +144,19 @@ public class DatabaseService extends Service implements SharedPreferences.OnShar
         }
 
         public <T extends DatabaseObject> void putMapping(Class<T> type) throws RemoteException {
-            Message message = Message.obtain(null,PUT_MAPPING,type);
+            Message message = Message.obtain(null, PUT_MAPPING, type);
             message.replyTo = replyTo;
             sendMessenger.send(message);
         }
+
         public <T extends DatabaseObject> void create(T data) throws RemoteException {
-            Message message = Message.obtain(null,CREATE_INDEX,data);
+            Message message = Message.obtain(null, CREATE_INDEX, data);
             message.replyTo = replyTo;
             sendMessenger.send(message);
         }
+
         public <T extends DatabaseObject> void get(GetRequest<T> request) throws RemoteException {
-            Message message = Message.obtain(null,GET_INDEX,request);
+            Message message = Message.obtain(null, GET_INDEX, request);
             message.replyTo = replyTo;
             sendMessenger.send(message);
         }
