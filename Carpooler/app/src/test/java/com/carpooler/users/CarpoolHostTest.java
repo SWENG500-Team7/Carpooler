@@ -1,13 +1,14 @@
-package com.carpooler;
-import android.support.annotation.NonNull;
+package com.carpooler.users;
 
-import junit.framework.TestCase;
+import com.carpooler.trips.Trip;
+import com.carpooler.trips.TripStatus;
+import com.carpooler.trips.Vehicle;
+
 import junit.framework.Assert;
 
 import org.junit.Test;
 
 import java.util.*;
-import java.util.Iterator;
 
 /**
  * Created by Aidos on 07.06.2015.
@@ -18,27 +19,30 @@ public class CarpoolHostTest {
     public void testAddRating() {
         CarpoolHost ch = new CarpoolHost();
         ch.addRating(Rating.B);
-        Assert.assertEquals(Rating.B, ch.getRating());
+        ch.addRating(Rating.D);
+        Assert.assertEquals(Rating.C, ch.getRating());
     }
     @Test
     public void testAddVehicle() {
-        Vehicle v = new Vehicle ();
+        Vehicle v = new Vehicle (2, "NYC321");
         CarpoolHost ch = new CarpoolHost();
         ch.addVechicle(v);
-        Assert.assertEquals(true, ch.getVehicles().contains(v));
+        Assert.assertEquals(1, ch.getVehicles().size());
 
     }
     @Test
     public void testRemoveVehicle() {
-        Vehicle v = new Vehicle ();
+        Vehicle v = new Vehicle (3, "01KZ");
+        Vehicle v2 = new Vehicle(1, "02KZ");
         CarpoolHost ch = new CarpoolHost();
         ch.addVechicle(v);
+        ch.addVechicle(v2);
         ch.removeVehicle(v);
-        Assert.assertEquals(false, ch.getVehicles().contains(v));
+        Assert.assertEquals(1, ch.getVehicles().size());
     }
     @Test
     public void testCreateTrip() {
-        Vehicle v = new Vehicle();
+        Vehicle v = new Vehicle(2, "03KZ");
         CarpoolHost ch = new CarpoolHost();
         Assert.assertNotNull(ch.createTrip(v));
 
@@ -46,9 +50,10 @@ public class CarpoolHostTest {
     @Test
     public void testSaveTrip() {
         Trip t = new Trip();
+        t.setStatus(TripStatus.COMPLETED);
         CarpoolHost ch = new CarpoolHost();
         ch.saveTrip(t);
-        Assert.assertTrue(ch.getTrips(TripStatus.COMPLETED).contains(t));
+        Assert.assertEquals(1, ch.getTrips(TripStatus.COMPLETED).size());
 
     }
     @Test
@@ -61,8 +66,14 @@ public class CarpoolHostTest {
     @Test
     public void testGetTrips() {
         CarpoolHost ch = new CarpoolHost();
-        Collection<Trip> trips = ch.getTrips(TripStatus.CANCELLED);
-        Assert.assertFalse(trips.isEmpty());
+        Trip t1 = new Trip();
+        t1.setStatus(TripStatus.CANCELLED);
+        ch.saveTrip(t1);
+        Trip t2 = new Trip();
+        t2.setStatus(TripStatus.IN_ROUTE);
+        ch.saveTrip(t2);
+        List<Trip> trips = ch.getTrips(TripStatus.CANCELLED);
+        Assert.assertEquals(1, trips.size());
     }
 
     @Test
@@ -70,7 +81,8 @@ public class CarpoolHostTest {
         CarpoolHost ch = new CarpoolHost();
         String review = "Crazy Schumacher!";
         User u = new User("speed_racer");
-        ch.addRating(u, Rating.F, review);
-        Assert.assertTrue(ch.getReviews().containsKey(u));
+        ch.addRating(u, Rating.D, review);
+        Assert.assertFalse(ch.getReviews().isEmpty());
+        Assert.assertEquals(Rating.D, ch.getRating());
     }
 }

@@ -1,4 +1,6 @@
-package com.carpooler;
+package com.carpooler.payment;
+
+import com.carpooler.users.User;
 
 /**
  * Uses third party payment service and user stored credentials to complete transactions

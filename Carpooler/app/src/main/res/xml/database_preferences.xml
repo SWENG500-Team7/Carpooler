@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceScreen
+        android:key="database.screen"
+        android:persistent="false"
+        android:title="Database">
+        <EditTextPreference
+            android:key="database.url"
+            android:summary="@string/database_url_summary"
+            android:title="@string/database_url_title" />
+        <EditTextPreference
+            android:key="database.user"
+            android:summary="@string/database_username_summary"
+            android:title="@string/database_username_title" />
+        <EditTextPreference
+            android:password="true"
+            android:key="database.password"
+            android:summary="@string/database_password_summary"
+            android:title="@string/database_password_title" />
+    </PreferenceScreen>
+</PreferenceScreen>

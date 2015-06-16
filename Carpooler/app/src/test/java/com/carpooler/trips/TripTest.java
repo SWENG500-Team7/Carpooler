@@ -1,4 +1,8 @@
-package com.carpooler;
+package com.carpooler.trips;
+
+import com.carpooler.trips.Trip;
+import com.carpooler.users.CarpoolUser;
+import com.carpooler.users.CarpoolUserStatus;
 
 import junit.framework.TestCase;
 
@@ -7,13 +11,11 @@ import junit.framework.TestCase;
  */
 public class TripTest extends TestCase {
 
-    private Trip trip;
-    private CarpoolUser user;
+    private Trip trip = new Trip();
+    private CarpoolUser user = new CarpoolUser();
 
     public void setUp() throws Exception {
         super.setUp();
-        trip = new Trip();
-        user = new CarpoolUser();
     }
 
     public void tearDown() throws Exception {
@@ -36,16 +38,27 @@ public class TripTest extends TestCase {
     }
 
     public void testPickupCarpoolUser() {
+        trip.addCarpoolUser(user);
+        assertEquals(1, trip.getCarpoolUsers().size());
+        assertEquals(CarpoolUserStatus.CONFIRMED_FOR_PICKUP, user.getStatus());
         trip.pickupCarpoolUser(user);
         assertEquals(CarpoolUserStatus.PICKED_UP, user.getStatus());
     }
 
     public void testDropoffCarpoolUser() {
-        trip.dropoffCarpoolUser(user);
+        trip.addCarpoolUser(user);
+        assertEquals(1, trip.getCarpoolUsers().size());
+        assertEquals(CarpoolUserStatus.CONFIRMED_FOR_PICKUP, user.getStatus());
+        trip.pickupCarpoolUser(user);
+        assertEquals(CarpoolUserStatus.PICKED_UP, user.getStatus());
+        trip.dropoffCarpoolUser(user, 1.00);
         assertEquals(CarpoolUserStatus.DROPPED_OFF, user.getStatus());
     }
 
     public void testSkipNoShow() {
+        trip.addCarpoolUser(user);
+        assertEquals(1, trip.getCarpoolUsers().size());
+        assertEquals(CarpoolUserStatus.CONFIRMED_FOR_PICKUP, user.getStatus());
         trip.skipNoShow(user);
         assertEquals(CarpoolUserStatus.NO_SHOW, user.getStatus());
     }
@@ -56,11 +69,17 @@ public class TripTest extends TestCase {
     }
 
     public void testSplitFuelCost() {
+        CarpoolUser user1 = new CarpoolUser();
+        CarpoolUser user2 = new CarpoolUser();
+        CarpoolUser user3 = new CarpoolUser();
         double fuel_cost = 12.00;
-        trip.addCarpoolUser(new CarpoolUser());
-        trip.addCarpoolUser(new CarpoolUser());
-        trip.addCarpoolUser(new CarpoolUser());
+        trip.addCarpoolUser(user1);
+        trip.addCarpoolUser(user2);
+        trip.addCarpoolUser(user3);
         assertEquals(3, trip.getCarpoolUsers().size());
+        trip.pickupCarpoolUser(user1);
+        trip.pickupCarpoolUser(user2);
+        trip.pickupCarpoolUser(user3);
         double fuel_split = trip.splitFuelCost(fuel_cost);
         assertEquals(4.00, fuel_split);
     }

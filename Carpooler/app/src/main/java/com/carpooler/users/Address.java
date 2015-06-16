@@ -1,4 +1,6 @@
-package com.carpooler;
+package com.carpooler.users;
+
+import com.carpooler.GeoPoint;
 
 /**
  * Created by raymond on 6/6/15.

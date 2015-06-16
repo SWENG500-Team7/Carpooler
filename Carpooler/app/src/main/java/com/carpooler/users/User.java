@@ -1,4 +1,4 @@
-package com.carpooler;
+package com.carpooler.users;
 
 /**
  * User class keeps track of user google identity and payment information
