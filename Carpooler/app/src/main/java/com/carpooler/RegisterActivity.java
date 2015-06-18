@@ -1,5 +1,6 @@
 package com.carpooler;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -8,10 +9,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.carpooler.dao.VehicleRestService;
 import com.carpooler.users.CarpoolHost;
 import com.carpooler.users.User;
 import com.google.android.gms.common.SignInButton;
@@ -24,6 +29,11 @@ import java.io.InputStream;
 
 public class RegisterActivity extends GoogleActivity implements OnClickListener, GoogleApiClient.ConnectionCallbacks {
 
+    /* Intent messages */
+    private static final String YEAR_MESSAGE = "com.carpooler.RegisterActivity.YEAR_MESSAGE";
+    private static final String MAKE_MESSAGE = "com.carpooler.RegisterActivity.MAKE_MESSAGE";
+    private static final String MODEL_MESSAGE = "com.carpooler.RegisterActivity.MODEL_MESSAGE";
+
     /* Profile pic image size in pixels */
     private static final int PROFILE_PIC_SIZE = 400;
 
@@ -32,6 +42,9 @@ public class RegisterActivity extends GoogleActivity implements OnClickListener,
     private TextView txtName, txtEmail;
     private LinearLayout llProfileLayout;
     private SignInButton btnSignIn;
+    private Spinner ddYear;
+    private Spinner ddMake;
+    private Spinner ddModel;
 
     /* Flag to see if sign in button clicked */
     private boolean mSignInClicked = false;
@@ -41,6 +54,11 @@ public class RegisterActivity extends GoogleActivity implements OnClickListener,
 
     /* Newly registered host */
     CarpoolHost newHost;
+
+    /* Vehicle menus populated through web services */
+    public enum VehicleMenuEnum {
+        YEAR, MAKE, MODEL
+    }
 
     /**
      * Initialize UI components and call GoogleActivity onCreate
@@ -57,6 +75,33 @@ public class RegisterActivity extends GoogleActivity implements OnClickListener,
         txtEmail = (TextView) findViewById(R.id.txtEmail);
         llProfileLayout = (LinearLayout) findViewById(R.id.llProfile);
         btnSignIn = (SignInButton) findViewById(R.id.btn_sign_in);
+        ddYear = (Spinner) findViewById(R.id.yearDropdown);
+        ddMake = (Spinner) findViewById(R.id.makeDropdown);
+        ddModel = (Spinner) findViewById(R.id.modelDropdown);
+
+        //Set selection listeners for dropdowns
+        ddYear.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                new LoadVehicleMenu().execute(VehicleMenuEnum.MAKE);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        ddMake.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                new LoadVehicleMenu().execute(VehicleMenuEnum.MODEL);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         //Set click listeners
         btnSignIn.setOnClickListener(this);
@@ -91,6 +136,9 @@ public class RegisterActivity extends GoogleActivity implements OnClickListener,
     public void onStart() {
         mConnectOnStart = false;
         super.onStart();
+
+        //Load vehicle information into dropdowns
+        new LoadVehicleMenu().execute(VehicleMenuEnum.YEAR);
     }
 
     /**
@@ -188,6 +236,7 @@ public class RegisterActivity extends GoogleActivity implements OnClickListener,
             this.bmImage = bmImage;
         }
 
+        @Override
         protected Bitmap doInBackground(String... urls) {
             String urldisplay = urls[0];
             Bitmap mIcon11 = null;
@@ -202,6 +251,52 @@ public class RegisterActivity extends GoogleActivity implements OnClickListener,
 
         protected void onPostExecute(Bitmap result) {
             bmImage.setImageBitmap(result);
+        }
+    }
+
+    private class LoadVehicleMenu extends AsyncTask<VehicleMenuEnum, Void, String[]> {
+        private VehicleMenuEnum menuType = null;
+
+        @Override
+        protected String[] doInBackground(VehicleMenuEnum... params) {
+            VehicleMenuEnum menu = params[0];
+            menuType = menu;
+            String[] results = null;
+            String year, make, model;
+
+            switch (menu) {
+                case YEAR:
+                    results = VehicleRestService.getYears();
+                    break;
+                case MAKE:
+                    year = (String) ddYear.getSelectedItem();
+                    results = VehicleRestService.getMakes(year);
+                    break;
+                case MODEL:
+                    year = (String) ddYear.getSelectedItem();
+                    make = (String) ddMake.getSelectedItem();
+                    results = VehicleRestService.getModels(year, make);
+                    break;
+            }
+
+            return results;
+        }
+
+        @Override
+        protected void onPostExecute(String[] result) {
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(RegisterActivity.this, android.R.layout.simple_spinner_item, result);
+            adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+            switch (menuType) {
+                case YEAR:
+                    ddYear.setAdapter(adapter);
+                    break;
+                case MAKE:
+                    ddMake.setAdapter(adapter);
+                    break;
+                case MODEL:
+                    ddModel.setAdapter(adapter);
+                    break;
+            }
         }
     }
 }

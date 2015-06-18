@@ -70,7 +70,7 @@
 
         <RadioGroup
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:checkedButton="@+id/noHost">
 
@@ -87,6 +87,23 @@
                 android:text="@string/register_no_host"/>
         </RadioGroup>
 
+        <Spinner
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/yearDropdown"
+            android:spinnerMode="dropdown"/>
+
+        <Spinner
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/makeDropdown"
+            android:spinnerMode="dropdown"/>
+
+        <Spinner
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/modelDropdown"
+            android:spinnerMode="dropdown"/>
 
     </LinearLayout>
 
