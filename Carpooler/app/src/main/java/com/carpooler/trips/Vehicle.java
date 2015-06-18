@@ -19,4 +19,61 @@ public class Vehicle {
     public String getPlateNumber() {
         return this.plateNumber;
     }
+
+    public int getSeats() {
+        return seats;
+    }
+
+    public void setSeats(int seats) {
+        this.seats = seats;
+    }
+
+    public String getMake() {
+        return make;
+    }
+
+    public void setMake(String make) {
+        this.make = make;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public com.carpooler.dao.dto.Vehicle toVehicleDTO() {
+        com.carpooler.dao.dto.Vehicle vehicleDTO = new com.carpooler.dao.dto.Vehicle();
+        vehicleDTO.setColor(color);
+        vehicleDTO.setPlateNumber(plateNumber);
+        vehicleDTO.setSeats(seats);
+        vehicleDTO.setMake(make);
+        vehicleDTO.setModel(model);
+        vehicleDTO.setYear(year);
+
+        return vehicleDTO;
+    }
+
+    @Override
+    public String toString() {
+        return make + " " + model + " (" + plateNumber + ")";
+    }
 }

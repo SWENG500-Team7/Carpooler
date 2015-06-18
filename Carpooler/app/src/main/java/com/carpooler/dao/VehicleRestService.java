@@ -22,24 +22,44 @@ public class VehicleRestService {
     private static final String mMenuUrl = "vehicle/menu/";
     private static final String mMpgUrl = "ympg/shared/";
 
+    /**
+     * Get list of years from FuelEconomy.gov
+     * @return
+     */
     public static String[] getYears() {
         String requestUrlString = mBaseUrl + mMenuUrl + "year";
         XmlPullParser parser = vehicleServiceCall(requestUrlString);
         return parseSingleTag(parser, "text");
     }
 
+    /**
+     * Get list of makes based on years from FuelEconomy.gov
+     * @param pYear
+     * @return
+     */
     public static String[] getMakes(String pYear) {
         String requestUrlString = mBaseUrl + mMenuUrl + "make?year=" + pYear;
         XmlPullParser parser = vehicleServiceCall(requestUrlString);
         return parseSingleTag(parser, "text");
     }
 
+    /**
+     * Get list of models based on makes and years from FuelEconomy.gov
+     * @param pYear
+     * @param pMake
+     * @return
+     */
     public static String[] getModels(String pYear, String pMake) {
         String requestUrlString = mBaseUrl + mMenuUrl + "model?year=" + pYear + "&make=" + pMake;
         XmlPullParser parser = vehicleServiceCall(requestUrlString);
         return parseSingleTag(parser, "text");
     }
 
+    /**
+     * Obtain XML from specified URL and put it in a parser
+     * @param pRequestUrlString
+     * @return
+     */
     private static XmlPullParser vehicleServiceCall(String pRequestUrlString) {
         InputStream in = null;
         XmlPullParser parser = null;
@@ -72,6 +92,12 @@ public class VehicleRestService {
         return parser;
     }
 
+    /**
+     * Get list of XML element data based on specified tag (e.g. get data from all "text" tags)
+     * @param pParser
+     * @param pTag
+     * @return
+     */
     private static String[] parseSingleTag(XmlPullParser pParser, String pTag) {
         ArrayList<String> itemList = new ArrayList<String>();
 

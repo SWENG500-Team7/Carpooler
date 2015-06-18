@@ -1,11 +1,29 @@
 <resources>
     <string name="app_name">Carpooler</string>
 
+    <string name="register">Register</string>
     <string name="register_instruction">Please sign in with your google account:</string>
-    <string name="register_host_question">Would you like to host carpools?</string>
-    <string name="register_yes_host">Yes, I\'d like to host!</string>
-    <string name="register_no_host">No thanks!</string>
+    <string name="register_host_question">If you plan on hosting carpools, add one or more cars:</string>
     <string name="register_signed_in">Signed in as:</string>
+    <string name="register_add_vehicle">Add a Vehicle</string>
+    <string name="register_add_vehicle_ok">Add</string>
+    <string name="register_update_vehicle_ok">Update</string>
+    <string name="register_cancel">Cancel</string>
+    <string name="register_add_vehicle_ok_toast">Vehicle Added</string>
+    <string name="register_update_vehicle_ok_toast">Vehicle Updated</string>
+    <string name="register_add_vehicle_cancel_toast">Changes Discarded</string>
+    <string name="register_add_vehicle_year_label">Year: </string>
+    <string name="register_add_vehicle_make_label">Make: </string>
+    <string name="register_add_vehicle_model_label">Model: </string>
+    <string name="register_add_vehicle_seats_label">Available Seats: </string>
+    <string name="register_add_vehicle_license_label">Plate #: </string>
+    <string name="register_add_vehicle_color_label">Color: </string>
+    <string name="register_remove_vehicle">Remove</string>
+    <string name="register_remove_vehicle_toast">Vehicle Removed</string>
+    <string name="register_must_sign_in">You must sign in using your Google Profile to register!</string>
+    <string name="register_host_success">You are registered! You may now host your own carpools and use carpools hosted by others.</string>
+    <string name="register_user_success">You are registered! You may now use carpools hosted by others.</string>
+    <string name="register_fail">Failed to register.</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_google">GoogleActivity</string>
     <string name="title_activity_register">RegisterActivity</string>

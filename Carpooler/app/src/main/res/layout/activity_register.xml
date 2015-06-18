@@ -68,43 +68,24 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"/>
 
-        <RadioGroup
+        <Button
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:checkedButton="@+id/noHost">
+            android:id="@+id/btnAddVehicle"
+            android:text="@string/register_add_vehicle"/>
 
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/yesHost"
-                android:text="@string/register_yes_host"/>
-
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/noHost"
-                android:text="@string/register_no_host"/>
-        </RadioGroup>
-
-        <Spinner
+        <ListView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/yearDropdown"
-            android:spinnerMode="dropdown"/>
-
-        <Spinner
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/makeDropdown"
-            android:spinnerMode="dropdown"/>
-
-        <Spinner
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/modelDropdown"
-            android:spinnerMode="dropdown"/>
+            android:id="@+id/lv_vehicles"/>
 
     </LinearLayout>
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_register"
+        android:text="@string/register"
+        android:layout_alignParentBottom="true"/>
 
 </RelativeLayout>

@@ -1,6 +1,10 @@
 package com.carpooler.users;
+import android.os.RemoteException;
 import android.support.annotation.NonNull;
 
+import com.carpooler.dao.DatabaseService;
+import com.carpooler.dao.UserDataService;
+import com.carpooler.dao.dto.UserData;
 import com.carpooler.trips.Vehicle;
 import com.carpooler.trips.Trip;
 import com.carpooler.trips.TripStatus;
@@ -11,6 +15,7 @@ import java.util.*;
  * Created by Aidos on 07.06.2015.
  */
 public class CarpoolHost {
+    private User user;
     private Rating averageRating;
     private int ratings;
     private Map<User, String> reviews;
@@ -35,6 +40,14 @@ public class CarpoolHost {
 
     public List<Vehicle> getVehicles() {
         return vehicles;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public void addRating (User u, Rating r, String s) {
@@ -85,4 +98,41 @@ public class CarpoolHost {
         }
         return temp;
     }
+
+    /**
+     * Converts CarpoolHost instance to a UserData object and persists
+     * using given database connection
+     * @param conn
+     * @return
+     */
+    public boolean persistHost(DatabaseService.Connection conn) {
+        //If no user info or vehicles exist, can't persist
+        if (user == null || vehicles == null || vehicles.size() <= 0) {
+            return false;
+        }
+
+        //Create User and Vehicle DTOs
+        UserData data = new UserData();
+        data.setUserId(user.getGoogleId());
+        List<com.carpooler.dao.dto.Vehicle> vehicleDTOs =
+                new ArrayList<com.carpooler.dao.dto.Vehicle>();
+        for (Vehicle vehicle : vehicles) {
+            vehicleDTOs.add(vehicle.toVehicleDTO());
+        }
+        data.setVehicle(vehicleDTOs);
+
+        //Persist user data
+        try {
+            //Persist user data
+            UserDataService dataService = new UserDataService();
+            dataService.createUser(data, conn);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
+
+
 }

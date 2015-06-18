@@ -74,18 +74,8 @@ public class CarpoolerActivity extends ActionBarActivity {
     }
 
     public void clickRegister(View view){
-        UserDataService userDataService = new UserDataService();
-        try {
-            UserData data = new UserData();
-            data.setUserId("testuserid");
-            com.carpooler.dao.dto.Vehicle v = new Vehicle();
-//            data.getVehicle().add(v);
-            userDataService.createUser(data,conn);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-//        Intent intent = new Intent(this, RegisterActivity.class);
-//        startActivity(intent);
+        Intent intent = new Intent(this, RegisterActivity.class);
+        startActivity(intent);
     }
 
 }
