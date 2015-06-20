@@ -16,6 +16,7 @@ public class Trip {
 
     private TripStatus status;
     private List<CarpoolUser> users = new ArrayList<CarpoolUser>();
+    private Vehicle vehicle;
     private double fuel_split = 0.00;
 
     /**
@@ -114,6 +115,22 @@ public class Trip {
      */
     public TripStatus getStatus() {
         return status;
+    }
+
+    /**
+     * Sets the vehicle to be associated with this trip
+     * @param vehicle - the trip vehicle
+     */
+    public void setVehicle(Vehicle vehicle) {
+        this.vehicle = vehicle;
+    }
+
+    /**
+     * Gets the vehicle associated with this trip
+     * @return vehicle - the trip vehicle
+     */
+    public Vehicle getVehicle() {
+        return vehicle;
     }
 
 }
