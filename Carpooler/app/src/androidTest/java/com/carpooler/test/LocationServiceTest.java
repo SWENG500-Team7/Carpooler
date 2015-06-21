@@ -8,6 +8,9 @@ import android.util.Log;
 
 import com.carpooler.trips.LocationService;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by jcsax on 6/21/15.
  */
@@ -64,6 +67,25 @@ public class LocationServiceTest extends AndroidTestCase {
         assertNotNull(location);
         assertNotNull(location.getLatitude());
         assertNotNull(location.getLongitude());
+    }
+
+    public void testSelectNextDestination() {
+        Location start = new Location("");
+        start.setLatitude(37.374412);
+        start.setLongitude(-122.065147);
+        Location destination1 = new Location("");
+        destination1.setLatitude(37.414771);
+        destination1.setLongitude(-122.081119);
+        Location destination2 = new Location("");
+        destination2.setLatitude(37.439293);
+        destination2.setLongitude(-122.173539);
+        List<Location> destinations = new ArrayList<Location>();
+        destinations.add(destination1);
+        destinations.add(destination2);
+        Location location = mLocationService.selectNextDestination(start, destinations);
+        assertNotNull(location);
+        assertEquals(37.414771, location.getLatitude());
+        assertEquals(-122.081119, location.getLongitude());
     }
 
 }

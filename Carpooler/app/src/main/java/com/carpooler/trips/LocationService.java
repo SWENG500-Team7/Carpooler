@@ -122,4 +122,26 @@ public class LocationService {
         return location;
     }
 
+    /**
+     * Determines the next destination based on which is the closest
+     * @param start current Location
+     * @param destinations a list of Locations
+     * @return nextDestination
+     */
+    public Location selectNextDestination(Location start, List<Location> destinations) {
+        Location nextDestination = null;
+        for (Location destination : destinations) {
+            if(nextDestination == null) {
+                nextDestination = destination;
+            } else {
+                float first_distance = start.distanceTo(nextDestination);
+                float second_distance = start.distanceTo(destination);
+                if(second_distance < first_distance) {
+                    nextDestination = destination;
+                }
+            }
+        }
+        return nextDestination;
+    }
+
 }
