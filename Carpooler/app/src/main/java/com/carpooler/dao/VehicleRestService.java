@@ -56,6 +56,19 @@ public class VehicleRestService {
     }
 
     /**
+     * Get mpg based on make and model from FuelEconomy.gov
+     * @param pMake
+     * @param pModel
+     * @param pYear
+     * @return
+     */
+    public static String getMPG(String pMake, String pModel, String pYear) {
+        String requestUrlString = mBaseUrl + mMpgUrl + "vehicles?make=" + pMake + "&model=" + pModel;
+        XmlPullParser parser = vehicleServiceCall(requestUrlString);
+        return parseSingleTagForYear(parser, pYear, "comb08");
+    }
+
+    /**
      * Obtain XML from specified URL and put it in a parser
      * @param pRequestUrlString
      * @return
@@ -132,5 +145,55 @@ public class VehicleRestService {
 
         String[] itemArray = itemList.toArray(new String[itemList.size()]);
         return itemArray;
+    }
+
+    /**
+     * Get list of XML element data based on specified tag for a specified year
+     * @param pParser
+     * @param pYear
+     * @param pTag
+     * @return
+     */
+    private static String parseSingleTagForYear(XmlPullParser pParser, String pYear, String pTag) {
+        String value = null;
+//        boolean identified = false;
+        try {
+            int eventType = pParser.getEventType();
+            int count = 0;
+
+            //Move through document and collect data
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                String item = null;
+                Log.i("VehicleRestService", "Looped " + count++);
+
+                //Get the value from pTag for when the value for "year" is pYear
+                switch (eventType) {
+                    case XmlPullParser.START_TAG:
+                        item = pParser.getName();
+                        Log.i("VehicleRestService", "item: " + item);
+//                        if (item.equals(pTag)) {
+//                            value = pParser.nextText();
+//                            Log.i("VehicleRestService", "Tag identified " + count);
+//                        } else if (item.equals("year") && pParser.nextText().equals(pYear)) {
+//                            Log.i("VehicleRestService", "Year identified");
+//                            identified = true;
+//                        }
+                        break;
+                    case XmlPullParser.END_TAG:
+                        break;
+                }
+
+                //Iterate through document
+                pParser.next();
+                eventType = pParser.getEventType();
+                Log.i("VehicleRestService", "eventType: " + eventType);
+            }
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return value;
     }
 }

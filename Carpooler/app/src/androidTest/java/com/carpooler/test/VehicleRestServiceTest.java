@@ -31,4 +31,9 @@ public class VehicleRestServiceTest extends AndroidTestCase {
         assertTrue(modelsArray.length > 0);
         assertTrue(Arrays.asList(modelsArray).contains("Charger"));
     }
+
+//    public void testGetMPG() {
+//        int mpg = Integer.parseInt(VehicleRestService.getMPG("Honda", "Fit", "2015"));
+//        assertEquals(35, mpg);
+//    }
 }
