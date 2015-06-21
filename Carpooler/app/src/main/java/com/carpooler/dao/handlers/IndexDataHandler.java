@@ -33,13 +33,18 @@ public class IndexDataHandler extends AbstractHandler {
             JestResult result =  client.execute(indexData);
             if (result.isSucceeded()) {
                 String response = (String) result.getValue("_id");
-                replySuccess(message, DatabaseService.CREATE_INDEX,response);
+                replySuccess(message, response);
             }else{
                 replyError(message,result);
             }
         } catch (IOException e) {
             replyError(message,e);
         }
+    }
+
+    @Override
+    public int getWhat() {
+        return DatabaseService.CREATE_INDEX;
     }
 
 }

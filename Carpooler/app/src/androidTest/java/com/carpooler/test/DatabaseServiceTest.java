@@ -7,18 +7,13 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
-import android.os.RemoteException;
 import android.test.ServiceTestCase;
-import android.test.UiThreadTest;
-import android.test.suitebuilder.annotation.SmallTest;
 
 import com.carpooler.dao.DatabaseService;
-import com.carpooler.dao.dto.UserData;
 
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by raymond on 6/14/15.
@@ -39,6 +34,8 @@ public abstract class DatabaseServiceTest extends ServiceTestCase<DatabaseServic
                 case DatabaseService.EXCEPTION:
                     errorException = (Exception) msg.obj;
                     break;
+                case DatabaseService.QUERY_INDEX:
+                    assertTrue("Empty List Found",!((List)msg.obj).isEmpty());
                 default:
                     resp = msg.obj;
             }
@@ -82,7 +79,7 @@ public abstract class DatabaseServiceTest extends ServiceTestCase<DatabaseServic
     protected void checkResponse() throws InterruptedException {
         latch.await(20, TimeUnit.SECONDS);
         assertNull("Exception found", errorException);
-        assertNull("Error Message Found", errorResp);
+        assertNull("Error Message Found:" + errorResp, errorResp);
         assertNotNull("Null Response", resp);
     }
 }

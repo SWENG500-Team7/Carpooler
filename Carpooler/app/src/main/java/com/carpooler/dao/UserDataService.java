@@ -2,7 +2,6 @@ package com.carpooler.dao;
 
 import android.os.RemoteException;
 
-import com.carpooler.dao.dto.DatabaseObject;
 import com.carpooler.dao.dto.UserData;
 
 /**
@@ -10,7 +9,7 @@ import com.carpooler.dao.dto.UserData;
  */
 public class UserDataService {
     public void getUserData(String id, DatabaseService.Connection connection) throws RemoteException {
-        GetRequest request = new GetRequest(id,UserData.class);
+        IdRequest request = new IdRequest(id,UserData.class);
         connection.get(request);
     }
 

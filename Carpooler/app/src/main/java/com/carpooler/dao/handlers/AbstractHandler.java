@@ -23,10 +23,10 @@ public abstract class AbstractHandler {
         return ed;
     }
 
-    protected void replySuccess(Message message, int what, Object obj) throws RemoteException {
+    protected void replySuccess(Message message, Object obj) throws RemoteException {
         Messenger replyTo = message.replyTo;
         if (replyTo != null) {
-            Message response = Message.obtain(null, what, obj);
+            Message response = Message.obtain(null, getWhat(), obj);
             replyTo.send(response);
         }
     }
@@ -48,4 +48,6 @@ public abstract class AbstractHandler {
     }
 
     public abstract void process(JestClient client, Message message) throws RemoteException;
+
+    public abstract int getWhat();
 }

@@ -3,7 +3,18 @@ package com.carpooler.dao.dto;
 /**
  * Created by raymond on 6/13/15.
  */
-public class Vehicle {
+public class VehicleData {
+    protected static final String MAPPING =
+            "{"
+                + "\"properties\":{"
+                    + "\"seats\":{\"type\":\"integer\"},"
+                    + "\"make\":{\"type\":\"string\"},"
+                    + "\"model\":{\"type\":\"string\"},"
+                    + "\"color\":{\"type\":\"string\"},"
+                    + "\"plateNumber\":{\"type\":\"string\"},"
+                    + "\"year\":{\"type\":\"integer\"}"
+                + "}"
+            + "}";
     private int seats;
     private String make;
     private String model;
