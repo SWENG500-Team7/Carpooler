@@ -1,15 +1,20 @@
 package com.carpooler.users;
+
 import android.os.RemoteException;
-import android.support.annotation.NonNull;
 
 import com.carpooler.dao.DatabaseService;
 import com.carpooler.dao.UserDataService;
 import com.carpooler.dao.dto.UserData;
-import com.carpooler.trips.Vehicle;
+import com.carpooler.dao.dto.VehicleData;
 import com.carpooler.trips.Trip;
 import com.carpooler.trips.TripStatus;
+import com.carpooler.trips.Vehicle;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Aidos on 07.06.2015.
@@ -111,11 +116,11 @@ public class CarpoolHost {
             return false;
         }
 
-        //Create User and Vehicle DTOs
+        //Create User and VehicleData DTOs
         UserData data = new UserData();
         data.setUserId(user.getGoogleId());
-        List<com.carpooler.dao.dto.Vehicle> vehicleDTOs =
-                new ArrayList<com.carpooler.dao.dto.Vehicle>();
+        List<VehicleData> vehicleDTOs =
+                new ArrayList<VehicleData>();
         for (Vehicle vehicle : vehicles) {
             vehicleDTOs.add(vehicle.toVehicleDTO());
         }

@@ -6,16 +6,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
-import android.os.RemoteException;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.carpooler.dao.DatabaseService;
-import com.carpooler.dao.UserDataService;
-import com.carpooler.dao.dto.UserData;
-import com.carpooler.dao.dto.Vehicle;
 import com.carpooler.ui.activities.CarpoolerSettings;
 
 

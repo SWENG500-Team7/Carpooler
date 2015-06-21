@@ -10,39 +10,38 @@ import java.io.IOException;
 
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
-import io.searchbox.indices.mapping.PutMapping;
+import io.searchbox.core.Update;
 
 /**
- * Created by raymond on 6/13/15.
+ * Created by raymond on 6/16/15.
  */
-public class PutMappingHandler extends AbstractHandler {
+public class UpdateDataHandler extends AbstractHandler {
     @Override
     public void process(JestClient client, Message message) throws RemoteException {
-        Class data = (Class) message.obj;
+        Object data = message.obj;
         if (data==null){
             throw new IllegalArgumentException("data cannot be null");
         }
+        Class type = data.getClass();
 
-        ElasticData ed = getElasticData(data);
+        ElasticData ed = getElasticData(type);
         String index = ed.index();
         String indexType = ed.type();
-        String mapping = ed.mapping();
-        PutMapping put = new PutMapping.Builder(index,indexType,mapping).build();
+        Update update = new Update.Builder(data).index(index).type(indexType).build();
         try {
-            JestResult result = client.execute(put);
+            JestResult result =  client.execute(update);
             if (result.isSucceeded()) {
-                replySuccess(message, result.getJsonString());
+                String response = (String) result.getValue("_id");
+                replySuccess(message, response);
             }else{
-                replyError(message, result);
+                replyError(message,result);
             }
         } catch (IOException e) {
             replyError(message,e);
         }
     }
-
     @Override
     public int getWhat() {
-        return DatabaseService.PUT_MAPPING;
+        return DatabaseService.UPDATE_INDEX;
     }
-
 }

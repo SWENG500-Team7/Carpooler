@@ -6,26 +6,26 @@ import com.carpooler.dao.IdRequest;
 
 import io.searchbox.action.AbstractAction;
 import io.searchbox.client.JestResult;
-import io.searchbox.core.Get;
+import io.searchbox.core.Delete;
 
 /**
- * Created by raymond on 6/13/15.
+ * Created by raymond on 6/20/15.
  */
-public class GetDataHandler extends AbstractTypeHandler {
+public class DeleteDataHandler extends AbstractTypeHandler {
 
     @Override
     protected Object getResponse(JestResult result, Class type) {
-        return result.getSourceAsObject(type);
+        return result.getValue("_id");
     }
 
     @Override
     protected AbstractAction createTarget(ElasticDataRequest request, String index, String indexType) {
         IdRequest idRequest = (IdRequest) request;
-        return new Get.Builder(index,idRequest.getId()).type(indexType).build();
+        return new Delete.Builder(idRequest.getId()).index(index).type(indexType).build();
     }
 
     @Override
     public int getWhat() {
-        return DatabaseService.GET_INDEX;
+        return DatabaseService.DELETE_INDEX;
     }
 }
