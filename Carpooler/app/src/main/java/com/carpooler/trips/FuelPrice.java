@@ -19,12 +19,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * FuelCost handles all GET requests for local fuel stations, converts the response
+ * FuelPrice handles all GET requests for local fuel stations, converts the response
  * JSON string into a list of fuel prices, and provides the average local fuel price.
  *
  * Created by jcsax on 6/13/15.
  */
-public class FuelCost {
+public class FuelPrice {
 
     private static final String myGasFeedURL = "http://devapi.mygasfeed.com/stations/radius/";
     private static final String ARRAY_KEY = "stations";
@@ -67,7 +67,7 @@ public class FuelCost {
                     result = convertInputStreamToString(in);
 
             } catch (Exception e) {
-                Log.d("FuelCost", e.getLocalizedMessage());
+                Log.d("FuelPrice", e.getLocalizedMessage());
                 if (urlConnection != null) {
                     urlConnection.disconnect();
                 }
