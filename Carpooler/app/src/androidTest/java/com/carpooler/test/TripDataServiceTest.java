@@ -16,10 +16,16 @@ import java.util.Date;
  * Created by raymond on 6/20/15.
  */
 public class TripDataServiceTest extends DatabaseServiceTest {
-    private TripDataService service = new TripDataService();
+    private TripDataService service;
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        service = new TripDataService(conn);
+    }
 
     public void testPutMapping() throws RemoteException, InterruptedException {
-        service.putMapping(conn);
+        service.putMapping();
         checkResponse();
     }
 
@@ -40,7 +46,7 @@ public class TripDataServiceTest extends DatabaseServiceTest {
         endLocation.setLocation(endGeo);
         endLocation.setZip("07059");
         tripData.setEndLocation(endLocation);
-        service.createTrip(tripData, conn);
+        service.createTrip(tripData);
         checkResponse();
     }
 
@@ -48,7 +54,7 @@ public class TripDataServiceTest extends DatabaseServiceTest {
         FindTripQuery query = new FindTripQuery();
         query.setStartTime(new Date());
         query.setEndTime(getEndDate(5));
-        query.setTimeRange(20);
+        query.setTimeRange(200);
         GeoPointData startPoint = getStartGeoPointData();
         adjustGeoPoint(startPoint, .005);
         GeoPointData endPoint = getEndGeoPointData();
@@ -57,7 +63,7 @@ public class TripDataServiceTest extends DatabaseServiceTest {
         query.setEndPoint(endPoint);
         query.setDistance(20);
 
-        service.findAvailableTrips(query, conn);
+        service.findAvailableTrips(query);
         checkResponse();
 
     }
