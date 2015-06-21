@@ -1,10 +1,15 @@
 package com.carpooler.trips;
 
 import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.util.Log;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by jcsax on 6/21/15.
@@ -13,6 +18,8 @@ public class LocationService {
 
     private static final String TAG = LocationService.class.getSimpleName();
     private final Context mContext;
+
+    private Geocoder geocoder;
 
     // flag for GPS status
     private boolean isGPSEnabled = false;
@@ -37,6 +44,7 @@ public class LocationService {
     public LocationService(Context context, LocationListener listener) {
         mContext = context;
         mListener = listener;
+        geocoder = new Geocoder(context);
         initialize();
     }
 
@@ -61,7 +69,6 @@ public class LocationService {
                         location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                     } else {
                         location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                        Log.i(TAG, "location: " + location);
                     }
                 }
             } else if (isNetworkEnabled) {
@@ -91,10 +98,28 @@ public class LocationService {
 
     /**
      * Checks whether or not GPS/Wifi enabled
-     * @return boolean
+     * @return canGetLocation
      */
     public boolean canGetLocation() {
         return canGetLocation;
+    }
+
+    /**
+     * Gets a location object from an address
+     * @param address String
+     * @return location
+     */
+    public Location getLocationFromAddressName(String address) {
+        Location location = new Location("");
+        try {
+            List<Address> addresses = geocoder.getFromLocationName(address, 1);
+            Address extractedAddress = addresses.get(0);
+            location.setLatitude(extractedAddress.getLatitude());
+            location.setLongitude(extractedAddress.getLongitude());
+        } catch (IOException e) {
+            Log.i(TAG, "Failed to get address from name");
+        }
+        return location;
     }
 
 }

@@ -59,4 +59,11 @@ public class LocationServiceTest extends AndroidTestCase {
         assertFalse(mLocationService.canGetLocation());
     }
 
+    public void testGetLocationFromAddressName() {
+        Location location = mLocationService.getLocationFromAddressName("1600 Amphitheatre Parkway Mountain View, CA 94043");
+        assertNotNull(location);
+        assertNotNull(location.getLatitude());
+        assertNotNull(location.getLongitude());
+    }
+
 }

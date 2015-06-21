@@ -25,5 +25,6 @@ dependencies {
     compile 'io.searchbox:jest-droid:0.1.6'
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.google.android.gms:play-services-plus:6.5.+'
+    compile 'com.google.android.gms:play-services-maps:6.5.+'
     compile 'com.android.support:support-v4:22.2.0'
 }
