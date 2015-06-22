@@ -91,7 +91,7 @@ public class RegisterActivity extends GoogleActivity implements OnClickListener,
     /* Newly registered host */
     CarpoolHost newHost;
 
-    /* Vehicle menus populated through web services */
+    /* VehicleData menus populated through web services */
     public enum VehicleMenuEnum {
         YEAR, MAKE, MODEL
     }

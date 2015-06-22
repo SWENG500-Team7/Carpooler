@@ -5,20 +5,16 @@ import com.carpooler.dao.dto.DatabaseObject;
 /**
  * Created by raymond on 6/14/15.
  */
-public class GetRequest<T extends DatabaseObject> {
+public class IdRequest<T extends DatabaseObject> extends ElasticDataRequest<T> {
     private final String id;
-    private final Class<T> type;
 
-    public GetRequest(String id, Class<T> type) {
+    public IdRequest(String id, Class<T> type) {
+        super(type);
         this.id = id;
-        this.type = type;
     }
 
     public String getId() {
         return id;
     }
 
-    public Class<T> getType() {
-        return type;
-    }
 }

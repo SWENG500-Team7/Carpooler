@@ -15,14 +15,21 @@ import android.os.RemoteException;
 import android.preference.PreferenceManager;
 
 import com.carpooler.dao.dto.DatabaseObject;
+import com.carpooler.dao.handlers.AbstractHandler;
+import com.carpooler.dao.handlers.DeleteDataHandler;
 import com.carpooler.dao.handlers.GetDataHandler;
 import com.carpooler.dao.handlers.IndexDataHandler;
 import com.carpooler.dao.handlers.PutMappingHandler;
+import com.carpooler.dao.handlers.QueryDataHandler;
+import com.carpooler.dao.handlers.UpdateDataHandler;
 import com.searchly.jestdroid.DroidClientConfig;
 import com.searchly.jestdroid.JestClientFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import io.searchbox.client.JestClient;
 
@@ -40,6 +47,9 @@ public class DatabaseService extends Service implements SharedPreferences.OnShar
     public static final int CREATE_INDEX = 0;
     public static final int PUT_MAPPING = 1;
     public static final int GET_INDEX = 2;
+    public static final int UPDATE_INDEX = 3;
+    public static final int DELETE_INDEX = 4;
+    public static final int QUERY_INDEX = 5;
     private Messenger serviceMessenger;
     private HandlerThread handlerThread;
 
@@ -52,6 +62,14 @@ public class DatabaseService extends Service implements SharedPreferences.OnShar
         handlerThread = new HandlerThread(DatabaseService.class.getSimpleName());
         handlerThread.start();
         serviceMessenger = new Messenger(new DatabaseHandler(handlerThread.getLooper()));
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (handlerThread!=null && handlerThread.isAlive()) {
+            handlerThread.quit();
+        }
     }
 
     @Override
@@ -85,43 +103,31 @@ public class DatabaseService extends Service implements SharedPreferences.OnShar
     }
 
     private class DatabaseHandler extends Handler {
-        private IndexDataHandler indexDataHandler = new IndexDataHandler();
-        private PutMappingHandler putMappingHandler = new PutMappingHandler();
-        private GetDataHandler getDataHandler = new GetDataHandler();
+        private final List<AbstractHandler> handlers = new ArrayList<>();
 
         DatabaseHandler(Looper looper) {
             super(looper);
+            handlers.add(new IndexDataHandler());
+            handlers.add(new PutMappingHandler());
+            handlers.add(new GetDataHandler());
+            handlers.add(new UpdateDataHandler());
+            handlers.add(new DeleteDataHandler());
+            handlers.add(new QueryDataHandler());
         }
 
         @Override
         public void handleMessage(Message msg) {
             try {
-                switch (msg.what) {
-                    case CREATE_INDEX:
-                        handleCreateIndex(msg);
+                for (AbstractHandler handler:handlers){
+                    if (msg.what==handler.getWhat()){
+                        handler.process(jestClient,msg);
                         break;
-                    case PUT_MAPPING:
-                        handlePutMapping(msg);
-                        break;
-                    case GET_INDEX:
-                        handleGet(msg);
-                        break;
+                    }
                 }
             } catch (RemoteException ex) {
+                log.error("",ex);
             }
 
-        }
-
-        private void handleCreateIndex(Message msg) throws RemoteException {
-            indexDataHandler.process(jestClient, msg);
-        }
-
-        private void handlePutMapping(Message msg) throws RemoteException {
-            putMappingHandler.process(jestClient, msg);
-        }
-
-        private void handleGet(Message msg) throws RemoteException {
-            getDataHandler.process(jestClient, msg);
         }
     }
 
@@ -155,8 +161,25 @@ public class DatabaseService extends Service implements SharedPreferences.OnShar
             sendMessenger.send(message);
         }
 
-        public <T extends DatabaseObject> void get(GetRequest<T> request) throws RemoteException {
+        public <T extends DatabaseObject> void get(IdRequest<T> request) throws RemoteException {
             Message message = Message.obtain(null, GET_INDEX, request);
+            message.replyTo = replyTo;
+            sendMessenger.send(message);
+        }
+
+        public <T extends DatabaseObject> void delete(IdRequest<T> request) throws RemoteException {
+            Message message = Message.obtain(null, DELETE_INDEX, request);
+            message.replyTo = replyTo;
+            sendMessenger.send(message);
+        }
+        public <T extends DatabaseObject> void update(T data) throws RemoteException {
+            Message message = Message.obtain(null, UPDATE_INDEX, data);
+            message.replyTo = replyTo;
+            sendMessenger.send(message);
+        }
+
+        public <T extends DatabaseObject> void query(QueryRequest<T> request) throws RemoteException {
+            Message message = Message.obtain(null, QUERY_INDEX, request);
             message.replyTo = replyTo;
             sendMessenger.send(message);
         }

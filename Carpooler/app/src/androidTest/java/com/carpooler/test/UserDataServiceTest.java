@@ -1,43 +1,42 @@
 package com.carpooler.test;
 
 import android.os.RemoteException;
-import android.test.UiThreadTest;
-import android.test.suitebuilder.annotation.LargeTest;
-import android.test.suitebuilder.annotation.SmallTest;
 
-import com.carpooler.dao.DatabaseService;
-import com.carpooler.dao.GetRequest;
 import com.carpooler.dao.UserDataService;
 import com.carpooler.dao.dto.UserData;
-import com.carpooler.dao.dto.Vehicle;
-
-import java.util.concurrent.TimeUnit;
+import com.carpooler.dao.dto.VehicleData;
 
 /**
  * Created by raymond on 6/14/15.
  */
 public class UserDataServiceTest extends DatabaseServiceTest {
-    private UserDataService userDataService = new UserDataService();
+    private UserDataService userDataService;
 
     public static final String TEST_ID ="testid";
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        userDataService = new UserDataService(conn);
+    }
 
     public void testCreateUser() throws RemoteException, InterruptedException {
         UserData data = new UserData();
         data.setUserId(TEST_ID);
-        Vehicle vehicle = new Vehicle();
+        VehicleData vehicle = new VehicleData();
         vehicle.setPlateNumber("ABCDE");
         data.getVehicle().add(vehicle);
-        userDataService.createUser(data, conn);
+        userDataService.createUser(data);
         checkResponse();
     }
 
     public void testGetUser() throws InterruptedException, RemoteException {
-        userDataService.getUserData(TEST_ID, conn);
+        userDataService.getUserData(TEST_ID);
         checkResponse();
     }
 
     public void testPutMapping() throws RemoteException, InterruptedException {
-        userDataService.putMapping(conn);
+        userDataService.putMapping();
         checkResponse();
     }
 }

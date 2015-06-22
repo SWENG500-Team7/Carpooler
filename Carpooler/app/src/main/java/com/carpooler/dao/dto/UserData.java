@@ -17,16 +17,7 @@ import io.searchbox.annotations.JestId;
                     + "user\":{" +
                         "\"properties\":{"
                             + "\"userId\": {\"type\": \"string\", \"indexed\":\"not_analyzed\", \"copy_to\":\"_id\"},"
-                            + "\"vehicle\": {"
-                                + "\"properties\":{"
-                                    + "\"seats\":{\"type\":\"integer\"},"
-                                    + "\"make\":{\"type\":\"string\"},"
-                                    + "\"model\":{\"type\":\"string\"},"
-                                    + "\"color\":{\"type\":\"string\"},"
-                                    + "\"plateNumber\":{\"type\":\"string\"},"
-                                    + "\"year\":{\"type\":\"integer\"}"
-                                + "}"
-                            + "}"
+                            + "\"vehicle\": " + VehicleData.MAPPING
                         + "}"
                     + "}"
                 + "}"
@@ -35,7 +26,7 @@ import io.searchbox.annotations.JestId;
 public class UserData implements DatabaseObject {
     @JestId
     private String userId;
-    private List<Vehicle> vehicle = new ArrayList<>();
+    private List<VehicleData> vehicle = new ArrayList<>();
 
     public String getUserId() {
         return userId;
@@ -45,11 +36,11 @@ public class UserData implements DatabaseObject {
         this.userId = userId;
     }
 
-    public List<Vehicle> getVehicle() {
+    public List<VehicleData> getVehicle() {
         return vehicle;
     }
 
-    public void setVehicle(List<Vehicle> vehicle) {
+    public void setVehicle(List<VehicleData> vehicle) {
         this.vehicle = vehicle;
     }
 

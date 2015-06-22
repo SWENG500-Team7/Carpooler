@@ -1,5 +1,7 @@
 package com.carpooler.trips;
 
+import com.carpooler.dao.dto.VehicleData;
+
 /**
  * Created by Aidos on 07.06.2015.
  */
@@ -60,8 +62,8 @@ public class Vehicle {
         this.color = color;
     }
 
-    public com.carpooler.dao.dto.Vehicle toVehicleDTO() {
-        com.carpooler.dao.dto.Vehicle vehicleDTO = new com.carpooler.dao.dto.Vehicle();
+    public VehicleData toVehicleDTO() {
+        VehicleData vehicleDTO = new VehicleData();
         vehicleDTO.setColor(color);
         vehicleDTO.setPlateNumber(plateNumber);
         vehicleDTO.setSeats(seats);
