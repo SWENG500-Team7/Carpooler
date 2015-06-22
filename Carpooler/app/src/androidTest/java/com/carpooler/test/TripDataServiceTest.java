@@ -9,7 +9,6 @@ import com.carpooler.dao.dto.GeoPointData;
 import com.carpooler.dao.dto.TripData;
 import com.carpooler.trips.TripStatus;
 
-import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -40,7 +39,6 @@ public class TripDataServiceTest extends DatabaseServiceTest {
         startLocation.setZip("18360");
         tripData.setStartLocation(startLocation);
         tripData.setStartTime(new Date());
-        tripData.setEndTime(getEndDate(0));
         GeoPointData endGeo = getEndGeoPointData();
         AddressData endLocation = new AddressData();
         endLocation.setStreetAddress("20 main st warren nj");
@@ -54,7 +52,6 @@ public class TripDataServiceTest extends DatabaseServiceTest {
     public void testFindAvailableTrips() throws RemoteException, InterruptedException {
         FindTripQuery query = new FindTripQuery();
         query.setStartTime(new Date());
-        query.setEndTime(getEndDate(5));
         query.setTimeRange(200);
         GeoPointData startPoint = getStartGeoPointData();
         adjustGeoPoint(startPoint, .005);
@@ -76,13 +73,6 @@ public class TripDataServiceTest extends DatabaseServiceTest {
     private void adjustGeoPoint(GeoPointData data, double adjustment) {
         data.setLat(data.getLat() + adjustment);
         data.setLon(data.getLon() + adjustment);
-    }
-
-    private Date getEndDate(int minutesAdjust) {
-        Calendar endDate = Calendar.getInstance();
-        endDate.add(Calendar.HOUR_OF_DAY, 8);
-        endDate.add(Calendar.MINUTE, minutesAdjust);
-        return endDate.getTime();
     }
 
     private GeoPointData getStartGeoPointData() {

@@ -49,16 +49,8 @@ public class FindTripQuery {
                 +"}"
             +"},"
             +"{"
-                +"\"range\" : {"
-                    +"\"endTime\" :{"
-                        +"\"gte\": %6$s,"
-                        +"\"lte\": %7$s"
-                    +"}"
-                +"}"
-            +"},"
-            +"{"
                 +"\"term\": {"
-                    +"\"status\": \"%8$s\""
+                    +"\"status\": \"%6$s\""
                 +"}"
             +"}"
         +"]"
@@ -69,7 +61,6 @@ public class FindTripQuery {
     private GeoPointData endPoint;
     private int distance;
     private Date startTime;
-    private Date endTime;
     private int timeRange;
     private final Gson gson = new GsonBuilder()
             .setDateFormat(AbstractJestClient.ELASTIC_SEARCH_DATE_FORMAT)
@@ -82,8 +73,6 @@ public class FindTripQuery {
                 geoJson(endPoint),
                 formatDate(startTime,-timeRange),
                 formatDate(startTime,timeRange),
-                formatDate(endTime,-timeRange),
-                formatDate(endTime,timeRange),
                 TripStatus.OPEN);
     }
 
@@ -129,14 +118,6 @@ public class FindTripQuery {
 
     public void setStartTime(Date startTime) {
         this.startTime = startTime;
-    }
-
-    public Date getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
     }
 
     public int getTimeRange() {
