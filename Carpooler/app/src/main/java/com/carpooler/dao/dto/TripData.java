@@ -19,6 +19,7 @@ import io.searchbox.annotations.JestId;
                 "{\""
                     + "trip\":{" +
                         "\"properties\":{"
+                            + "\"hostId\": {\"type\": \"string\", \"index\":\"not_analyzed\"},"
                             + "\"status\": {\"type\": \"string\", \"index\":\"not_analyzed\"},"
                             + "\"fuelSplit\": {\"type\": \"double\"},"
                             + "\"startTime\": {\"type\": \"date\", \"format\":\"date_time_no_millis\"},"
@@ -33,6 +34,7 @@ import io.searchbox.annotations.JestId;
 public class TripData implements DatabaseObject{
     @JestId
     private transient String _id;
+    private String hostId;
     private TripStatus status;
     private AddressData startLocation;
     private AddressData endLocation;
@@ -68,6 +70,14 @@ public class TripData implements DatabaseObject{
     public double getFuelSplit() {
 
         return fuelSplit;
+    }
+
+    public String getHostId() {
+        return hostId;
+    }
+
+    public void setHostId(String hostId) {
+        this.hostId = hostId;
     }
 
     public void setFuelSplit(double fuelSplit) {

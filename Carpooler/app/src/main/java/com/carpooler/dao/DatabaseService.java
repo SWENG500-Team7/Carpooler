@@ -65,6 +65,14 @@ public class DatabaseService extends Service implements SharedPreferences.OnShar
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (handlerThread!=null && handlerThread.isAlive()) {
+            handlerThread.quit();
+        }
+    }
+
+    @Override
     public IBinder onBind(Intent intent) {
         return serviceMessenger.getBinder();
     }
