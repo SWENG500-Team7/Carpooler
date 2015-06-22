@@ -36,7 +36,7 @@ public class FuelPrice {
      * @param location - a GeoPoint
      * @return a cost average
      */
-    public double getFuelUnitCost(GeoPoint location) {
+    public double getFuelUnitPrice(GeoPoint location) {
         String json = requestFuelStations(location);
         List<Double> prices = convertJSONStringToPriceList(json, ARRAY_KEY, ELEMENT_KEY);
         return computePriceAverage(prices);

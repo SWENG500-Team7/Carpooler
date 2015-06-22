@@ -29,9 +29,9 @@ public class FuelPriceTest extends TestCase {
 
     }
 
-    public void testGetFuelUnitCost() {
+    public void testGetFuelUnitPrice() {
         GeoPoint location = new GeoPoint(-122.080143, 37.391025);
-        double unit_cost = fuelPrice.getFuelUnitCost(location);
+        double unit_cost = fuelPrice.getFuelUnitPrice(location);
         assertTrue(unit_cost > 0.0);
     }
 
