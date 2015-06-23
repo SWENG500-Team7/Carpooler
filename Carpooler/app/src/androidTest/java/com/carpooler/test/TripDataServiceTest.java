@@ -5,6 +5,7 @@ import android.os.RemoteException;
 import com.carpooler.dao.FindTripQuery;
 import com.carpooler.dao.TripDataService;
 import com.carpooler.dao.dto.AddressData;
+import com.carpooler.dao.dto.CarpoolUserData;
 import com.carpooler.dao.dto.GeoPointData;
 import com.carpooler.dao.dto.TripData;
 import com.carpooler.trips.TripStatus;
@@ -45,6 +46,9 @@ public class TripDataServiceTest extends DatabaseServiceTest {
         endLocation.setLocation(endGeo);
         endLocation.setZip("07059");
         tripData.setEndLocation(endLocation);
+        CarpoolUserData userData = new CarpoolUserData();
+        userData.setUserId("testcpuser");
+        tripData.getUsers().add(userData);
         service.createTrip(tripData);
         checkResponse();
     }
@@ -70,6 +74,12 @@ public class TripDataServiceTest extends DatabaseServiceTest {
         service.findTripsByHostIdAndStatus("testuser", TripStatus.OPEN);
         checkResponse();
     }
+
+    public void testFindTripsByUserIdAndStatus() throws RemoteException, InterruptedException {
+        service.findTripsByUserIdAndStatus("testcpuser", TripStatus.OPEN);
+        checkResponse();
+    }
+
     private void adjustGeoPoint(GeoPointData data, double adjustment) {
         data.setLat(data.getLat() + adjustment);
         data.setLon(data.getLon() + adjustment);
