@@ -5,11 +5,11 @@ import android.os.RemoteException;
 import com.carpooler.dao.FindTripQuery;
 import com.carpooler.dao.TripDataService;
 import com.carpooler.dao.dto.AddressData;
+import com.carpooler.dao.dto.CarpoolUserData;
 import com.carpooler.dao.dto.GeoPointData;
 import com.carpooler.dao.dto.TripData;
 import com.carpooler.trips.TripStatus;
 
-import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -40,13 +40,15 @@ public class TripDataServiceTest extends DatabaseServiceTest {
         startLocation.setZip("18360");
         tripData.setStartLocation(startLocation);
         tripData.setStartTime(new Date());
-        tripData.setEndTime(getEndDate(0));
         GeoPointData endGeo = getEndGeoPointData();
         AddressData endLocation = new AddressData();
         endLocation.setStreetAddress("20 main st warren nj");
         endLocation.setLocation(endGeo);
         endLocation.setZip("07059");
         tripData.setEndLocation(endLocation);
+        CarpoolUserData userData = new CarpoolUserData();
+        userData.setUserId("testcpuser");
+        tripData.getUsers().add(userData);
         service.createTrip(tripData);
         checkResponse();
     }
@@ -54,7 +56,6 @@ public class TripDataServiceTest extends DatabaseServiceTest {
     public void testFindAvailableTrips() throws RemoteException, InterruptedException {
         FindTripQuery query = new FindTripQuery();
         query.setStartTime(new Date());
-        query.setEndTime(getEndDate(5));
         query.setTimeRange(200);
         GeoPointData startPoint = getStartGeoPointData();
         adjustGeoPoint(startPoint, .005);
@@ -73,16 +74,15 @@ public class TripDataServiceTest extends DatabaseServiceTest {
         service.findTripsByHostIdAndStatus("testuser", TripStatus.OPEN);
         checkResponse();
     }
+
+    public void testFindTripsByUserIdAndStatus() throws RemoteException, InterruptedException {
+        service.findTripsByUserIdAndStatus("testcpuser", TripStatus.OPEN);
+        checkResponse();
+    }
+
     private void adjustGeoPoint(GeoPointData data, double adjustment) {
         data.setLat(data.getLat() + adjustment);
         data.setLon(data.getLon() + adjustment);
-    }
-
-    private Date getEndDate(int minutesAdjust) {
-        Calendar endDate = Calendar.getInstance();
-        endDate.add(Calendar.HOUR_OF_DAY, 8);
-        endDate.add(Calendar.MINUTE, minutesAdjust);
-        return endDate.getTime();
     }
 
     private GeoPointData getStartGeoPointData() {

@@ -20,6 +20,22 @@ public class TripDataService {
             +"]"
         +"}"
     +"}";
+    private static final String USER_ID_STATUS_QUERY =
+    "{"
+        + "\"filter\" : {"
+            +"\"and\" : ["
+                +"{"
+                    +"\"nested\": {"
+                        +"\"path\": \"users\","
+                        + "\"filter\" : {"
+                            + "\"term\": {\"users.userId\": \"%1$s\"}"
+                        +"}"
+                    + "}"
+                + "},"
+                +"{\"term\": {\"status\": \"%2$s\"}}"
+            +"]"
+        +"}"
+    +"}";
     public TripDataService(DatabaseService.Connection connection) {
         this.connection = connection;
     }
@@ -44,6 +60,11 @@ public class TripDataService {
 
     public void findTripsByHostIdAndStatus(String hostId, TripStatus tripStatus) throws RemoteException {
         String json = String.format(HOST_ID_STATUS_QUERY,hostId,tripStatus);
+        QueryRequest<TripData> queryRequest = new QueryRequest<>(json,TripData.class);
+        connection.query(queryRequest);
+    }
+    public void findTripsByUserIdAndStatus(String userId, TripStatus tripStatus) throws RemoteException {
+        String json = String.format(USER_ID_STATUS_QUERY,userId,tripStatus);
         QueryRequest<TripData> queryRequest = new QueryRequest<>(json,TripData.class);
         connection.query(queryRequest);
     }
