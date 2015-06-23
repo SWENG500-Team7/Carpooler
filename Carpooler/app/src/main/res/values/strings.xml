@@ -33,4 +33,7 @@
     <string name="database_username_summary">User for Authentication</string>
     <string name="database_password_title">Password</string>
     <string name="database_password_summary">Password for DB</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="hello_world">Hello world!</string>
 </resources>
