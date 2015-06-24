@@ -58,12 +58,20 @@ public class TripListFragment extends Fragment implements MessageFragment {
         loadData();
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        tripDataService = null;
+    }
+
     private void loadData(){
         try {
             if (!refreshLayout.isRefreshing()){
                 refreshLayout.setRefreshing(true);
             }
-            tripDataService.findTripsByHostIdAndStatus("testuser", TripStatus.OPEN,QUERY_ID);
+            if (tripDataService!=null) {
+                tripDataService.findTripsByHostIdAndStatus("testuser", TripStatus.OPEN, QUERY_ID);
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
         }
