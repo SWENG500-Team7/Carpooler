@@ -134,7 +134,7 @@ public class DatabaseService extends Service implements SharedPreferences.OnShar
     public static class Connection implements ServiceConnection {
         private Messenger sendMessenger;
         private Messenger replyTo;
-
+        private List<Message> messageHolder = new ArrayList<>();
         public Connection(Messenger replyTo) {
             this.replyTo = replyTo;
         }
@@ -142,6 +142,13 @@ public class DatabaseService extends Service implements SharedPreferences.OnShar
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             sendMessenger = new Messenger(service);
+            for (Message message:messageHolder){
+                try {
+                    sendMessenger.send(message);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         @Override
@@ -149,39 +156,43 @@ public class DatabaseService extends Service implements SharedPreferences.OnShar
 
         }
 
-        public <T extends DatabaseObject> void putMapping(Class<T> type) throws RemoteException {
+        public <T extends DatabaseObject> void putMapping(Class<T> type, int callbackId) throws RemoteException {
             Message message = Message.obtain(null, PUT_MAPPING, type);
             message.replyTo = replyTo;
-            sendMessenger.send(message);
+            sendMessage(message,callbackId);
+        }
+        private void sendMessage(Message message, int callbackId) throws RemoteException {
+            message.replyTo = replyTo;
+            message.arg1 = callbackId;
+            if (sendMessenger==null){
+                messageHolder.add(message);
+            }else{
+                sendMessenger.send(message);
+            }
         }
 
-        public <T extends DatabaseObject> void create(T data) throws RemoteException {
+        public <T extends DatabaseObject> void create(T data, int callbackId) throws RemoteException {
             Message message = Message.obtain(null, CREATE_INDEX, data);
-            message.replyTo = replyTo;
-            sendMessenger.send(message);
+            sendMessage(message,callbackId);
         }
 
-        public <T extends DatabaseObject> void get(IdRequest<T> request) throws RemoteException {
+        public <T extends DatabaseObject> void get(IdRequest<T> request, int callbackId) throws RemoteException {
             Message message = Message.obtain(null, GET_INDEX, request);
-            message.replyTo = replyTo;
-            sendMessenger.send(message);
+            sendMessage(message,callbackId);
         }
 
-        public <T extends DatabaseObject> void delete(IdRequest<T> request) throws RemoteException {
+        public <T extends DatabaseObject> void delete(IdRequest<T> request, int callbackId) throws RemoteException {
             Message message = Message.obtain(null, DELETE_INDEX, request);
-            message.replyTo = replyTo;
-            sendMessenger.send(message);
+            sendMessage(message,callbackId);
         }
-        public <T extends DatabaseObject> void update(T data) throws RemoteException {
+        public <T extends DatabaseObject> void update(T data, int callbackId) throws RemoteException {
             Message message = Message.obtain(null, UPDATE_INDEX, data);
-            message.replyTo = replyTo;
-            sendMessenger.send(message);
+            sendMessage(message,callbackId);
         }
 
-        public <T extends DatabaseObject> void query(QueryRequest<T> request) throws RemoteException {
+        public <T extends DatabaseObject> void query(QueryRequest<T> request, int callbackId) throws RemoteException {
             Message message = Message.obtain(null, QUERY_INDEX, request);
-            message.replyTo = replyTo;
-            sendMessenger.send(message);
+            sendMessage(message,callbackId);
         }
     }
 }

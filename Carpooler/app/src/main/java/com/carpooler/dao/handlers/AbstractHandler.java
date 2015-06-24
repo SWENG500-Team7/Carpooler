@@ -26,7 +26,7 @@ public abstract class AbstractHandler {
     protected void replySuccess(Message message, Object obj) throws RemoteException {
         Messenger replyTo = message.replyTo;
         if (replyTo != null) {
-            Message response = Message.obtain(null, getWhat(), obj);
+            Message response = Message.obtain(null, message.arg1, obj);
             replyTo.send(response);
         }
     }

@@ -8,10 +8,16 @@ import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 /**
@@ -38,7 +44,13 @@ public class VehicleRestService {
      * @return
      */
     public static String[] getMakes(String pYear) {
-        String requestUrlString = mBaseUrl + mMenuUrl + "make?year=" + pYear;
+        String requestUrlString = mBaseUrl + mMenuUrl + "make?year=";
+        try {
+            requestUrlString += URLEncoder.encode(pYear, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
         XmlPullParser parser = vehicleServiceCall(requestUrlString);
         return parseSingleTag(parser, "text");
     }
@@ -50,7 +62,13 @@ public class VehicleRestService {
      * @return
      */
     public static String[] getModels(String pYear, String pMake) {
-        String requestUrlString = mBaseUrl + mMenuUrl + "model?year=" + pYear + "&make=" + pMake;
+        String requestUrlString = mBaseUrl + mMenuUrl + "model?year=";
+        try {
+            requestUrlString += URLEncoder.encode(pYear, "UTF-8") + "&make=" + URLEncoder.encode(pMake, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
         XmlPullParser parser = vehicleServiceCall(requestUrlString);
         return parseSingleTag(parser, "text");
     }
@@ -74,32 +92,40 @@ public class VehicleRestService {
      * @return
      */
     private static XmlPullParser vehicleServiceCall(String pRequestUrlString) {
-        InputStream in = null;
+        InputStreamReader in = null;
         XmlPullParser parser = null;
 
-        //Make the connection and get the XML
+
         HttpURLConnection urlConnection = null;
         try {
+            //Make the connection and get the XML
             URL requestUrl = new URL(pRequestUrlString);
             urlConnection = (HttpURLConnection) requestUrl.openConnection();
-            in = new BufferedInputStream(urlConnection.getInputStream());
-            urlConnection.disconnect();
-        } catch (Exception e) {
-            if (urlConnection != null) {
-                urlConnection.disconnect();
-            }
-            e.printStackTrace();
-        }
+            in = new InputStreamReader(urlConnection.getInputStream());
 
-        //Parse XML
-        try {
+            //Ensure all data is read from connection
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            int data;
+            while ((data = in.read()) > -1) {
+                buffer.write(data);
+            }
+            in.close();
+
+            //Make parser
             XmlPullParserFactory parserFactory = XmlPullParserFactory.newInstance();
             parser = parserFactory.newPullParser();
 
+            //Put received stream in parser
             parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-            parser.setInput(in, null);
+            parser.setInput(new ByteArrayInputStream(buffer.toByteArray()), null);
         } catch (XmlPullParserException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
         }
 
         return parser;

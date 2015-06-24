@@ -12,6 +12,7 @@ public class CarpoolUserData {
             "{"
                 + "\"type\":\"nested\","
                 + "\"properties\":{"
+                    + "\"userId\": {\"type\": \"string\", \"index\":\"not_analyzed\"},"
                     + "\"pickupLocation\":" + AddressData.MAPPING + ","
                     + "\"dropoffLocation\":" + AddressData.MAPPING + ","
                     + "\"status\":{\"type\":\"string\"},"
@@ -20,7 +21,7 @@ public class CarpoolUserData {
                     + "\"dropoffDate\":{\"type\": \"date\", \"format\":\"date_time_no_millis\"}"
                 + "}"
             + "}";
-
+    private String userId;
     private AddressData pickupLocation;
     private AddressData dropoffLocation;
     private CarpoolUserStatus status;
@@ -74,5 +75,13 @@ public class CarpoolUserData {
 
     public void setDropoffDate(Date dropoffDate) {
         this.dropoffDate = dropoffDate;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

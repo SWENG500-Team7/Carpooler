@@ -20,31 +20,52 @@ public class TripDataService {
             +"]"
         +"}"
     +"}";
+    private static final String USER_ID_STATUS_QUERY =
+    "{"
+        + "\"filter\" : {"
+            +"\"and\" : ["
+                +"{"
+                    +"\"nested\": {"
+                        +"\"path\": \"users\","
+                        + "\"filter\" : {"
+                            + "\"term\": {\"users.userId\": \"%1$s\"}"
+                        +"}"
+                    + "}"
+                + "},"
+                +"{\"term\": {\"status\": \"%2$s\"}}"
+            +"]"
+        +"}"
+    +"}";
     public TripDataService(DatabaseService.Connection connection) {
         this.connection = connection;
     }
 
-    public void getTripData(String id) throws RemoteException {
+    public void getTripData(String id, int callbackId) throws RemoteException {
         IdRequest request = new IdRequest(id, TripData.class);
-        connection.get(request);
+        connection.get(request,callbackId);
     }
 
-    public void createTrip(TripData data) throws RemoteException {
-        connection.create(data);
+    public void createTrip(TripData data, int callbackId) throws RemoteException {
+        connection.create(data,callbackId);
     }
 
-    public void putMapping() throws RemoteException {
-        connection.putMapping(TripData.class);
+    public void putMapping(int callbackId) throws RemoteException {
+        connection.putMapping(TripData.class,callbackId);
     }
 
-    public void findAvailableTrips(FindTripQuery query) throws RemoteException {
+    public void findAvailableTrips(FindTripQuery query, int callbackId) throws RemoteException {
         QueryRequest<TripData> queryRequest = new QueryRequest<>(query.toJson(),TripData.class);
-        connection.query(queryRequest);
+        connection.query(queryRequest,callbackId);
     }
 
-    public void findTripsByHostIdAndStatus(String hostId, TripStatus tripStatus) throws RemoteException {
+    public void findTripsByHostIdAndStatus(String hostId, TripStatus tripStatus, int callbackId) throws RemoteException {
         String json = String.format(HOST_ID_STATUS_QUERY,hostId,tripStatus);
         QueryRequest<TripData> queryRequest = new QueryRequest<>(json,TripData.class);
-        connection.query(queryRequest);
+        connection.query(queryRequest,callbackId);
+    }
+    public void findTripsByUserIdAndStatus(String userId, TripStatus tripStatus, int callbackId) throws RemoteException {
+        String json = String.format(USER_ID_STATUS_QUERY,userId,tripStatus);
+        QueryRequest<TripData> queryRequest = new QueryRequest<>(json,TripData.class);
+        connection.query(queryRequest,callbackId);
     }
 }

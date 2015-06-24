@@ -372,7 +372,7 @@ public class RegisterActivity extends GoogleActivity implements OnClickListener,
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    Intent intent = new Intent(RegisterActivity.this, CarpoolerActivity.class);
+                    Intent intent = new Intent(RegisterActivity.this, /*CarpoolerActivity.class*/MainActivity.class);
                     startActivity(intent);
                 }
             });
