@@ -14,16 +14,16 @@ public class UserDataService {
         this.connection = connection;
     }
 
-    public void getUserData(String id) throws RemoteException {
+    public void getUserData(String id, int callbackId) throws RemoteException {
         IdRequest request = new IdRequest(id,UserData.class);
-        connection.get(request);
+        connection.get(request,callbackId);
     }
 
-    public void createUser(UserData data) throws RemoteException {
-        connection.create(data);
+    public void createUser(UserData data, int callbackId) throws RemoteException {
+        connection.create(data,callbackId);
     }
 
-    public void putMapping() throws RemoteException {
-        connection.putMapping(UserData.class);
+    public void putMapping(int callbackId) throws RemoteException {
+        connection.putMapping(UserData.class,callbackId);
     }
 }

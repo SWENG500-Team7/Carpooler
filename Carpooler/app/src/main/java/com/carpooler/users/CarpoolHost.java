@@ -130,7 +130,7 @@ public class CarpoolHost {
         try {
             //Persist user data
             UserDataService dataService = new UserDataService(conn);
-            dataService.createUser(data);
+            dataService.createUser(data,0);
         } catch (RemoteException e) {
             e.printStackTrace();
             return false;

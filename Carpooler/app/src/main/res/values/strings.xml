@@ -36,4 +36,21 @@
     <string name="title_activity_main">MainActivity</string>
 
     <string name="hello_world">Hello world!</string>
+    <string name="title_activity_carpooler_main">CarpoolerMain</string>
+
+    <string-array name="nav_drawer_labels">
+        <item>@string/nav_item_trips</item>
+        <item>@string/nav_item_vehicles</item>
+    </string-array>
+    <string name="nav_item_trips">Trips</string>
+    <string name="nav_item_vehicles">Vehicles</string>
+    <string name="title_trips">Trips</string>
+    <string name="title_vehicles">Vehicles</string>
+    <string name="action_search">Search</string>
+    <string name="drawer_open">Open</string>
+    <string name="drawer_close">Close</string>
+    <string name="start">Start:</string>
+    <string name="status">Status:</string>
+    <string name="from">From:</string>
+    <string name="to">To:</string>
 </resources>

@@ -26,17 +26,17 @@ public class UserDataServiceTest extends DatabaseServiceTest {
         VehicleData vehicle = new VehicleData();
         vehicle.setPlateNumber("ABCDE");
         data.getVehicle().add(vehicle);
-        userDataService.createUser(data);
+        userDataService.createUser(data,100);
         checkResponse();
     }
 
     public void testGetUser() throws InterruptedException, RemoteException {
-        userDataService.getUserData(TEST_ID);
+        userDataService.getUserData(TEST_ID,100);
         checkResponse();
     }
 
     public void testPutMapping() throws RemoteException, InterruptedException {
-        userDataService.putMapping();
+        userDataService.putMapping(100);
         checkResponse();
     }
 }
