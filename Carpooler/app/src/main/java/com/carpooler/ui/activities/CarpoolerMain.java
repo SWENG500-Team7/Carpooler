@@ -26,7 +26,7 @@ public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.F
     private FragmentDrawer drawerFragment;
     private DatabaseService.Connection conn;
     private MessageFragment activeFragment;
-    private class TripDataHandler extends Handler {
+    private class FragmentDataHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
             if (activeFragment!=null){
@@ -49,18 +49,18 @@ public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.F
         drawerFragment.setUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), mToolbar);
         drawerFragment.setDrawerListener(this);
 
-        Messenger responseMessenger = new Messenger(new TripDataHandler());
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Messenger responseMessenger = new Messenger(new FragmentDataHandler());
         conn = new DatabaseService.Connection(responseMessenger);
         Intent intent = new Intent(this, DatabaseService.class);
         bindService(intent, conn, Context.BIND_AUTO_CREATE);
         tripDataService = new TripDataService(conn);
         userDataService = new UserDataService(conn);
         displayView(0);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
     }
 
     @Override
