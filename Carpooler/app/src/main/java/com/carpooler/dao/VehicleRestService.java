@@ -80,10 +80,20 @@ public class VehicleRestService {
      * @param pYear
      * @return
      */
-    public static String getMPG(String pMake, String pModel, String pYear) {
+    public static int getMPG(String pMake, String pModel, String pYear) {
         String requestUrlString = mBaseUrl + mMpgUrl + "vehicles?make=" + pMake + "&model=" + pModel;
         XmlPullParser parser = vehicleServiceCall(requestUrlString);
-        return parseSingleTagForYear(parser, pYear, "comb08");
+        String[] mpgs = parseSingleTagForYear(parser, pYear, "comb08");
+        int sum = 0;
+        int len = mpgs.length;
+        if(len > 0) {
+            for(int i = 0; i < len; i++) {
+                sum += Integer.parseInt(mpgs[i]);
+            }
+            // calculate average mpg
+            return sum/len;
+        }
+        return sum;
     }
 
     /**
@@ -180,30 +190,25 @@ public class VehicleRestService {
      * @param pTag
      * @return
      */
-    private static String parseSingleTagForYear(XmlPullParser pParser, String pYear, String pTag) {
+    private static String[] parseSingleTagForYear(XmlPullParser pParser, String pYear, String pTag) {
+        ArrayList<String> itemList = new ArrayList<String>();
         String value = null;
-//        boolean identified = false;
         try {
             int eventType = pParser.getEventType();
-            int count = 0;
 
             //Move through document and collect data
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 String item = null;
-                Log.i("VehicleRestService", "Looped " + count++);
 
                 //Get the value from pTag for when the value for "year" is pYear
                 switch (eventType) {
                     case XmlPullParser.START_TAG:
                         item = pParser.getName();
-                        Log.i("VehicleRestService", "item: " + item);
-//                        if (item.equals(pTag)) {
-//                            value = pParser.nextText();
-//                            Log.i("VehicleRestService", "Tag identified " + count);
-//                        } else if (item.equals("year") && pParser.nextText().equals(pYear)) {
-//                            Log.i("VehicleRestService", "Year identified");
-//                            identified = true;
-//                        }
+                        if (item.equals(pTag)) {
+                            value = pParser.nextText();
+                        } else if (item.equals("year") && pParser.nextText().equals(pYear)) {
+                            itemList.add(value);
+                        }
                         break;
                     case XmlPullParser.END_TAG:
                         break;
@@ -212,7 +217,6 @@ public class VehicleRestService {
                 //Iterate through document
                 pParser.next();
                 eventType = pParser.getEventType();
-                Log.i("VehicleRestService", "eventType: " + eventType);
             }
         } catch (XmlPullParserException e) {
             e.printStackTrace();
@@ -220,6 +224,7 @@ public class VehicleRestService {
             e.printStackTrace();
         }
 
-        return value;
+        String[] itemArray = itemList.toArray(new String[itemList.size()]);
+        return itemArray;
     }
 }
