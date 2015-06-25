@@ -1,5 +1,6 @@
 package com.carpooler.ui.activities;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.RemoteException;
@@ -12,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.carpooler.R;
-import com.carpooler.dao.TripDataService;
 import com.carpooler.dao.dto.TripData;
 import com.carpooler.trips.TripStatus;
 import com.carpooler.ui.adapters.TripRecyclerAdapter;
@@ -24,15 +24,18 @@ public class TripListFragment extends Fragment implements MessageFragment {
     private RecyclerView recyclerView;
     private SwipeRefreshLayout refreshLayout;
     private TripRecyclerAdapter adapter;
-    private TripDataService tripDataService;
     private static final int QUERY_ID=100;
+    private TripDetailCallback callback;
+
     protected void setupAdapter(List<TripData> trips){
-        adapter = new TripRecyclerAdapter(trips);
+        adapter = new TripRecyclerAdapter(trips,callback);
         recyclerView.setAdapter(adapter);
     }
 
-    public void setTripDataService(TripDataService tripDataService) {
-        this.tripDataService = tripDataService;
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        callback = (TripDetailCallback) activity;
     }
 
     @Override
@@ -40,7 +43,7 @@ public class TripListFragment extends Fragment implements MessageFragment {
         View rootView = inflater.inflate(R.layout.fragment_trip_list, container, false);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        adapter = new TripRecyclerAdapter(null);
+        adapter = new TripRecyclerAdapter(null,callback);
         recyclerView.setAdapter(adapter);
         refreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.contentView);
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -49,6 +52,7 @@ public class TripListFragment extends Fragment implements MessageFragment {
                 loadData();
             }
         });
+
         return rootView;
     }
 
@@ -60,12 +64,10 @@ public class TripListFragment extends Fragment implements MessageFragment {
 
     private void loadData(){
         try {
-            if (tripDataService!=null) {
                 if (!refreshLayout.isRefreshing()){
                     refreshLayout.setRefreshing(true);
                 }
-                tripDataService.findTripsByHostIdAndStatus("testuser", TripStatus.OPEN, QUERY_ID);
-            }
+                callback.getTripDataService().findTripsByHostIdAndStatus("testuser", TripStatus.OPEN, QUERY_ID);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -79,5 +81,10 @@ public class TripListFragment extends Fragment implements MessageFragment {
                 refreshLayout.setRefreshing(false);
                 break;
         }
+    }
+
+    @Override
+    public void handleError(Message msg) {
+        refreshLayout.setRefreshing(false);
     }
 }

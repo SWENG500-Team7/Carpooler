@@ -7,4 +7,5 @@ import android.os.Message;
  */
 public interface MessageFragment {
     public void handleMessage(Message msg);
+    public void handleError(Message msg);
 }

@@ -15,28 +15,68 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.carpooler.R;
 import com.carpooler.dao.DatabaseService;
 import com.carpooler.dao.TripDataService;
 import com.carpooler.dao.UserDataService;
 
-public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.FragmentDrawerListener{
+public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.FragmentDrawerListener, TripDetailCallback{
     private Toolbar mToolbar;
     private FragmentDrawer drawerFragment;
     private DatabaseService.Connection conn;
     private MessageFragment activeFragment;
+
+    @Override
+    public void onTripSelected(String tripId) {
+        TripDetailFragment fragment = new TripDetailFragment();
+        String title = getString(R.string.title_trip_detail);
+        transitionFragment(fragment,title);
+    }
+
+    @Override
+    public TripDataService getTripDataService() {
+        return tripDataService;
+    }
+
+    @Override
+    public UserDataService getUserDataService() {
+        return userDataService;
+    }
+
     private class FragmentDataHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
-            if (activeFragment!=null){
-                activeFragment.handleMessage(msg);
+            if (msg.what<0){
+                handleErrorDbResponse(msg);
+            }else{
+                handleSuccessDbResponse(msg);
             }
         }
     }
 
     private TripDataService tripDataService;
     private UserDataService userDataService;
+
+    private void handleErrorDbResponse(Message msg){
+        switch (msg.what){
+            case DatabaseService.ERROR:
+                Toast.makeText(this,(String)msg.obj,Toast.LENGTH_LONG);
+                break;
+            case DatabaseService.EXCEPTION:
+                Toast.makeText(this,((Exception)msg.obj).getMessage(),Toast.LENGTH_LONG);
+                break;
+        }
+        if (activeFragment!=null){
+            activeFragment.handleError(msg);
+        }
+    }
+    private void handleSuccessDbResponse(Message msg){
+        if (activeFragment!=null){
+            activeFragment.handleMessage(msg);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,17 +137,22 @@ public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.F
         String title = getString(R.string.app_name);
         switch (position) {
             case 0:
-                TripListFragment tl =  new TripListFragment();
-                tl.setTripDataService(tripDataService);
-                fragment = tl;
+                fragment = new TripListFragment();
                 title = getString(R.string.title_trips);
                 break;
             default:
                 break;
         }
 
+        transitionFragment(fragment,title);
+
+    }
+
+    private void transitionFragment(Fragment fragment, String title){
         if (fragment != null) {
-            activeFragment = (MessageFragment) fragment;
+            if (fragment instanceof MessageFragment) {
+                activeFragment = (MessageFragment) fragment;
+            }
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.container_body, fragment);
@@ -116,4 +161,6 @@ public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.F
             // set the toolbar title
             getSupportActionBar().setTitle(title);
         }
-    }}
+
+    }
+}
