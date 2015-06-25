@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.carpooler.R;
 import com.carpooler.dao.dto.TripData;
+import com.carpooler.ui.activities.TripDetailCallback;
 
 import java.util.List;
 
@@ -16,9 +17,11 @@ import java.util.List;
  */
 public class TripRecyclerAdapter extends RecyclerView.Adapter<TripRecyclerAdapter.TripRowHolder> {
     private List<TripData> tripDatas;
+    private TripDetailCallback callback;
 
-    public TripRecyclerAdapter(List<TripData> tripDatas) {
+    public TripRecyclerAdapter(List<TripData> tripDatas, TripDetailCallback callback) {
         this.tripDatas = tripDatas;
+        this.callback = callback;
     }
 
     @Override
@@ -54,6 +57,15 @@ public class TripRecyclerAdapter extends RecyclerView.Adapter<TripRecyclerAdapte
             status = (TextView) itemView.findViewById(R.id.status);
             toZip = (TextView) itemView.findViewById(R.id.toZip);
             fromZip = (TextView) itemView.findViewById(R.id.fromZip);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int pos = getAdapterPosition();
+                    TripData data = tripDatas.get(pos);
+                    callback.onTripSelected(data.get_id());
+                }
+            });
         }
+
     }
 }

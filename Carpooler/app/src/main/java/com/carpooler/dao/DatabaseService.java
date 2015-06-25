@@ -118,16 +118,25 @@ public class DatabaseService extends Service implements SharedPreferences.OnShar
         @Override
         public void handleMessage(Message msg) {
             try {
-                for (AbstractHandler handler:handlers){
-                    if (msg.what==handler.getWhat()){
-                        handler.process(jestClient,msg);
-                        break;
+                if (jestClient==null){
+                    Messenger replyTo = msg.replyTo;
+                    if (replyTo != null) {
+                        String errorMessage = "Database setup invalid";
+                        Message response = Message.obtain(null, DatabaseService.ERROR, errorMessage);
+                        replyTo.send(response);
                     }
+
+                }else {
+                        for (AbstractHandler handler : handlers) {
+                            if (msg.what == handler.getWhat()) {
+                                handler.process(jestClient, msg);
+                                break;
+                            }
+                        }
                 }
             } catch (RemoteException ex) {
-                log.error("",ex);
+                log.error("", ex);
             }
-
         }
     }
 
