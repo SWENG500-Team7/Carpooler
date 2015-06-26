@@ -63,12 +63,13 @@ public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.F
     private void handleErrorDbResponse(Message msg){
         switch (msg.what){
             case DatabaseService.ERROR:
-                Toast.makeText(this,(String)msg.obj,Toast.LENGTH_LONG);
+                Toast.makeText(this,(String)msg.obj,Toast.LENGTH_LONG).show();
                 break;
             case DatabaseService.EXCEPTION:
-                Toast.makeText(this,((Exception)msg.obj).getMessage(),Toast.LENGTH_LONG);
+                Toast.makeText(this,((Exception)msg.obj).getMessage(),Toast.LENGTH_LONG).show();
                 break;
         }
+
         if (activeFragment!=null){
             activeFragment.handleError(msg);
         }
