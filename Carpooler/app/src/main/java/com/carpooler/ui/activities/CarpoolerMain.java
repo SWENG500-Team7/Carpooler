@@ -21,6 +21,7 @@ import com.carpooler.R;
 import com.carpooler.dao.DatabaseService;
 import com.carpooler.dao.TripDataService;
 import com.carpooler.dao.UserDataService;
+import com.carpooler.trips.TripStatus;
 
 public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.FragmentDrawerListener, TripDetailCallback{
     private Toolbar mToolbar;
@@ -137,15 +138,27 @@ public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.F
         String title = getString(R.string.app_name);
         switch (position) {
             case 0:
-                fragment = new TripListFragment();
-                title = getString(R.string.title_trips);
+                fragment = createTripListFragment(TripStatus.OPEN);
+                title = getString(R.string.nav_item_open_trips);
+                break;
+            case 1:
+                fragment = createTripListFragment(TripStatus.IN_ROUTE);
+                title = getString(R.string.nav_item_in_route_trips);
                 break;
             default:
                 break;
         }
 
-        transitionFragment(fragment,title);
+        transitionFragment(fragment, title);
 
+    }
+
+    private Fragment createTripListFragment(TripStatus status){
+        Bundle args = new Bundle();
+        args.putString(TripListFragment.STATUS_ARG, status.name());
+        Fragment fragment = new TripListFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     private void transitionFragment(Fragment fragment, String title){

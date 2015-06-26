@@ -26,6 +26,8 @@ public class TripListFragment extends Fragment implements MessageFragment {
     private TripRecyclerAdapter adapter;
     private static final int QUERY_ID=100;
     private TripDetailCallback callback;
+    public static final String STATUS_ARG = "status";
+    private TripStatus tripStatus;
 
     protected void setupAdapter(List<TripData> trips){
         adapter = new TripRecyclerAdapter(trips,callback);
@@ -52,6 +54,13 @@ public class TripListFragment extends Fragment implements MessageFragment {
                 loadData();
             }
         });
+        Bundle args = getArguments();
+        if (args!=null) {
+            String status = args.getString(STATUS_ARG, TripStatus.OPEN.name());
+            tripStatus = TripStatus.valueOf(status);
+        }else{
+            tripStatus = TripStatus.OPEN;
+        }
 
         return rootView;
     }
@@ -67,7 +76,7 @@ public class TripListFragment extends Fragment implements MessageFragment {
                 if (!refreshLayout.isRefreshing()){
                     refreshLayout.setRefreshing(true);
                 }
-                callback.getTripDataService().findTripsByHostIdAndStatus("testuser", TripStatus.OPEN, QUERY_ID);
+                callback.getTripDataService().findTripsByHostIdAndStatus("testuser", tripStatus, QUERY_ID);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
