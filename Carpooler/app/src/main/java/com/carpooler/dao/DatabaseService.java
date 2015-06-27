@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.location.Address;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -17,6 +18,7 @@ import android.preference.PreferenceManager;
 
 import com.carpooler.dao.dto.DatabaseObject;
 import com.carpooler.dao.handlers.AbstractHandler;
+import com.carpooler.dao.handlers.BitmapLoadHandler;
 import com.carpooler.dao.handlers.DeleteDataHandler;
 import com.carpooler.dao.handlers.GeocodeHandler;
 import com.carpooler.dao.handlers.GetDataHandler;
@@ -53,6 +55,7 @@ public class DatabaseService extends Service implements SharedPreferences.OnShar
     public static final int DELETE_INDEX = 4;
     public static final int QUERY_INDEX = 5;
     public static final int GEOCODE = 100;
+    public static final int BITMAP = 200;
     private Messenger serviceMessenger;
     private HandlerThread handlerThread;
 
@@ -117,23 +120,23 @@ public class DatabaseService extends Service implements SharedPreferences.OnShar
             handlers.add(new DeleteDataHandler());
             handlers.add(new QueryDataHandler());
             handlers.add(new GeocodeHandler(getApplicationContext()));
+            handlers.add(new BitmapLoadHandler());
         }
 
         @Override
         public void handleMessage(Message msg) {
             try {
                 if (jestClient==null){
-                    Messenger replyTo = msg.replyTo;
-                    if (replyTo != null) {
-                        String errorMessage = "Database setup invalid";
-                        Message response = Message.obtain(null, DatabaseService.ERROR, errorMessage);
-                        replyTo.send(response);
-                    }
 
                 }else {
                         for (AbstractHandler handler : handlers) {
                             if (msg.what == handler.getWhat()) {
-                                handler.process(jestClient, msg);
+                                if (jestClient==null && handler.isJestRequired()){
+                                    DatabaseService.CallbackMessage callbackMessage = (DatabaseService.CallbackMessage) msg.obj;
+                                    handler.replyError(msg,"Database setup invalid",callbackMessage);
+                                }else {
+                                    handler.process(jestClient, msg);
+                                }
                                 break;
                             }
                         }
@@ -237,6 +240,10 @@ public class DatabaseService extends Service implements SharedPreferences.OnShar
             CallbackMessage callbackMessage = new CallbackMessage(callback,address);
             sendMessage(callbackMessage,GEOCODE);
         }
+        public void loadBitmap(String url, BitmapCallback callback) throws RemoteException {
+            CallbackMessage callbackMessage = new CallbackMessage(callback,url);
+            sendMessage(callbackMessage,BITMAP);
+        }
     }
 
     public static class CallbackMessage{
@@ -303,6 +310,10 @@ public class DatabaseService extends Service implements SharedPreferences.OnShar
     public static interface IndexCallback extends Callback<String> {
     }
     public static interface GeocodeCallback extends Callback<Address>{
+
+    }
+
+    public static interface BitmapCallback extends Callback<Bitmap>{
 
     }
 }

@@ -44,4 +44,9 @@ public class GeocodeHandler extends AbstractHandler {
     public int getWhat() {
         return DatabaseService.GEOCODE;
     }
+
+    @Override
+    public boolean isJestRequired() {
+        return false;
+    }
 }

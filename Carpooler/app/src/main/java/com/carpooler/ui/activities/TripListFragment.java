@@ -75,7 +75,7 @@ public class TripListFragment extends Fragment implements DatabaseService.QueryC
                 if (!refreshLayout.isRefreshing()){
                     refreshLayout.setRefreshing(true);
                 }
-                callback.getTripDataService().findTripsByHostIdAndStatus("testuser", tripStatus, this);
+                callback.getTripDataService().findTripsByHostIdAndStatus(callback.getUser().getGoogleId(), tripStatus, this);
         } catch (RemoteException e) {
             e.printStackTrace();
         }

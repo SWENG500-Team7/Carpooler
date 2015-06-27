@@ -44,11 +44,15 @@ public abstract class AbstractHandler {
         replyError(message,result.getErrorMessage(),callbackMessage);
     }
 
-    protected void replyError(Message message, String errorMessage,DatabaseService.CallbackMessage callbackMessage) throws RemoteException {
+    public void replyError(Message message, String errorMessage,DatabaseService.CallbackMessage callbackMessage) throws RemoteException {
         callbackMessage.setErrorMessage(errorMessage);
         sendReply(message,DatabaseService.ERROR);
     }
     public abstract void process(JestClient client, Message message) throws RemoteException;
 
     public abstract int getWhat();
+
+    public boolean isJestRequired(){
+        return true;
+    }
 }

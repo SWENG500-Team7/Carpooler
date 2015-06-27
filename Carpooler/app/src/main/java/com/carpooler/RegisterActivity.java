@@ -264,7 +264,7 @@ public class RegisterActivity extends GoogleActivity implements OnClickListener,
         try {
             Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
             if (currentPerson != null) {
-                newUser = new User(currentPerson.getId());
+                newUser = new User(currentPerson.getId(),null);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -344,12 +344,12 @@ public class RegisterActivity extends GoogleActivity implements OnClickListener,
                     startActivity(intent);
                 }
             });
-            boolean persistResult = newUser.persistUser(conn);
-            if (persistResult) {
-                builder.setMessage(R.string.register_user_success);
-            } else {
-                builder.setMessage(R.string.register_fail);
-            }
+//            boolean persistResult = newUser.persistUser(conn);
+//            if (persistResult) {
+//                builder.setMessage(R.string.register_user_success);
+//            } else {
+//                builder.setMessage(R.string.register_fail);
+//            }
             builder.create().show();
             return;
         }

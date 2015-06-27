@@ -15,11 +15,26 @@ public class User {
 
     private String mGoogleId;
     private String mPayCredential;
+    private UserDataService userDataService;
+    private UserData userData;
 
-    public User(String pGoogleId) {
+    public User(String pGoogleId, UserDataService userDataService) {
         mGoogleId = pGoogleId;
+        this.userDataService = userDataService;
+        loadUserData();
     }
 
+    private void loadUserData()  {
+        try {
+            userDataService.getUserData(mGoogleId, new GetUserCallback());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void refreshUserData(){
+        loadUserData();
+    }
     //region Getters and Setters
     public String getGoogleId() { return mGoogleId; }
 
@@ -30,27 +45,46 @@ public class User {
     }
     //endregion
 
-    /**
-     * Converts User instance to a UserData object and persists
-     * using given database connection
-     * @param conn
-     * @return
-     */
-    public boolean persistUser(DatabaseService.Connection conn) {
-        //Create User dto
-        UserData data = new UserData();
-        data.setUserId(mGoogleId);
-
-        //Persist user data
+    public void saveUser(){
         try {
-            //Persist user data
-            UserDataService dataService = new UserDataService(conn);
-            dataService.createUser(data,null);
+            userDataService.createUser(userData, new CreateUserCallback());
         } catch (RemoteException e) {
             e.printStackTrace();
-            return false;
+        }
+    }
+    private class CreateUserCallback implements DatabaseService.IndexCallback{
+
+        @Override
+        public void doError(String message) {
         }
 
-        return true;
+        @Override
+        public void doException(Exception exception) {
+
+        }
+
+        @Override
+        public void doSuccess(String data) {
+            refreshUserData();
+        }
+    }
+    private class GetUserCallback implements DatabaseService.GetCallback<UserData>{
+
+        @Override
+        public void doError(String message) {
+            userData = new UserData();
+            userData.setUserId(mGoogleId);
+            saveUser();
+        }
+
+        @Override
+        public void doException(Exception exception) {
+
+        }
+
+        @Override
+        public void doSuccess(UserData data) {
+            userData = data;
+        }
     }
 }
