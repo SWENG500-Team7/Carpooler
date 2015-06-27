@@ -2,7 +2,6 @@ package com.carpooler.test;
 
 import android.os.RemoteException;
 
-import com.carpooler.dao.DatabaseService;
 import com.carpooler.dao.FindTripQuery;
 import com.carpooler.dao.TripDataService;
 import com.carpooler.dao.dto.AddressData;
@@ -26,7 +25,7 @@ public class TripDataServiceTest extends DatabaseServiceTest {
     }
 
     public void testPutMapping() throws RemoteException, InterruptedException {
-        service.putMapping(100);
+        service.putMapping(new StringResponseCallback());
         checkResponse();
     }
 
@@ -50,7 +49,7 @@ public class TripDataServiceTest extends DatabaseServiceTest {
         CarpoolUserData userData = new CarpoolUserData();
         userData.setUserId("testcpuser");
         tripData.getUsers().add(userData);
-        service.createTrip(tripData,100);
+        service.createTrip(tripData,new StringResponseCallback());
         checkResponse();
     }
 
@@ -66,18 +65,18 @@ public class TripDataServiceTest extends DatabaseServiceTest {
         query.setEndPoint(endPoint);
         query.setDistance(20);
 
-        service.findAvailableTrips(query, DatabaseService.QUERY_INDEX);
+        service.findAvailableTrips(query, new QueryResponseCallback<TripData>());
         checkResponse();
 
     }
 
     public void testFindTripsByHostIdAndStatus() throws RemoteException, InterruptedException {
-        service.findTripsByHostIdAndStatus("testuser", TripStatus.OPEN, DatabaseService.QUERY_INDEX);
+        service.findTripsByHostIdAndStatus("testuser", TripStatus.OPEN, new QueryResponseCallback<TripData>());
         checkResponse();
     }
 
     public void testFindTripsByUserIdAndStatus() throws RemoteException, InterruptedException {
-        service.findTripsByUserIdAndStatus("testcpuser", TripStatus.OPEN, DatabaseService.QUERY_INDEX);
+        service.findTripsByUserIdAndStatus("testcpuser", TripStatus.OPEN, new QueryResponseCallback<TripData>());
         checkResponse();
     }
 

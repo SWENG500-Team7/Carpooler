@@ -3,6 +3,7 @@ package com.carpooler.dao.handlers;
 import android.os.Message;
 import android.os.RemoteException;
 
+import com.carpooler.dao.DatabaseService;
 import com.carpooler.dao.ElasticDataRequest;
 import com.carpooler.dao.annotations.ElasticData;
 
@@ -18,7 +19,8 @@ import io.searchbox.client.JestResult;
 public abstract class AbstractTypeHandler extends AbstractHandler {
     @Override
     public void process(JestClient client, Message message) throws RemoteException {
-        ElasticDataRequest request = (ElasticDataRequest) message.obj;
+        DatabaseService.CallbackMessage callbackMessage = (DatabaseService.CallbackMessage) message.obj;
+        ElasticDataRequest request = (ElasticDataRequest) callbackMessage.getRequest();
         Class type = request.getType();
         if (type == null) {
             throw new IllegalArgumentException("data cannot be null");
@@ -32,12 +34,12 @@ public abstract class AbstractTypeHandler extends AbstractHandler {
             JestResult result = client.execute(target);
             if (result.isSucceeded()) {
                 Object response = getResponse(result, type);
-                replySuccess(message, response);
+                replySuccess(message, response,callbackMessage);
             } else {
-                replyError(message, result);
+                replyError(message, result,callbackMessage);
             }
         } catch (IOException e) {
-            replyError(message, e);
+            replyError(message, e,callbackMessage);
         }
     }
 

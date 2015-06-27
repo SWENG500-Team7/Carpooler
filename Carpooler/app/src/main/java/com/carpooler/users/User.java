@@ -45,7 +45,7 @@ public class User {
         try {
             //Persist user data
             UserDataService dataService = new UserDataService(conn);
-            dataService.createUser(data,0);
+            dataService.createUser(data,null);
         } catch (RemoteException e) {
             e.printStackTrace();
             return false;

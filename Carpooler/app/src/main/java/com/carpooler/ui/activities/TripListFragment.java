@@ -2,7 +2,6 @@ package com.carpooler.ui.activities;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.Message;
 import android.os.RemoteException;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -13,18 +12,18 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.carpooler.R;
+import com.carpooler.dao.DatabaseService;
 import com.carpooler.dao.dto.TripData;
 import com.carpooler.trips.TripStatus;
 import com.carpooler.ui.adapters.TripRecyclerAdapter;
 
 import java.util.List;
 
-public class TripListFragment extends Fragment implements MessageFragment {
+public class TripListFragment extends Fragment implements DatabaseService.QueryCallback<TripData>{
 
     private RecyclerView recyclerView;
     private SwipeRefreshLayout refreshLayout;
     private TripRecyclerAdapter adapter;
-    private static final int QUERY_ID=100;
     private TripDetailCallback callback;
     public static final String STATUS_ARG = "status";
     private TripStatus tripStatus;
@@ -76,24 +75,26 @@ public class TripListFragment extends Fragment implements MessageFragment {
                 if (!refreshLayout.isRefreshing()){
                     refreshLayout.setRefreshing(true);
                 }
-                callback.getTripDataService().findTripsByHostIdAndStatus("testuser", tripStatus, QUERY_ID);
+                callback.getTripDataService().findTripsByHostIdAndStatus("testuser", tripStatus, this);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public void handleMessage(Message msg) {
-        switch (msg.what){
-            case QUERY_ID:
-                setupAdapter((List<TripData>) msg.obj);
-                refreshLayout.setRefreshing(false);
-                break;
-        }
+    public void doError(String message) {
+        refreshLayout.setRefreshing(false);
     }
 
     @Override
-    public void handleError(Message msg) {
+    public void doException(Exception exception) {
         refreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void doSuccess(List<TripData> data) {
+        setupAdapter(data);
+        refreshLayout.setRefreshing(false);
+
     }
 }

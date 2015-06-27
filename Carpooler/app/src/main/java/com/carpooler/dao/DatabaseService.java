@@ -37,7 +37,7 @@ import io.searchbox.client.JestClient;
  * Created by raymond on 6/12/15.
  */
 public class DatabaseService extends Service implements SharedPreferences.OnSharedPreferenceChangeListener {
-    private final static Logger log = LoggerFactory.getLogger(JestClientFactory.class);
+    private final static Logger log = LoggerFactory.getLogger(DatabaseService.class);
     public static final String DATABASE_URL = "database.url";
     public static final String DATABASE_USER = "database.user";
     public static final String DATABASE_PASSWORD = "database.password";
@@ -140,14 +140,41 @@ public class DatabaseService extends Service implements SharedPreferences.OnShar
         }
     }
 
+   private static class DataHandler extends Handler {
+
+       public DataHandler() {
+           super();
+       }
+        public DataHandler(Looper looper) {
+            super(looper);
+        }
+        @Override
+        public void handleMessage(Message msg) {
+            CallbackMessage callbackMessage = (CallbackMessage) msg.obj;
+            if (callbackMessage.callback!=null) {
+                switch (msg.what) {
+                    case DatabaseService.ERROR:
+                        callbackMessage.callback.doError(callbackMessage.errorMessage);
+                    case DatabaseService.EXCEPTION:
+                        callbackMessage.callback.doException(callbackMessage.exception);
+                        break;
+                    default:
+                        callbackMessage.callback.doSuccess(callbackMessage.response);
+                }
+            }
+        }
+    }
     public static class Connection implements ServiceConnection {
         private Messenger sendMessenger;
         private Messenger replyTo;
         private List<Message> messageHolder = new ArrayList<>();
-        public Connection(Messenger replyTo) {
-            this.replyTo = replyTo;
+        public Connection() {
+            this.replyTo = new Messenger(new DataHandler());
         }
 
+        public Connection(Looper looper) {
+            this.replyTo = new Messenger(new DataHandler(looper));
+        }
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             sendMessenger = new Messenger(service);
@@ -165,14 +192,9 @@ public class DatabaseService extends Service implements SharedPreferences.OnShar
 
         }
 
-        public <T extends DatabaseObject> void putMapping(Class<T> type, int callbackId) throws RemoteException {
-            Message message = Message.obtain(null, PUT_MAPPING, type);
+        private void sendMessage(CallbackMessage callbackMessage, int what) throws RemoteException {
+            Message message = Message.obtain(null, what, callbackMessage);
             message.replyTo = replyTo;
-            sendMessage(message,callbackId);
-        }
-        private void sendMessage(Message message, int callbackId) throws RemoteException {
-            message.replyTo = replyTo;
-            message.arg1 = callbackId;
             if (sendMessenger==null){
                 messageHolder.add(message);
             }else{
@@ -180,28 +202,108 @@ public class DatabaseService extends Service implements SharedPreferences.OnShar
             }
         }
 
-        public <T extends DatabaseObject> void create(T data, int callbackId) throws RemoteException {
-            Message message = Message.obtain(null, CREATE_INDEX, data);
-            sendMessage(message,callbackId);
+        public <T extends DatabaseObject> void putMapping(Class<T> type, PutMappingCallback callback) throws RemoteException {
+            CallbackMessage callbackMessage = new CallbackMessage(callback,type);
+            sendMessage(callbackMessage,PUT_MAPPING);
+        }
+        public <T extends DatabaseObject> void create(T data, IndexCallback callback) throws RemoteException {
+            CallbackMessage callbackMessage = new CallbackMessage(callback,data);
+            sendMessage(callbackMessage,CREATE_INDEX);
         }
 
-        public <T extends DatabaseObject> void get(IdRequest<T> request, int callbackId) throws RemoteException {
-            Message message = Message.obtain(null, GET_INDEX, request);
-            sendMessage(message,callbackId);
+        public <T extends DatabaseObject> void get(IdRequest<T> request, GetCallback<T> callback) throws RemoteException {
+            CallbackMessage callbackMessage = new CallbackMessage(callback,request);
+            sendMessage(callbackMessage,GET_INDEX);
         }
 
-        public <T extends DatabaseObject> void delete(IdRequest<T> request, int callbackId) throws RemoteException {
-            Message message = Message.obtain(null, DELETE_INDEX, request);
-            sendMessage(message,callbackId);
+        public <T extends DatabaseObject> void delete(IdRequest<T> request, DeleteCallback callback) throws RemoteException {
+            CallbackMessage callbackMessage = new CallbackMessage(callback,request);
+            sendMessage(callbackMessage,DELETE_INDEX);
         }
-        public <T extends DatabaseObject> void update(T data, int callbackId) throws RemoteException {
-            Message message = Message.obtain(null, UPDATE_INDEX, data);
-            sendMessage(message,callbackId);
+        public <T extends DatabaseObject> void update(T data, UpdateCallback callback) throws RemoteException {
+            CallbackMessage callbackMessage = new CallbackMessage(callback,data);
+            sendMessage(callbackMessage,UPDATE_INDEX);
         }
 
-        public <T extends DatabaseObject> void query(QueryRequest<T> request, int callbackId) throws RemoteException {
-            Message message = Message.obtain(null, QUERY_INDEX, request);
-            sendMessage(message,callbackId);
+        public <T extends DatabaseObject> void query(QueryRequest<T> request, QueryCallback<T> callback) throws RemoteException {
+            CallbackMessage callbackMessage = new CallbackMessage(callback,request);
+            sendMessage(callbackMessage,QUERY_INDEX);
         }
+    }
+
+    public static class CallbackMessage{
+        private final Callback callback;
+        private final Object request;
+        private Object response;
+        private String errorMessage;
+        private Exception exception;
+
+        public CallbackMessage(Callback callback, Object request) {
+            this.callback = callback;
+            this.request = request;
+        }
+
+        public Callback getCallback() {
+            return callback;
+        }
+
+        public Object getRequest() {
+            return request;
+        }
+
+        public Object getResponse() {
+            return response;
+        }
+
+        public void setResponse(Object response) {
+            this.response = response;
+        }
+
+        public Exception getException() {
+            return exception;
+        }
+
+        public void setException(Exception exception) {
+            this.exception = exception;
+        }
+
+        public String getErrorMessage() {
+            return errorMessage;
+        }
+
+        public void setErrorMessage(String errorMessage) {
+            this.errorMessage = errorMessage;
+        }
+    }
+
+    public static interface Callback<T> {
+        public void doError(String message);
+        public void doException(Exception exception);
+        public void doSuccess(T data);
+    }
+
+    public static interface GetCallback<T extends DatabaseObject> extends Callback<T> {
+        @Override
+        public void doSuccess(T data);
+    }
+    public static interface QueryCallback<T extends DatabaseObject> extends Callback<List<T>> {
+        @Override
+        public void doSuccess(List<T> data);
+    }
+    public static interface PutMappingCallback extends Callback<String> {
+        @Override
+        public void doSuccess(String message);
+    }
+    public static interface UpdateCallback extends Callback<String> {
+        @Override
+        public void doSuccess(String id);
+    }
+    public static interface DeleteCallback extends Callback<String> {
+        @Override
+        public void doSuccess(String id);
+    }
+    public static interface IndexCallback extends Callback<String> {
+        @Override
+        public void doSuccess(String id);
     }
 }

@@ -9,9 +9,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.Messenger;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -46,12 +43,6 @@ public class RegisterActivity extends GoogleActivity implements OnClickListener,
 
     /* Database connection */
     DatabaseService.Connection conn;
-    private class ActHandler extends Handler {
-        @Override
-        public void handleMessage(Message msg) {
-            Object resp = msg.obj;
-        }
-    }
 
     /* Intent messages */
     private static final String YEAR_MESSAGE = "com.carpooler.RegisterActivity.YEAR_MESSAGE";
@@ -169,8 +160,7 @@ public class RegisterActivity extends GoogleActivity implements OnClickListener,
         super.onStart();
 
         //Bind to database
-        Messenger responseMessenger = new Messenger(new ActHandler());
-        conn = new DatabaseService.Connection(responseMessenger);
+        conn = new DatabaseService.Connection();
         Intent intent = new Intent(this, DatabaseService.class);
         bindService(intent, conn, Context.BIND_AUTO_CREATE);
     }
