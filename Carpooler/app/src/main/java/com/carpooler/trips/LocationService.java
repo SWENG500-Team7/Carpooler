@@ -1,14 +1,14 @@
 package com.carpooler.trips;
 
 import android.content.Context;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.RemoteException;
 import android.util.Log;
 
-import java.io.IOException;
+import com.carpooler.dao.DatabaseService;
+
 import java.util.List;
 
 /**
@@ -18,8 +18,6 @@ public class LocationService {
 
     private static final String TAG = LocationService.class.getSimpleName();
     private final Context mContext;
-
-    private Geocoder geocoder;
 
     // flag for GPS status
     private boolean isGPSEnabled = false;
@@ -41,10 +39,12 @@ public class LocationService {
 
     private LocationListener mListener;
 
-    public LocationService(Context context, LocationListener listener) {
+    private DatabaseService.Connection connection;
+
+    public LocationService(Context context, LocationListener listener, DatabaseService.Connection connection) {
         mContext = context;
         mListener = listener;
-        geocoder = new Geocoder(context);
+        this.connection = connection;
         initialize();
     }
 
@@ -109,17 +109,8 @@ public class LocationService {
      * @param address String
      * @return location
      */
-    public Location getLocationFromAddressName(String address) {
-        Location location = new Location("");
-        try {
-            List<Address> addresses = geocoder.getFromLocationName(address, 1);
-            Address extractedAddress = addresses.get(0);
-            location.setLatitude(extractedAddress.getLatitude());
-            location.setLongitude(extractedAddress.getLongitude());
-        } catch (IOException e) {
-            Log.i(TAG, "Failed to get address from name");
-        }
-        return location;
+    public void getLocationFromAddressName(String address, DatabaseService.GeocodeCallback callback) throws RemoteException {
+        connection.geocode(address,callback);
     }
 
     /**

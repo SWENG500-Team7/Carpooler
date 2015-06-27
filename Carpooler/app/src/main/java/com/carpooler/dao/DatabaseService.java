@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.location.Address;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -17,6 +18,7 @@ import android.preference.PreferenceManager;
 import com.carpooler.dao.dto.DatabaseObject;
 import com.carpooler.dao.handlers.AbstractHandler;
 import com.carpooler.dao.handlers.DeleteDataHandler;
+import com.carpooler.dao.handlers.GeocodeHandler;
 import com.carpooler.dao.handlers.GetDataHandler;
 import com.carpooler.dao.handlers.IndexDataHandler;
 import com.carpooler.dao.handlers.PutMappingHandler;
@@ -50,6 +52,7 @@ public class DatabaseService extends Service implements SharedPreferences.OnShar
     public static final int UPDATE_INDEX = 3;
     public static final int DELETE_INDEX = 4;
     public static final int QUERY_INDEX = 5;
+    public static final int GEOCODE = 100;
     private Messenger serviceMessenger;
     private HandlerThread handlerThread;
 
@@ -113,6 +116,7 @@ public class DatabaseService extends Service implements SharedPreferences.OnShar
             handlers.add(new UpdateDataHandler());
             handlers.add(new DeleteDataHandler());
             handlers.add(new QueryDataHandler());
+            handlers.add(new GeocodeHandler(getApplicationContext()));
         }
 
         @Override
@@ -229,6 +233,10 @@ public class DatabaseService extends Service implements SharedPreferences.OnShar
             CallbackMessage callbackMessage = new CallbackMessage(callback,request);
             sendMessage(callbackMessage,QUERY_INDEX);
         }
+        public void geocode(String address, GeocodeCallback callback) throws RemoteException {
+            CallbackMessage callbackMessage = new CallbackMessage(callback,address);
+            sendMessage(callbackMessage,GEOCODE);
+        }
     }
 
     public static class CallbackMessage{
@@ -283,27 +291,18 @@ public class DatabaseService extends Service implements SharedPreferences.OnShar
     }
 
     public static interface GetCallback<T extends DatabaseObject> extends Callback<T> {
-        @Override
-        public void doSuccess(T data);
     }
     public static interface QueryCallback<T extends DatabaseObject> extends Callback<List<T>> {
-        @Override
-        public void doSuccess(List<T> data);
     }
     public static interface PutMappingCallback extends Callback<String> {
-        @Override
-        public void doSuccess(String message);
     }
     public static interface UpdateCallback extends Callback<String> {
-        @Override
-        public void doSuccess(String id);
     }
     public static interface DeleteCallback extends Callback<String> {
-        @Override
-        public void doSuccess(String id);
     }
     public static interface IndexCallback extends Callback<String> {
-        @Override
-        public void doSuccess(String id);
+    }
+    public static interface GeocodeCallback extends Callback<Address>{
+
     }
 }

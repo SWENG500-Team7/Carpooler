@@ -1,12 +1,16 @@
 package com.carpooler.test;
 
+import android.location.Address;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
-import android.test.AndroidTestCase;
+import android.os.RemoteException;
 import android.util.Log;
 
+import com.carpooler.dao.DatabaseService;
 import com.carpooler.trips.LocationService;
+
+import junit.framework.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +18,7 @@ import java.util.List;
 /**
  * Created by jcsax on 6/21/15.
  */
-public class LocationServiceTest extends AndroidTestCase {
+public class LocationServiceTest extends DatabaseServiceTest {
 
     private LocationService mLocationService;
 
@@ -42,12 +46,9 @@ public class LocationServiceTest extends AndroidTestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        mLocationService = new LocationService(getContext(), mListener);
+        mLocationService = new LocationService(getContext(), mListener,conn);
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
 
     public void testGetInitialLocation() {
         Location location = mLocationService.initialize();
@@ -62,11 +63,9 @@ public class LocationServiceTest extends AndroidTestCase {
         assertFalse(mLocationService.canGetLocation());
     }
 
-    public void testGetLocationFromAddressName() {
-        Location location = mLocationService.getLocationFromAddressName("1600 Amphitheatre Parkway Mountain View, CA 94043");
-        assertNotNull(location);
-        assertNotNull(location.getLatitude());
-        assertNotNull(location.getLongitude());
+    public void testGetLocationFromAddressName() throws RemoteException, InterruptedException {
+        mLocationService.getLocationFromAddressName("1600 Amphitheatre Parkway Mountain View, CA 94043", new AddressResponseCallback());
+        checkResponse();
     }
 
     public void testSelectNextDestination() {
@@ -86,6 +85,14 @@ public class LocationServiceTest extends AndroidTestCase {
         assertNotNull(location);
         assertEquals(37.414771, location.getLatitude());
         assertEquals(-122.081119, location.getLongitude());
+    }
+
+    class AddressResponseCallback extends AbstractTestCallback<Address> implements DatabaseService.GeocodeCallback{
+        @Override
+        public void doSuccess(Address data) {
+            Assert.assertNotNull("Success is null", data);
+            latch.countDown();
+        }
     }
 
 }

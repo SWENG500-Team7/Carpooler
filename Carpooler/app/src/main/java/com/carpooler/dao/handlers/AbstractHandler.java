@@ -41,10 +41,13 @@ public abstract class AbstractHandler {
         sendReply(message,DatabaseService.EXCEPTION);
     }
     protected void replyError(Message message, JestResult result,DatabaseService.CallbackMessage callbackMessage) throws RemoteException {
-        callbackMessage.setErrorMessage(result.getErrorMessage());
-        sendReply(message,DatabaseService.ERROR);
+        replyError(message,result.getErrorMessage(),callbackMessage);
     }
 
+    protected void replyError(Message message, String errorMessage,DatabaseService.CallbackMessage callbackMessage) throws RemoteException {
+        callbackMessage.setErrorMessage(errorMessage);
+        sendReply(message,DatabaseService.ERROR);
+    }
     public abstract void process(JestClient client, Message message) throws RemoteException;
 
     public abstract int getWhat();
