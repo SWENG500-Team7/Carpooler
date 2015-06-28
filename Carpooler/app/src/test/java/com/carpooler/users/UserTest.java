@@ -13,11 +13,11 @@ import java.util.*;
 /**
  * Created by Aidos on 07.06.2015.
  */
-public class CarpoolHostTest {
+public class UserTest {
 
     @Test
     public void testAddRating() {
-        CarpoolHost ch = new CarpoolHost();
+        User ch = new User("googleId");
         ch.addRating(Rating.B);
         ch.addRating(Rating.D);
         Assert.assertEquals(Rating.C, ch.getRating());
@@ -25,7 +25,7 @@ public class CarpoolHostTest {
     @Test
     public void testAddVehicle() {
         Vehicle v = new Vehicle (2, "NYC321");
-        CarpoolHost ch = new CarpoolHost();
+        User ch = new User("googleId");
         ch.addVechicle(v);
         Assert.assertEquals(1, ch.getVehicles().size());
 
@@ -34,7 +34,7 @@ public class CarpoolHostTest {
     public void testRemoveVehicle() {
         Vehicle v = new Vehicle (3, "01KZ");
         Vehicle v2 = new Vehicle(1, "02KZ");
-        CarpoolHost ch = new CarpoolHost();
+        User ch = new User("googleId");
         ch.addVechicle(v);
         ch.addVechicle(v2);
         ch.removeVehicle(v);
@@ -43,7 +43,7 @@ public class CarpoolHostTest {
     @Test
     public void testCreateTrip() {
         Vehicle v = new Vehicle(2, "03KZ");
-        CarpoolHost ch = new CarpoolHost();
+        User ch = new User("googleId");
         Assert.assertNotNull(ch.createTrip(v));
 
     }
@@ -51,7 +51,7 @@ public class CarpoolHostTest {
     public void testSaveTrip() {
         Trip t = new Trip();
         t.setStatus(TripStatus.COMPLETED);
-        CarpoolHost ch = new CarpoolHost();
+        User ch = new User("googleId");
         ch.saveTrip(t);
         Assert.assertEquals(1, ch.getTrips(TripStatus.COMPLETED).size());
 
@@ -59,13 +59,13 @@ public class CarpoolHostTest {
     @Test
     public void testCancelTrip() {
         Trip t = new Trip();
-        CarpoolHost ch = new CarpoolHost();
+        User ch = new User("googleId");
         ch.cancelTrip(t);
         Assert.assertFalse(ch.getTrips(TripStatus.CANCELLED).contains(t));
     }
     @Test
     public void testGetTrips() {
-        CarpoolHost ch = new CarpoolHost();
+        User ch = new User("googleId");
         Trip t1 = new Trip();
         t1.setStatus(TripStatus.CANCELLED);
         ch.saveTrip(t1);
@@ -78,7 +78,7 @@ public class CarpoolHostTest {
 
     @Test
     public void testAddRatingWithReview() {
-        CarpoolHost ch = new CarpoolHost();
+        User ch = new User("googleId");
         String review = "Crazy Schumacher!";
         User u = new User("speed_racer");
         ch.addRating(u, Rating.D, review);

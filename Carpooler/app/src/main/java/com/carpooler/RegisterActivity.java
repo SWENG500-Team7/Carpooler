@@ -29,7 +29,6 @@ import android.widget.Toast;
 import com.carpooler.dao.DatabaseService;
 import com.carpooler.dao.VehicleRestService;
 import com.carpooler.trips.Vehicle;
-import com.carpooler.users.CarpoolHost;
 import com.carpooler.users.User;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -78,9 +77,6 @@ public class RegisterActivity extends GoogleActivity implements OnClickListener,
 
     /* Newly registered user */
     User newUser;
-
-    /* Newly registered host */
-    CarpoolHost newHost;
 
     /* VehicleData menus populated through web services */
     public enum VehicleMenuEnum {
@@ -210,7 +206,7 @@ public class RegisterActivity extends GoogleActivity implements OnClickListener,
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     //Remove the vehicle and update list view
-                    newHost.removeVehicle(toRemove);
+                    newUser.removeVehicle(toRemove);
                     ((BaseAdapter) lvVehicles.getAdapter()).notifyDataSetChanged();
                     Toast.makeText(getApplicationContext(), getString(R.string.register_remove_vehicle_toast), Toast.LENGTH_LONG).show();
                 }
@@ -273,7 +269,7 @@ public class RegisterActivity extends GoogleActivity implements OnClickListener,
     }
 
     /**
-     * Added a new vehicle to the CarpoolHost, creates CarpoolHost if not yet created
+     * Added a new vehicle to the host
      * @param pYear
      * @param pMake
      * @param pModel
@@ -282,12 +278,9 @@ public class RegisterActivity extends GoogleActivity implements OnClickListener,
      * @param pColor
      */
     private void addVehicle(int pYear, String pMake, String pModel, int pSeats, String pPlate, String pColor) {
-        if (newHost == null) {
-            newHost = new CarpoolHost();
-            ArrayAdapter<Vehicle> adapter = new ArrayAdapter<Vehicle>(RegisterActivity.this,
-                    android.R.layout.simple_list_item_1, newHost.getVehicles());
-            lvVehicles.setAdapter(adapter);
-        }
+        ArrayAdapter<Vehicle> adapter = new ArrayAdapter<Vehicle>(RegisterActivity.this,
+                android.R.layout.simple_list_item_1, newUser.getVehicles());
+        lvVehicles.setAdapter(adapter);
 
         Vehicle newVehicle = new Vehicle(pSeats, pPlate);
         newVehicle.setYear(pYear);
@@ -295,7 +288,7 @@ public class RegisterActivity extends GoogleActivity implements OnClickListener,
         newVehicle.setModel(pModel);
         newVehicle.setColor(pColor);
 
-        newHost.addVechicle(newVehicle);
+        newUser.addVechicle(newVehicle);
     }
 
     /**
@@ -336,7 +329,7 @@ public class RegisterActivity extends GoogleActivity implements OnClickListener,
         }
 
         //If not a host, persist regular user
-        if (newHost == null || newHost.getVehicles() == null || newHost.getVehicles().size() <= 0) {
+        if (newUser == null || newUser.getVehicles() == null || newUser.getVehicles().size() <= 0) {
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -354,11 +347,8 @@ public class RegisterActivity extends GoogleActivity implements OnClickListener,
             return;
         }
 
-        //Set user information in host
-        newHost.setUser(newUser);
-
         //If a host with cars, persist as host
-        if (newHost != null && newHost.getVehicles().size() > 0) {
+        if (newUser != null && newUser.getVehicles().size() > 0) {
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -366,12 +356,8 @@ public class RegisterActivity extends GoogleActivity implements OnClickListener,
                     startActivity(intent);
                 }
             });
-            boolean persistResult = newHost.persistHost(conn);
-            if (persistResult) {
-                builder.setMessage(R.string.register_host_success);
-            } else {
-                builder.setMessage(R.string.register_fail);
-            }
+            newUser.saveUser();
+            builder.setMessage(R.string.register_host_success);
             builder.create().show();
             return;
         }

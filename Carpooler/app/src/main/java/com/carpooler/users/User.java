@@ -5,6 +5,16 @@ import android.os.RemoteException;
 import com.carpooler.dao.DatabaseService;
 import com.carpooler.dao.UserDataService;
 import com.carpooler.dao.dto.UserData;
+import com.carpooler.dao.dto.VehicleData;
+import com.carpooler.trips.Trip;
+import com.carpooler.trips.TripStatus;
+import com.carpooler.trips.Vehicle;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * User class keeps track of user google identity and payment information
@@ -14,14 +24,92 @@ import com.carpooler.dao.dto.UserData;
 public class User {
 
     private String mGoogleId;
-    private String mPayCredential;
     private UserDataService userDataService;
     private UserData userData;
+    private Rating averageRating;
+    private int ratings;
+    private Map<User, String> reviews;
+    private List<Vehicle> vehicles;
+    private List<Trip> saved_trips;
+
+    public User(String pGoogleId) {
+        mGoogleId = pGoogleId;
+        averageRating = Rating.F;
+        ratings = 0;
+        saved_trips = new ArrayList<Trip>();
+        vehicles = new ArrayList<Vehicle>();
+        reviews = new HashMap<User, String>();
+    }
 
     public User(String pGoogleId, UserDataService userDataService) {
         mGoogleId = pGoogleId;
         this.userDataService = userDataService;
         loadUserData();
+    }
+
+    public String getGoogleId() {
+        return mGoogleId;
+    }
+
+    public Rating getRating() {
+        return this.averageRating;
+    }
+
+    public Map<User, String> getReviews(){
+        return this.reviews;
+    }
+
+    public List<Vehicle> getVehicles() {
+        return vehicles;
+    }
+
+    public void addRating (User u, Rating r, String s) {
+        reviews.put(u, s);
+        this.addRating(r);
+
+    }
+
+    public void addRating(Rating r) {
+        this.ratings++;
+        int average = (this.averageRating.ordinal() + r.ordinal())/this.ratings;
+        this.averageRating = Rating.values()[average];
+    }
+
+    public void addVechicle(Vehicle v) {
+        vehicles.add(v);
+    }
+
+    public void removeVehicle(Vehicle v) {
+        if (vehicles.isEmpty()) return;
+        else {
+            for (Iterator<Vehicle> iter = this.vehicles.listIterator(); iter.hasNext();) {
+                Vehicle v2 = iter.next();
+                if (v2.getPlateNumber().equalsIgnoreCase(v.getPlateNumber()))
+                    iter.remove();
+            }
+        }
+    }
+
+    public Trip createTrip(Vehicle v) {
+        return new Trip ();
+    }
+
+    public void saveTrip(Trip t) {
+        saved_trips.add(t);
+    }
+
+    public void cancelTrip(Trip t) {
+        saved_trips.remove(t);
+    }
+
+    public List<Trip> getTrips(TripStatus ts) {
+        ArrayList<Trip> temp = new ArrayList<Trip>();
+        for (Iterator<Trip> iter = this.saved_trips.listIterator(); iter.hasNext();) {
+            Trip t = iter.next();
+            if (t.getStatus() == ts)
+                temp.add(t);
+        }
+        return temp;
     }
 
     private void loadUserData()  {
@@ -35,18 +123,28 @@ public class User {
     public void refreshUserData(){
         loadUserData();
     }
-    //region Getters and Setters
-    public String getGoogleId() { return mGoogleId; }
-
-    public String getPayCredential() { return mPayCredential; }
-
-    public void setPayCredential(String payCredential) {
-        this.mPayCredential = payCredential;
-    }
-    //endregion
 
     public void saveUser(){
         try {
+            //If new user create new DTO
+            if (userData == null) {
+                userData = new UserData();
+                userData.setUserId(mGoogleId);
+            }
+
+            //Convert Vehicle List to DTOs and add to user DTO
+            List<VehicleData> vehicleDTOs =
+                    new ArrayList<VehicleData>();
+            for (Vehicle vehicle : vehicles) {
+                vehicleDTOs.add(vehicle.toVehicleDTO());
+            }
+            userData.setVehicle(vehicleDTOs);
+
+            //TODO: add ratings
+            //TODO: add reviews
+            //TODO: add trips
+
+            //Persist
             userDataService.createUser(userData, new CreateUserCallback());
         } catch (RemoteException e) {
             e.printStackTrace();
