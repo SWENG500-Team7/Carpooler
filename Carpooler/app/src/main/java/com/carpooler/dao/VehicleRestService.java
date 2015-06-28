@@ -74,6 +74,29 @@ public class VehicleRestService {
     }
 
     /**
+     * Get mpg based on make and model from FuelEconomy.gov
+     * @param pMake
+     * @param pModel
+     * @param pYear
+     * @return
+     */
+    public static int getMPG(String pMake, String pModel, String pYear) {
+        String requestUrlString = mBaseUrl + mMpgUrl + "vehicles?make=" + pMake + "&model=" + pModel;
+        XmlPullParser parser = vehicleServiceCall(requestUrlString);
+        String[] mpgs = parseSingleTagForYear(parser, pYear, "comb08");
+        int sum = 0;
+        int len = mpgs.length;
+        if(len > 0) {
+            for(int i = 0; i < len; i++) {
+                sum += Integer.parseInt(mpgs[i]);
+            }
+            // calculate average mpg
+            return sum/len;
+        }
+        return sum;
+    }
+
+    /**
      * Obtain XML from specified URL and put it in a parser
      * @param pRequestUrlString
      * @return
@@ -140,6 +163,51 @@ public class VehicleRestService {
                         item = pParser.getName();
                         if (item.equals(pTag)) {
                             itemList.add(pParser.nextText());
+                        }
+                        break;
+                    case XmlPullParser.END_TAG:
+                        break;
+                }
+
+                //Iterate through document
+                pParser.next();
+                eventType = pParser.getEventType();
+            }
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String[] itemArray = itemList.toArray(new String[itemList.size()]);
+        return itemArray;
+    }
+
+    /**
+     * Get list of XML element data based on specified tag for a specified year
+     * @param pParser
+     * @param pYear
+     * @param pTag
+     * @return
+     */
+    private static String[] parseSingleTagForYear(XmlPullParser pParser, String pYear, String pTag) {
+        ArrayList<String> itemList = new ArrayList<String>();
+        String value = null;
+        try {
+            int eventType = pParser.getEventType();
+
+            //Move through document and collect data
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                String item = null;
+
+                //Get the value from pTag for when the value for "year" is pYear
+                switch (eventType) {
+                    case XmlPullParser.START_TAG:
+                        item = pParser.getName();
+                        if (item.equals(pTag)) {
+                            value = pParser.nextText();
+                        } else if (item.equals("year") && pParser.nextText().equals(pYear)) {
+                            itemList.add(value);
                         }
                         break;
                     case XmlPullParser.END_TAG:

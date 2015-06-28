@@ -18,7 +18,8 @@ import io.searchbox.core.Index;
 public class IndexDataHandler extends AbstractHandler {
 
     public void process(JestClient client, Message message) throws RemoteException {
-        Object data = message.obj;
+        DatabaseService.CallbackMessage callbackMessage = (DatabaseService.CallbackMessage) message.obj;
+        Object data = callbackMessage.getRequest();
         if (data==null){
             throw new IllegalArgumentException("data cannot be null");
         }
@@ -33,12 +34,12 @@ public class IndexDataHandler extends AbstractHandler {
             JestResult result =  client.execute(indexData);
             if (result.isSucceeded()) {
                 String response = (String) result.getValue("_id");
-                replySuccess(message, response);
+                replySuccess(message, response,callbackMessage);
             }else{
-                replyError(message,result);
+                replyError(message,result,callbackMessage);
             }
         } catch (IOException e) {
-            replyError(message,e);
+            replyError(message,e,callbackMessage);
         }
     }
 

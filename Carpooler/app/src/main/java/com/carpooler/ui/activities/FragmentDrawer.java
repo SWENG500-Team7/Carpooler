@@ -2,6 +2,7 @@ package com.carpooler.ui.activities;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -13,10 +14,13 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.carpooler.R;
+import com.carpooler.dao.DatabaseService;
 import com.carpooler.ui.adapters.NavigationDrawerAdapter;
 import com.carpooler.ui.models.NavDrawerItem;
+import com.google.android.gms.plus.model.people.Person;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +38,8 @@ public class FragmentDrawer extends Fragment {
     private View containerView;
     private static String[] titles = null;
     private FragmentDrawerListener drawerListener;
+    private ImageView profileImage;
+    private static final int PROFILE_PIC_SIZE = 70;
 
     public FragmentDrawer() {
 
@@ -70,7 +76,7 @@ public class FragmentDrawer extends Fragment {
         // Inflating view layout
         View layout = inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
         recyclerView = (RecyclerView) layout.findViewById(R.id.drawerList);
-
+        profileImage = (ImageView) layout.findViewById(R.id.profileImage);
         adapter = new NavigationDrawerAdapter(getActivity(), getData());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -175,5 +181,16 @@ public class FragmentDrawer extends Fragment {
 
     public interface FragmentDrawerListener {
         public void onDrawerItemSelected(View view, int position);
+    }
+
+    public void setProfileImageBitmap(Person currentPerson, DatabaseService.Connection connection){
+        String photoUrl = currentPerson.getImage().getUrl();
+        photoUrl = photoUrl.substring(0, photoUrl.length()-2) + PROFILE_PIC_SIZE;
+        try {
+            connection.loadBitmap(photoUrl, new ImageViewBitmapLoader(profileImage));
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
     }
 }

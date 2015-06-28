@@ -23,31 +23,36 @@ public abstract class AbstractHandler {
         return ed;
     }
 
-    protected void replySuccess(Message message, Object obj) throws RemoteException {
+    private void sendReply(Message message, int replyWhat) throws RemoteException {
         Messenger replyTo = message.replyTo;
         if (replyTo != null) {
-            Message response = Message.obtain(null, message.arg1, obj);
+            Message response = Message.obtain(null, replyWhat, message.obj);
             replyTo.send(response);
         }
+
+    }
+    protected void replySuccess(Message message, Object obj,DatabaseService.CallbackMessage callbackMessage) throws RemoteException {
+        callbackMessage.setResponse(obj);
+        sendReply(message,message.what);
     }
 
-    protected void replyError(Message message, Exception error) throws RemoteException {
-        Messenger replyTo = message.replyTo;
-        if (replyTo != null) {
-            Message response = Message.obtain(null, DatabaseService.EXCEPTION, error);
-            replyTo.send(response);
-        }
+    protected void replyError(Message message, Exception error,DatabaseService.CallbackMessage callbackMessage) throws RemoteException {
+        callbackMessage.setException(error);
+        sendReply(message,DatabaseService.EXCEPTION);
     }
-    protected void replyError(Message message, JestResult result) throws RemoteException {
-        Messenger replyTo = message.replyTo;
-        if (replyTo != null) {
-            String errorMessage = result.getErrorMessage();
-            Message response = Message.obtain(null, DatabaseService.ERROR, errorMessage);
-            replyTo.send(response);
-        }
+    protected void replyError(Message message, JestResult result,DatabaseService.CallbackMessage callbackMessage) throws RemoteException {
+        replyError(message,result.getErrorMessage(),callbackMessage);
     }
 
+    public void replyError(Message message, String errorMessage,DatabaseService.CallbackMessage callbackMessage) throws RemoteException {
+        callbackMessage.setErrorMessage(errorMessage);
+        sendReply(message,DatabaseService.ERROR);
+    }
     public abstract void process(JestClient client, Message message) throws RemoteException;
 
     public abstract int getWhat();
+
+    public boolean isJestRequired(){
+        return true;
+    }
 }

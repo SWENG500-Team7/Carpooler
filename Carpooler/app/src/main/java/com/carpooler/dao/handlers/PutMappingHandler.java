@@ -18,7 +18,8 @@ import io.searchbox.indices.mapping.PutMapping;
 public class PutMappingHandler extends AbstractHandler {
     @Override
     public void process(JestClient client, Message message) throws RemoteException {
-        Class data = (Class) message.obj;
+        DatabaseService.CallbackMessage callbackMessage = (DatabaseService.CallbackMessage) message.obj;
+        Class data = (Class) callbackMessage.getRequest();
         if (data==null){
             throw new IllegalArgumentException("data cannot be null");
         }
@@ -31,12 +32,12 @@ public class PutMappingHandler extends AbstractHandler {
         try {
             JestResult result = client.execute(put);
             if (result.isSucceeded()) {
-                replySuccess(message, result.getJsonString());
+                replySuccess(message, result.getJsonString(),callbackMessage);
             }else{
-                replyError(message, result);
+                replyError(message, result,callbackMessage);
             }
         } catch (IOException e) {
-            replyError(message,e);
+            replyError(message,e,callbackMessage);
         }
     }
 

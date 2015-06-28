@@ -39,12 +39,15 @@
     <string name="title_activity_carpooler_main">CarpoolerMain</string>
 
     <string-array name="nav_drawer_labels">
-        <item>@string/nav_item_trips</item>
+        <item>@string/nav_item_open_trips</item>
+        <item>@string/nav_item_in_route_trips</item>
         <item>@string/nav_item_vehicles</item>
     </string-array>
-    <string name="nav_item_trips">Trips</string>
+    <string name="nav_item_open_trips">Open Trips</string>
+    <string name="nav_item_in_route_trips">In Route Trips</string>
     <string name="nav_item_vehicles">Vehicles</string>
     <string name="title_trips">Trips</string>
+    <string name="title_trip_detail">Trip Detail</string>
     <string name="title_vehicles">Vehicles</string>
     <string name="action_search">Search</string>
     <string name="drawer_open">Open</string>
@@ -53,4 +56,7 @@
     <string name="status">Status:</string>
     <string name="from">From:</string>
     <string name="to">To:</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

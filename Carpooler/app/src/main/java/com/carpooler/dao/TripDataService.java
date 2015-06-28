@@ -40,32 +40,32 @@ public class TripDataService {
         this.connection = connection;
     }
 
-    public void getTripData(String id, int callbackId) throws RemoteException {
+    public void getTripData(String id, DatabaseService.GetCallback<TripData> callback) throws RemoteException {
         IdRequest request = new IdRequest(id, TripData.class);
-        connection.get(request,callbackId);
+        connection.get(request,callback);
     }
 
-    public void createTrip(TripData data, int callbackId) throws RemoteException {
-        connection.create(data,callbackId);
+    public void createTrip(TripData data, DatabaseService.IndexCallback callback) throws RemoteException {
+        connection.create(data,callback);
     }
 
-    public void putMapping(int callbackId) throws RemoteException {
-        connection.putMapping(TripData.class,callbackId);
+    public void putMapping(DatabaseService.PutMappingCallback callback) throws RemoteException {
+        connection.putMapping(TripData.class,callback);
     }
 
-    public void findAvailableTrips(FindTripQuery query, int callbackId) throws RemoteException {
+    public void findAvailableTrips(FindTripQuery query, DatabaseService.QueryCallback<TripData> callback) throws RemoteException {
         QueryRequest<TripData> queryRequest = new QueryRequest<>(query.toJson(),TripData.class);
-        connection.query(queryRequest,callbackId);
+        connection.query(queryRequest,callback);
     }
 
-    public void findTripsByHostIdAndStatus(String hostId, TripStatus tripStatus, int callbackId) throws RemoteException {
+    public void findTripsByHostIdAndStatus(String hostId, TripStatus tripStatus, DatabaseService.QueryCallback<TripData> callback) throws RemoteException {
         String json = String.format(HOST_ID_STATUS_QUERY,hostId,tripStatus);
         QueryRequest<TripData> queryRequest = new QueryRequest<>(json,TripData.class);
-        connection.query(queryRequest,callbackId);
+        connection.query(queryRequest,callback);
     }
-    public void findTripsByUserIdAndStatus(String userId, TripStatus tripStatus, int callbackId) throws RemoteException {
+    public void findTripsByUserIdAndStatus(String userId, TripStatus tripStatus, DatabaseService.QueryCallback<TripData> callback) throws RemoteException {
         String json = String.format(USER_ID_STATUS_QUERY,userId,tripStatus);
         QueryRequest<TripData> queryRequest = new QueryRequest<>(json,TripData.class);
-        connection.query(queryRequest,callbackId);
+        connection.query(queryRequest,callback);
     }
 }

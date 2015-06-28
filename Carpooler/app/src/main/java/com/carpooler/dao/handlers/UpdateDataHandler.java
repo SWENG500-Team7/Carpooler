@@ -18,7 +18,8 @@ import io.searchbox.core.Update;
 public class UpdateDataHandler extends AbstractHandler {
     @Override
     public void process(JestClient client, Message message) throws RemoteException {
-        Object data = message.obj;
+        DatabaseService.CallbackMessage callbackMessage = (DatabaseService.CallbackMessage) message.obj;
+        Object data = callbackMessage.getRequest();
         if (data==null){
             throw new IllegalArgumentException("data cannot be null");
         }
@@ -32,12 +33,12 @@ public class UpdateDataHandler extends AbstractHandler {
             JestResult result =  client.execute(update);
             if (result.isSucceeded()) {
                 String response = (String) result.getValue("_id");
-                replySuccess(message, response);
+                replySuccess(message, response,callbackMessage);
             }else{
-                replyError(message,result);
+                replyError(message,result,callbackMessage);
             }
         } catch (IOException e) {
-            replyError(message,e);
+            replyError(message,e,callbackMessage);
         }
     }
     @Override

@@ -3,9 +3,6 @@ package com.carpooler.ui.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.Messenger;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -20,21 +17,19 @@ import com.carpooler.R;
 import com.carpooler.dao.DatabaseService;
 import com.carpooler.dao.TripDataService;
 import com.carpooler.dao.UserDataService;
+import com.carpooler.trips.TripStatus;
+import com.carpooler.users.User;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.model.people.Person;
 
-public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.FragmentDrawerListener{
+public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.FragmentDrawerListener, TripDetailCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private Toolbar mToolbar;
     private FragmentDrawer drawerFragment;
     private DatabaseService.Connection conn;
-    private MessageFragment activeFragment;
-    private class FragmentDataHandler extends Handler {
-        @Override
-        public void handleMessage(Message msg) {
-            if (activeFragment!=null){
-                activeFragment.handleMessage(msg);
-            }
-        }
-    }
-
+    private GoogleApiClient mGoogleApiClient;
+    private User user;
     private TripDataService tripDataService;
     private UserDataService userDataService;
 
@@ -48,20 +43,27 @@ public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.F
                 getSupportFragmentManager().findFragmentById(R.id.fragment_navigation_drawer);
         drawerFragment.setUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), mToolbar);
         drawerFragment.setDrawerListener(this);
-        Messenger responseMessenger = new Messenger(new FragmentDataHandler());
-        conn = new DatabaseService.Connection(responseMessenger);
+        conn = new DatabaseService.Connection();
         Intent intent = new Intent(this, DatabaseService.class);
         bindService(intent, conn, Context.BIND_AUTO_CREATE);
         tripDataService = new TripDataService(conn);
         userDataService = new UserDataService(conn);
-        displayView(0);
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(Plus.API)
+                .addScope(Plus.SCOPE_PLUS_LOGIN)
+                .build();
+        mGoogleApiClient.connect();
 
     }
+
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         unbindService(conn);
+        mGoogleApiClient.disconnect();
     }
 
     @Override
@@ -97,17 +99,31 @@ public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.F
         String title = getString(R.string.app_name);
         switch (position) {
             case 0:
-                TripListFragment tl =  new TripListFragment();
-                tl.setTripDataService(tripDataService);
-                fragment = tl;
-                title = getString(R.string.title_trips);
+                fragment = createTripListFragment(TripStatus.OPEN);
+                title = getString(R.string.nav_item_open_trips);
+                break;
+            case 1:
+                fragment = createTripListFragment(TripStatus.IN_ROUTE);
+                title = getString(R.string.nav_item_in_route_trips);
                 break;
             default:
                 break;
         }
 
+        transitionFragment(fragment, title);
+
+    }
+
+    private Fragment createTripListFragment(TripStatus status){
+        Bundle args = new Bundle();
+        args.putString(TripListFragment.STATUS_ARG, status.name());
+        Fragment fragment = new TripListFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    private void transitionFragment(Fragment fragment, String title){
         if (fragment != null) {
-            activeFragment = (MessageFragment) fragment;
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.container_body, fragment);
@@ -116,4 +132,50 @@ public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.F
             // set the toolbar title
             getSupportActionBar().setTitle(title);
         }
-    }}
+
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
+        drawerFragment.setProfileImageBitmap(currentPerson, conn);
+        user = new User(currentPerson.getId(),userDataService);
+        displayView(0);
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public User getUser(){
+        return user;
+    }
+
+    @Override
+    public void onTripSelected(String tripId) {
+        TripDetailFragment fragment = new TripDetailFragment();
+        String title = getString(R.string.title_trip_detail);
+        Bundle args = new Bundle();
+        args.putString(TripDetailFragment.TRIP_ID_ARG,tripId);
+        fragment.setArguments(args);
+        transitionFragment(fragment, title);
+    }
+
+    @Override
+    public TripDataService getTripDataService() {
+        return tripDataService;
+    }
+
+    @Override
+    public UserDataService getUserDataService() {
+        return userDataService;
+    }
+
+}

@@ -1,7 +1,21 @@
 package com.carpooler.trips;
 
+import android.util.Log;
+
+import com.carpooler.GeoPoint;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,22 +26,74 @@ import java.util.List;
  */
 public class FuelPrice {
 
+    private static final String myGasFeedURL = "http://devapi.mygasfeed.com/stations/radius/";
+    private static final String ARRAY_KEY = "stations";
+    private static final String ELEMENT_KEY = "reg_price";
+    private static final int CONNECTION_ATTEMPTS = 5;
+
     /**
-     * Requests for local fuel stations from the input url
-     * @param url - a String
+     * Get the fuel unit cost around a particular location
+     * @param location - a GeoPoint
+     * @return a cost average
+     */
+    public double getFuelUnitPrice(GeoPoint location) {
+        String json = requestFuelStations(location);
+        List<Double> prices = convertJSONStringToPriceList(json, ARRAY_KEY, ELEMENT_KEY);
+        return computePriceAverage(prices);
+    }
+
+    /**
+     * Requests for local fuel stations
+     * @param location - a GeoPoint
      * @return a response JSON String
      */
-    public String requestFuelStations(String url) {
-        return null;
+    public String requestFuelStations(GeoPoint location) {
+        String url = myGasFeedURL + location.getLatitude() + "/" + location.getLongititude() + "/1/reg/price/rfej9napna.json";
+        HttpURLConnection urlConnection = null;
+        InputStream in = null;
+        String result = null;
+
+        //Make multiple attempts if it initially fails
+        for (int i = 0; i < CONNECTION_ATTEMPTS; i++) {
+            try {
+                //Make the connection and get the response
+                URL requestUrl = new URL(url);
+                urlConnection = (HttpURLConnection) requestUrl.openConnection();
+                in = new BufferedInputStream(urlConnection.getInputStream());
+                urlConnection.disconnect();
+
+                // convert inputstream to string
+                if (in != null)
+                    result = convertInputStreamToString(in);
+
+            } catch (Exception e) {
+                Log.d("FuelPrice", e.getLocalizedMessage());
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+            }
+            if(result != null) {
+                break;
+            }
+        }
+
+        return result;
     }
 
     /**
      * Converts an InputStream to a String
-     * @param inputStream
-     * @return a String of the contents of the InputStream
+     * @param in
+     * @return result a String of the contents of the InputStream
      */
-    private String convertInputStreamToString(InputStream inputStream) throws IOException{
-        return null;
+    private String convertInputStreamToString(InputStream in) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+        String line = "";
+        String result = "";
+        while((line = bufferedReader.readLine()) != null)
+            result += line;
+
+        in.close();
+        return result;
     }
 
     /**
@@ -40,7 +106,17 @@ public class FuelPrice {
      * @return fuel_prices
      */
     public List<Double> convertJSONStringToPriceList(String json, String arraykey, String elementkey) {
-        return null;
+        List<Double> prices = new ArrayList<Double>();
+        try {
+            JSONObject jsonObject = new JSONObject(json);
+            JSONArray stations = (JSONArray) jsonObject.get(arraykey);
+            for (int i = 0; i < stations.length(); i++) {
+                prices.add(Double.parseDouble(stations.getJSONObject(i).getString(elementkey)));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return prices;
     }
 
     /**
@@ -49,7 +125,14 @@ public class FuelPrice {
      * @return a double
      */
     public double computePriceAverage(List<Double> prices) {
-        return 0.0;
+        Double sum = 0.0;
+        if(!prices.isEmpty()) {
+            for (Double price : prices) {
+                sum += price;
+            }
+            return sum.doubleValue()/prices.size();
+        }
+        return sum;
     }
 
 }

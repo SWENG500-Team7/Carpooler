@@ -1,7 +1,7 @@
 package com.carpooler.ui.activities;
 
+import android.app.Activity;
 import android.os.Bundle;
-import android.os.Message;
 import android.os.RemoteException;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -12,27 +12,31 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.carpooler.R;
-import com.carpooler.dao.TripDataService;
+import com.carpooler.dao.DatabaseService;
 import com.carpooler.dao.dto.TripData;
 import com.carpooler.trips.TripStatus;
 import com.carpooler.ui.adapters.TripRecyclerAdapter;
 
 import java.util.List;
 
-public class TripListFragment extends Fragment implements MessageFragment {
+public class TripListFragment extends Fragment implements DatabaseService.QueryCallback<TripData>{
 
     private RecyclerView recyclerView;
     private SwipeRefreshLayout refreshLayout;
     private TripRecyclerAdapter adapter;
-    private TripDataService tripDataService;
-    private static final int QUERY_ID=100;
+    private TripDetailCallback callback;
+    public static final String STATUS_ARG = "status";
+    private TripStatus tripStatus;
+
     protected void setupAdapter(List<TripData> trips){
-        adapter = new TripRecyclerAdapter(trips);
+        adapter = new TripRecyclerAdapter(trips,callback);
         recyclerView.setAdapter(adapter);
     }
 
-    public void setTripDataService(TripDataService tripDataService) {
-        this.tripDataService = tripDataService;
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        callback = (TripDetailCallback) activity;
     }
 
     @Override
@@ -40,7 +44,7 @@ public class TripListFragment extends Fragment implements MessageFragment {
         View rootView = inflater.inflate(R.layout.fragment_trip_list, container, false);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        adapter = new TripRecyclerAdapter(null);
+        adapter = new TripRecyclerAdapter(null,callback);
         recyclerView.setAdapter(adapter);
         refreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.contentView);
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -49,6 +53,14 @@ public class TripListFragment extends Fragment implements MessageFragment {
                 loadData();
             }
         });
+        Bundle args = getArguments();
+        if (args!=null) {
+            String status = args.getString(STATUS_ARG, TripStatus.OPEN.name());
+            tripStatus = TripStatus.valueOf(status);
+        }else{
+            tripStatus = TripStatus.OPEN;
+        }
+
         return rootView;
     }
 
@@ -60,24 +72,29 @@ public class TripListFragment extends Fragment implements MessageFragment {
 
     private void loadData(){
         try {
-            if (tripDataService!=null) {
                 if (!refreshLayout.isRefreshing()){
                     refreshLayout.setRefreshing(true);
                 }
-                tripDataService.findTripsByHostIdAndStatus("testuser", TripStatus.OPEN, QUERY_ID);
-            }
+                callback.getTripDataService().findTripsByHostIdAndStatus(callback.getUser().getGoogleId(), tripStatus, this);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public void handleMessage(Message msg) {
-        switch (msg.what){
-            case QUERY_ID:
-                setupAdapter((List<TripData>) msg.obj);
-                refreshLayout.setRefreshing(false);
-                break;
-        }
+    public void doError(String message) {
+        refreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void doException(Exception exception) {
+        refreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void doSuccess(List<TripData> data) {
+        setupAdapter(data);
+        refreshLayout.setRefreshing(false);
+
     }
 }
