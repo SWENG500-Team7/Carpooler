@@ -39,10 +39,12 @@
     <string name="title_activity_carpooler_main">CarpoolerMain</string>
 
     <string-array name="nav_drawer_labels">
+        <item>@string/nav_item_trip_in_progress</item>
         <item>@string/nav_item_hosted_trips</item>
         <item>@string/nav_item_joined_trips</item>
         <item>@string/nav_item_vehicles</item>
     </string-array>
+    <string name="nav_item_trip_in_progress">Trip In-Progress</string>
     <string name="nav_item_hosted_trips">Hosted Trips</string>
     <string name="nav_item_joined_trips">Joined Trips</string>
     <string name="nav_item_vehicles">Vehicles</string>

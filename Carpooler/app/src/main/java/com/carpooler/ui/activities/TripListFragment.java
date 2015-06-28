@@ -44,7 +44,7 @@ public class TripListFragment extends Fragment implements DatabaseService.QueryC
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_trip_list, container, false);
-        recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
+        recyclerView = (RecyclerView) rootView.findViewById(R.id.trip_list_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         adapter = new TripRecyclerAdapter(null,callback);
         recyclerView.setAdapter(adapter);

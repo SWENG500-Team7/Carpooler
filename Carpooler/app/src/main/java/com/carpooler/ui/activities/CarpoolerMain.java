@@ -99,10 +99,14 @@ public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.F
         String title = getString(R.string.app_name);
         switch (position) {
             case 0:
+                fragment = createTripDetailFragment(TripStatus.IN_ROUTE);
+                title = getString(R.string.nav_item_trip_in_progress);
+                break;
+            case 1:
                 fragment = createTripListFragment(TripStatus.OPEN, true);
                 title = getString(R.string.nav_item_hosted_trips);
                 break;
-            case 1:
+            case 2:
                 fragment = createTripListFragment(TripStatus.OPEN, false);
                 title = getString(R.string.nav_item_joined_trips);
                 break;
@@ -112,6 +116,14 @@ public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.F
 
         transitionFragment(fragment, title);
 
+    }
+
+    private Fragment createTripDetailFragment(TripStatus status) {
+        Bundle args = new Bundle();
+        args.putString(TripListFragment.STATUS_ARG, status.name());
+        Fragment fragment = new TripListFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     private Fragment createTripListFragment(TripStatus status, boolean hosted){
