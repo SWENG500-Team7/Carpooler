@@ -26,7 +26,9 @@ public class TripListFragment extends Fragment implements DatabaseService.QueryC
     private TripRecyclerAdapter adapter;
     private TripDetailCallback callback;
     public static final String STATUS_ARG = "status";
+    public static final String HOSTED_ARG = "hosted";
     private TripStatus tripStatus;
+    private boolean hosted = false; // true for "host"; false for "participant"
 
     protected void setupAdapter(List<TripData> trips){
         adapter = new TripRecyclerAdapter(trips,callback);
@@ -57,6 +59,7 @@ public class TripListFragment extends Fragment implements DatabaseService.QueryC
         if (args!=null) {
             String status = args.getString(STATUS_ARG, TripStatus.OPEN.name());
             tripStatus = TripStatus.valueOf(status);
+            hosted = args.getBoolean(HOSTED_ARG);
         }else{
             tripStatus = TripStatus.OPEN;
         }
@@ -72,10 +75,14 @@ public class TripListFragment extends Fragment implements DatabaseService.QueryC
 
     private void loadData(){
         try {
-                if (!refreshLayout.isRefreshing()){
-                    refreshLayout.setRefreshing(true);
-                }
+            if (!refreshLayout.isRefreshing()){
+                refreshLayout.setRefreshing(true);
+            }
+            if(hosted) {
                 callback.getTripDataService().findTripsByHostIdAndStatus(callback.getUser().getGoogleId(), tripStatus, this);
+            } else {
+                callback.getTripDataService().findTripsByUserIdAndStatus(callback.getUser().getGoogleId(), tripStatus, this);
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
         }
