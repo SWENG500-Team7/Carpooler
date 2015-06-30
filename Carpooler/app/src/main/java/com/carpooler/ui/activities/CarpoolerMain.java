@@ -103,11 +103,11 @@ public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.F
                 title = getString(R.string.nav_item_trip_in_progress);
                 break;
             case 1:
-                fragment = createTripListFragment(TripStatus.OPEN, true);
+                fragment = createTripListFragment(true);
                 title = getString(R.string.nav_item_hosted_trips);
                 break;
             case 2:
-                fragment = createTripListFragment(TripStatus.OPEN, false);
+                fragment = createTripListFragment(false);
                 title = getString(R.string.nav_item_joined_trips);
                 break;
             default:
@@ -120,15 +120,14 @@ public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.F
 
     private Fragment createTripDetailFragment(TripStatus status) {
         Bundle args = new Bundle();
-        args.putString(TripListFragment.STATUS_ARG, status.name());
-        Fragment fragment = new TripListFragment();
+        args.putString(TripDetailFragment.STATUS_ARG, status.name());
+        Fragment fragment = new TripDetailFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
-    private Fragment createTripListFragment(TripStatus status, boolean hosted){
+    private Fragment createTripListFragment(boolean hosted){
         Bundle args = new Bundle();
-        args.putString(TripListFragment.STATUS_ARG, status.name());
         args.putBoolean(TripListFragment.HOSTED_ARG, hosted);
         Fragment fragment = new TripListFragment();
         fragment.setArguments(args);

@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,8 +39,6 @@ public class TripDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        rootView = inflater.inflate(R.layout.fragment_trip_detail, container, false);
         Bundle args = getArguments();
         if (args!=null) {
             searchId = args.getString(TRIP_ID_ARG, null);
@@ -48,7 +47,13 @@ public class TripDetailFragment extends Fragment {
         }else{
             tripStatus = TripStatus.IN_ROUTE;
         }
-        textView = (TextView) rootView.findViewById(R.id.hello);
+        // Inflate the layout for this fragment
+        if (searchId == null) {
+            rootView = inflater.inflate(R.layout.fragment_trip_inprogress, container, false);
+        } else {
+            rootView = inflater.inflate(R.layout.fragment_trip_detail, container, false);
+            textView = (TextView) rootView.findViewById(R.id.hello);
+        }
         return rootView;
     }
 
