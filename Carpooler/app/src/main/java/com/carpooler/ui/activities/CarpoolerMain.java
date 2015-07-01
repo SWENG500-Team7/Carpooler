@@ -24,8 +24,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 
-import java.util.Stack;
-
 public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.FragmentDrawerListener, TripDetailCallback, VehicleDetailCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private Toolbar mToolbar;
     private FragmentDrawer drawerFragment;
@@ -101,14 +99,18 @@ public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.F
         String title = getString(R.string.app_name);
         switch (position) {
             case 0:
-                fragment = createTripListFragment(TripStatus.OPEN);
-                title = getString(R.string.nav_item_open_trips);
+                fragment = createTripDetailFragment(TripStatus.IN_ROUTE);
+                title = getString(R.string.nav_item_trip_in_progress);
                 break;
             case 1:
-                fragment = createTripListFragment(TripStatus.IN_ROUTE);
-                title = getString(R.string.nav_item_in_route_trips);
+                fragment = createTripListFragment(true);
+                title = getString(R.string.nav_item_hosted_trips);
                 break;
             case 2:
+                fragment = createTripListFragment(false);
+                title = getString(R.string.nav_item_joined_trips);
+                break;
+            case 3:
                 fragment = createVehicleManagerFragment();
                 title = getString(R.string.title_vehicles);
                 break;
@@ -123,10 +125,18 @@ public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.F
     private Fragment createVehicleManagerFragment() {
         return VehicleListFragment.newInstance(VehicleListFragment.VehicleListType.MANAGER);
     }
-
-    private Fragment createTripListFragment(TripStatus status){
+    
+    private Fragment createTripDetailFragment(TripStatus status) {
         Bundle args = new Bundle();
-        args.putString(TripListFragment.STATUS_ARG, status.name());
+        args.putString(TripDetailFragment.STATUS_ARG, status.name());
+        Fragment fragment = new TripDetailFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    private Fragment createTripListFragment(boolean hosted) {
+        Bundle args = new Bundle();
+        args.putBoolean(TripListFragment.HOSTED_ARG, hosted);
         Fragment fragment = new TripListFragment();
         fragment.setArguments(args);
         return fragment;
