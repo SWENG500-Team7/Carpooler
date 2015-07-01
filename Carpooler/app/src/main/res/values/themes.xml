@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="CarpoolerTheme" parent="@style/AppTheme">
+        <item name="android:colorPrimary">@color/colorPrimary</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:colorBackground">@android:color/white</item>
+        <item name="android:colorAccent">@color/colorAccent</item>
+        <item name="android:colorControlHighlight">@color/colorAccent</item>
+        <item name="android:actionBarStyle">@style/CarpoolerActionBar</item>
+        <item name="actionBarStyle">@style/CarpoolerActionBar</item>
+    </style>
+
+    <style name="CarpoolerActionBar" parent="@style/Widget.AppCompat.ActionBar">
+        <item name="android:background">?android:colorPrimary</item>
+        <item name="background">?android:colorPrimary</item>
+    </style>
+
+</resources>

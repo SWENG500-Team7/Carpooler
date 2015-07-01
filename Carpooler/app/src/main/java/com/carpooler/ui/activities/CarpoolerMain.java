@@ -24,7 +24,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 
-public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.FragmentDrawerListener, TripDetailCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+import java.util.Stack;
+
+public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.FragmentDrawerListener, TripDetailCallback, VehicleDetailCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private Toolbar mToolbar;
     private FragmentDrawer drawerFragment;
     private DatabaseService.Connection conn;
@@ -106,12 +108,20 @@ public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.F
                 fragment = createTripListFragment(TripStatus.IN_ROUTE);
                 title = getString(R.string.nav_item_in_route_trips);
                 break;
+            case 2:
+                fragment = createVehicleManagerFragment();
+                title = getString(R.string.title_vehicles);
+                break;
             default:
                 break;
         }
 
         transitionFragment(fragment, title);
 
+    }
+
+    private Fragment createVehicleManagerFragment() {
+        return VehicleListFragment.newInstance(VehicleListFragment.VehicleListType.MANAGER);
     }
 
     private Fragment createTripListFragment(TripStatus status){
@@ -133,6 +143,19 @@ public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.F
             getSupportActionBar().setTitle(title);
         }
 
+    }
+
+    private void pushFragment(Fragment fragment, String title) {
+        if (fragment != null) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.addToBackStack(title);
+            fragmentTransaction.replace(R.id.container_body, fragment);
+            fragmentTransaction.commit();
+
+            // set the toolbar title
+            getSupportActionBar().setTitle(title);
+        }
     }
 
     @Override
@@ -166,6 +189,28 @@ public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.F
         args.putString(TripDetailFragment.TRIP_ID_ARG,tripId);
         fragment.setArguments(args);
         transitionFragment(fragment, title);
+    }
+
+    @Override
+    public void onVehicleSelected(String plateNumber) {
+        VehicleDetailFragment fragment = VehicleDetailFragment.newInstance(plateNumber);
+        String title = getString(R.string.title_vehicle_detail);
+        pushFragment(fragment, title);
+    }
+
+    @Override
+    public void onAddVehicle() {
+        VehicleDetailFragment fragment = VehicleDetailFragment.newInstance();
+        String title = getString(R.string.title_vehicle_detail);
+        pushFragment(fragment, title);
+    }
+
+    public void goBack(String title) {
+        FragmentManager fm = getSupportFragmentManager();
+        fm.popBackStack();
+
+        // set the toolbar title
+        getSupportActionBar().setTitle(title);
     }
 
     @Override

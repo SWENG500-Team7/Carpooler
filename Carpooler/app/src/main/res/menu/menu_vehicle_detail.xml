@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:carpooler="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/mi_edit_vehicle"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:title="@string/edit_vehicle"
+        carpooler:showAsAction="always"/>
+
+    <item android:id="@+id/mi_delete_vehicle"
+        android:icon="@android:drawable/ic_menu_delete"
+        android:title="@string/discard_vehicle"
+        carpooler:showAsAction="always"/>
+
+    <item android:id="@+id/mi_save_vehicle"
+        android:icon="@android:drawable/ic_menu_save"
+        android:title="@string/save_vehicle"
+        carpooler:showAsAction="always"/>
+
+</menu>

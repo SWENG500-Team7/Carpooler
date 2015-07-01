@@ -22,6 +22,10 @@ public class Vehicle {
         return this.plateNumber;
     }
 
+    public void setPlateNumber(String plateNumber) {
+        this.plateNumber = plateNumber;
+    }
+
     public int getSeats() {
         return seats;
     }
@@ -72,6 +76,16 @@ public class Vehicle {
         vehicleDTO.setYear(year);
 
         return vehicleDTO;
+    }
+
+    public static Vehicle fromVehicleDTO(VehicleData data) {
+        Vehicle vehicle = new Vehicle(data.getSeats(), data.getPlateNumber());
+        vehicle.setMake(data.getMake());
+        vehicle.setModel(data.getModel());
+        vehicle.setYear(data.getYear());
+        vehicle.setColor(data.getColor());
+
+        return vehicle;
     }
 
     @Override

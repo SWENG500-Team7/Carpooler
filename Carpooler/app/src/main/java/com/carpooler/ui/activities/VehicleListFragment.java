@@ -1,34 +1,43 @@
 package com.carpooler.ui.activities;
 
 import android.app.Activity;
-import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
+import com.bignerdranch.android.multiselector.MultiSelector;
 import com.carpooler.R;
+import com.carpooler.trips.Vehicle;
+import com.carpooler.ui.adapters.VehicleRecyclerAdapter;
+import com.carpooler.users.User;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link VehicleListFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link VehicleListFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class VehicleListFragment extends Fragment {
+import java.util.List;
+
+
+public class VehicleListFragment extends Fragment implements View.OnClickListener {
 
     /* Fragment can be used to create chooser screen or manager screen */
-    private static final String ARG_TYPE = "type";
-    public static final String TYPE_CHOOSER = "chooser";
-    public static final String TYPE_MANAGER = "manager";
+    public static final String ARG_TYPE = "type";
+    public static enum VehicleListType {
+        CHOOSER, MANAGER
+    }
 
     /* This fragment instance's type */
-    private String mType;
+    private VehicleListType mType;
 
-    private OnFragmentInteractionListener mListener;
+    /* UI Components */
+    private RecyclerView mRecyclerView;
+    private SwipeRefreshLayout mRefreshLayout;
+    private VehicleRecyclerAdapter mAdapter;
+    private VehicleDetailCallback mCallback;
+    private ImageButton mAddButton;
+    private MultiSelector mMultiSelector = new MultiSelector();
 
     /**
      * Use this factory method to create a new instance of
@@ -37,10 +46,10 @@ public class VehicleListFragment extends Fragment {
      * @param pType Parameter 1.
      * @return A new instance of fragment VehicleListFragment.
      */
-    public static VehicleListFragment newInstance(String pType) {
+    public static VehicleListFragment newInstance(VehicleListType pType) {
         VehicleListFragment fragment = new VehicleListFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_TYPE, pType);
+        args.putInt(ARG_TYPE, pType.ordinal());
         fragment.setArguments(args);
         return fragment;
     }
@@ -53,54 +62,67 @@ public class VehicleListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mType = getArguments().getString(ARG_TYPE);
+            mType = VehicleListType.values()[getArguments().getInt(ARG_TYPE)];
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_vehicle_list, container, false);
-    }
+        View rootView = inflater.inflate(R.layout.fragment_vehicle_list, container, false);
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mAdapter = new VehicleRecyclerAdapter(null, mCallback, mMultiSelector, getActivity());
+        mRecyclerView.setAdapter(mAdapter);
+
+        mRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.contentView);
+        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loadData();
+            }
+        });
+
+        mAddButton = (ImageButton) rootView.findViewById(R.id.btn_add_vehicle);
+        mAddButton.setOnClickListener(this);
+
+        return rootView;
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
+        mCallback = (VehicleDetailCallback) activity;
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
+    public void onStart() {
+        super.onStart();
+        loadData();
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_add_vehicle:
+                mCallback.onAddVehicle();
+                break;
+        }
     }
 
+    protected void setupAdapter(List<Vehicle> vehicles) {
+        mAdapter = new VehicleRecyclerAdapter(vehicles, mCallback, mMultiSelector, getActivity());
+        mRecyclerView.setAdapter(mAdapter);
+    }
+
+    private void loadData(){
+        if (!mRefreshLayout.isRefreshing()){
+            mRefreshLayout.setRefreshing(true);
+        }
+        User user = mCallback.getUser();
+        user.refreshUserData();
+        setupAdapter(user.getVehicles());
+        mRefreshLayout.setRefreshing(false);
+    }
 }

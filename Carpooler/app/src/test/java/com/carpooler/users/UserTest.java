@@ -37,7 +37,7 @@ public class UserTest {
         User ch = new User("googleId");
         ch.addVechicle(v);
         ch.addVechicle(v2);
-        ch.removeVehicle(v);
+        ch.removeVehicle(v.getPlateNumber());
         Assert.assertEquals(1, ch.getVehicles().size());
     }
     @Test

@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Carpooler</string>
 
+    <string name="nav_back">Back</string>
+
     <string name="register">Register</string>
     <string name="register_instruction">Please sign in with your google account:</string>
     <string name="register_host_question">If you plan on hosting carpools, add one or more cars:</string>
@@ -12,12 +14,12 @@
     <string name="register_add_vehicle_ok_toast">Vehicle Added</string>
     <string name="register_update_vehicle_ok_toast">Vehicle Updated</string>
     <string name="register_add_vehicle_cancel_toast">Changes Discarded</string>
-    <string name="register_add_vehicle_year_label">Year: </string>
-    <string name="register_add_vehicle_make_label">Make: </string>
-    <string name="register_add_vehicle_model_label">Model: </string>
-    <string name="register_add_vehicle_seats_label">Available Seats: </string>
-    <string name="register_add_vehicle_license_label">Plate #: </string>
-    <string name="register_add_vehicle_color_label">Color: </string>
+    <string name="register_add_vehicle_year_label">Year</string>
+    <string name="register_add_vehicle_make_label">Make</string>
+    <string name="register_add_vehicle_model_label">Model</string>
+    <string name="register_add_vehicle_seats_label">Available Seats</string>
+    <string name="register_add_vehicle_license_label">License Plate Number</string>
+    <string name="register_add_vehicle_color_label">Color</string>
     <string name="register_remove_vehicle">Remove</string>
     <string name="register_remove_vehicle_toast">Vehicle Removed</string>
     <string name="register_must_sign_in">You must sign in using your Google Profile to register!</string>
@@ -48,7 +50,6 @@
     <string name="nav_item_vehicles">Vehicles</string>
     <string name="title_trips">Trips</string>
     <string name="title_trip_detail">Trip Detail</string>
-    <string name="title_vehicles">Vehicles</string>
     <string name="action_search">Search</string>
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>
@@ -57,6 +58,14 @@
     <string name="from">From:</string>
     <string name="to">To:</string>
 
+    <!-- Vehicle Fragments -->
+    <string name="title_vehicles">Vehicles</string>
+    <string name="title_vehicle_detail">Vehicle</string>
+    <string name="discard_vehicle">Discard Vehicle</string>
+    <string name="edit_vehicle">Edit Vehicle</string>
+    <string name="save_vehicle">Save Vehicle</string>
+
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

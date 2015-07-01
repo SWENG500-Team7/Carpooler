@@ -75,17 +75,31 @@ public class User {
         this.averageRating = Rating.values()[average];
     }
 
+    public Vehicle getVehicle(String plateNumber) {
+        Vehicle returnVehicle = null;
+        if (vehicles != null && !vehicles.isEmpty()) {
+            for (Vehicle vehicle : vehicles) {
+                if (vehicle.getPlateNumber().equals(plateNumber)) {
+                    returnVehicle = vehicle;
+                }
+            }
+        }
+        return returnVehicle;
+    }
+
     public void addVechicle(Vehicle v) {
         vehicles.add(v);
     }
 
-    public void removeVehicle(Vehicle v) {
+    public void removeVehicle(String plateNumber) {
         if (vehicles.isEmpty()) return;
         else {
             for (Iterator<Vehicle> iter = this.vehicles.listIterator(); iter.hasNext();) {
                 Vehicle v2 = iter.next();
-                if (v2.getPlateNumber().equalsIgnoreCase(v.getPlateNumber()))
+                if (v2.getPlateNumber().equalsIgnoreCase(plateNumber)) {
                     iter.remove();
+                    return;
+                }
             }
         }
     }
@@ -112,6 +126,26 @@ public class User {
         return temp;
     }
 
+    private void updateUserData() {
+        //If new user create new DTO
+        if (userData == null) {
+            userData = new UserData();
+            userData.setUserId(mGoogleId);
+        }
+
+        //Convert Vehicle List to DTOs and add to user DTO
+        List<VehicleData> vehicleDTOs =
+                new ArrayList<VehicleData>();
+        for (Vehicle vehicle : vehicles) {
+            vehicleDTOs.add(vehicle.toVehicleDTO());
+        }
+        userData.setVehicle(vehicleDTOs);
+
+        //TODO: add ratings
+        //TODO: add reviews
+        //TODO: add trips
+    }
+
     private void loadUserData()  {
         try {
             userDataService.getUserData(mGoogleId, new GetUserCallback());
@@ -126,23 +160,8 @@ public class User {
 
     public void saveUser(){
         try {
-            //If new user create new DTO
-            if (userData == null) {
-                userData = new UserData();
-                userData.setUserId(mGoogleId);
-            }
-
-            //Convert Vehicle List to DTOs and add to user DTO
-            List<VehicleData> vehicleDTOs =
-                    new ArrayList<VehicleData>();
-            for (Vehicle vehicle : vehicles) {
-                vehicleDTOs.add(vehicle.toVehicleDTO());
-            }
-            userData.setVehicle(vehicleDTOs);
-
-            //TODO: add ratings
-            //TODO: add reviews
-            //TODO: add trips
+            //update the DTO to send to DB
+            updateUserData();
 
             //Persist
             userDataService.createUser(userData, new CreateUserCallback());
@@ -183,6 +202,19 @@ public class User {
         @Override
         public void doSuccess(UserData data) {
             userData = data;
+
+            //Convert Vehicle DTOs to Vehicle and set in User
+            vehicles = new ArrayList<Vehicle>();
+            List<VehicleData> vehicleDTOs = userData.getVehicle();
+            if (vehicleDTOs != null) {
+                for (VehicleData vehicleDTO : vehicleDTOs) {
+                    addVechicle(Vehicle.fromVehicleDTO(vehicleDTO));
+                }
+            }
+
+            //TODO: add ratings
+            //TODO: add reviews
+            //TODO: add trips
         }
     }
 }
