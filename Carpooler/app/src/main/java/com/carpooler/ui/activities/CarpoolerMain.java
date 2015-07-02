@@ -136,8 +136,8 @@ public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.F
 
     private Fragment createTripListFragment(boolean hosted) {
         Bundle args = new Bundle();
-        args.putBoolean(TripListFragment.HOSTED_ARG, hosted);
-        Fragment fragment = new TripListFragment();
+        args.putBoolean(TripListFragment.Status.HOSTED_ARG, hosted);
+        Fragment fragment = new TripListMainFragment();
         fragment.setArguments(args);
         return fragment;
     }
