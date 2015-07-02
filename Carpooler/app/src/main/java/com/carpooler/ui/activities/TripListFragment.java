@@ -13,10 +13,13 @@ import android.view.ViewGroup;
 
 import com.carpooler.R;
 import com.carpooler.dao.DatabaseService;
+import com.carpooler.dao.FindTripQuery;
+import com.carpooler.dao.dto.GeoPointData;
 import com.carpooler.dao.dto.TripData;
 import com.carpooler.trips.TripStatus;
 import com.carpooler.ui.adapters.TripRecyclerAdapter;
 
+import java.util.Date;
 import java.util.List;
 
 public abstract class TripListFragment extends Fragment  implements DatabaseService.QueryCallback<TripData> {
@@ -76,7 +79,13 @@ public abstract class TripListFragment extends Fragment  implements DatabaseServ
         refreshLayout.setRefreshing(false);
     }
 
-    protected abstract void loadData();
+    protected void loadData(){
+        if (!refreshLayout.isRefreshing()) {
+            refreshLayout.setRefreshing(true);
+        }
+        doLoadData();
+    }
+    protected abstract void doLoadData();
     protected abstract void setupArgs();
 
     public static class Status extends TripListFragment{
@@ -86,11 +95,8 @@ public abstract class TripListFragment extends Fragment  implements DatabaseServ
         private boolean hosted = false; // true for "host"; false for "participant"
 
         @Override
-        protected void loadData() {
+        protected void doLoadData() {
             try {
-                if (!refreshLayout.isRefreshing()) {
-                    refreshLayout.setRefreshing(true);
-                }
                 if (hosted) {
                     callback.getTripDataService().findTripsByHostIdAndStatus(callback.getUser().getGoogleId(), tripStatus, this);
                 } else {
@@ -110,6 +116,49 @@ public abstract class TripListFragment extends Fragment  implements DatabaseServ
                 hosted = args.getBoolean(HOSTED_ARG);
             }
 
+        }
+    }
+
+    public static class Search extends TripListFragment{
+        private FindTripQuery findTripQuery;
+        public static final String START_LON = "startLon";
+        public static final String START_LAT = "startLat";
+        public static final String END_LON = "endLon";
+        public static final String END_LAT = "endLat";
+        public static final String START_DATE = "startDate";
+        public static final String SEARCH_DISTANCE = "searchDistance";
+        public static final String TIME_RANGE = "timeRange";
+        @Override
+        protected void doLoadData() {
+            try {
+                callback.getTripDataService().findAvailableTrips(findTripQuery,this);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        protected void setupArgs() {
+            Bundle args = getArguments();
+            double startLon = args.getDouble(START_LON);
+            double startLat = args.getDouble(START_LAT);
+            GeoPointData startPoint = new GeoPointData();
+            startPoint.setLat(startLat);
+            startPoint.setLon(startLon);
+            double endLon = args.getDouble(END_LON);
+            double endtLat = args.getDouble(END_LAT);
+            GeoPointData endPoint = new GeoPointData();
+            endPoint.setLat(endtLat);
+            endPoint.setLon(endLon);
+            Date startDate = new Date(args.getLong(START_DATE));
+            int searchDistance = args.getInt(SEARCH_DISTANCE);
+            int timeRange = args.getInt(TIME_RANGE);
+            findTripQuery = new FindTripQuery();
+            findTripQuery.setDistance(searchDistance);
+            findTripQuery.setTimeRange(timeRange);
+            findTripQuery.setStartTime(startDate);
+            findTripQuery.setStartPoint(startPoint);
+            findTripQuery.setEndPoint(endPoint);
         }
     }
 }

@@ -24,7 +24,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 
-public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.FragmentDrawerListener, TripDetailCallback, VehicleDetailCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+import java.util.Date;
+
+public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.FragmentDrawerListener, TripDetailCallback, VehicleDetailCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, TripSearchCallback {
     private Toolbar mToolbar;
     private FragmentDrawer drawerFragment;
     private DatabaseService.Connection conn;
@@ -233,4 +235,17 @@ public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.F
         return userDataService;
     }
 
+    @Override
+    public void search(double startLon, double startLat, double endLon, double endLat, Date startDate, int searchDistance, int timeRangeMinutes) {
+        Bundle args = new Bundle();
+        args.putDouble(TripListFragment.Search.START_LON, startLon);
+        args.putDouble(TripListFragment.Search.START_LAT, startLat);
+        args.putDouble(TripListFragment.Search.END_LON, endLon);
+        args.putDouble(TripListFragment.Search.END_LAT, endLat);
+        args.putLong(TripListFragment.Search.START_DATE, startDate.getTime());
+        args.putInt(TripListFragment.Search.SEARCH_DISTANCE, searchDistance);
+        args.putInt(TripListFragment.Search.TIME_RANGE, timeRangeMinutes);
+        TripListFragment searchList = new TripListFragment.Search();
+        transitionFragment(searchList,"Search Results");
+    }
 }
