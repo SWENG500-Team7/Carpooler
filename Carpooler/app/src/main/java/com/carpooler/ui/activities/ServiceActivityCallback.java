@@ -2,6 +2,7 @@ package com.carpooler.ui.activities;
 
 import com.carpooler.dao.TripDataService;
 import com.carpooler.dao.UserDataService;
+import com.carpooler.trips.LocationService;
 import com.carpooler.users.User;
 
 /**
@@ -10,5 +11,6 @@ import com.carpooler.users.User;
 public interface ServiceActivityCallback {
     public TripDataService getTripDataService();
     public UserDataService getUserDataService();
+    public LocationService getLocationService();
     public User getUser();
 }

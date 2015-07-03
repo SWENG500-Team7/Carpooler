@@ -1,6 +1,7 @@
 package com.carpooler.ui.activities;
 
 import android.app.Activity;
+import android.location.Address;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v4.app.Fragment;
@@ -14,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -23,6 +25,7 @@ import com.carpooler.dao.dto.TripData;
 import com.carpooler.trips.Trip;
 import com.carpooler.trips.TripStatus;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -33,6 +36,10 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
     private MenuItem miEdit;
     private MenuItem miDelete;
     private MenuItem miSave;
+    private EditText startAddressEditText;
+    private EditText endAddressEditText;
+    private String startAddress;
+    private String endAddress;
     private DatePicker tripDatePicker;
     private TimePicker tripStartTimePicker;
     private TimePicker tripEndTimePicker;
@@ -78,9 +85,12 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
             textView = (TextView) rootView.findViewById(R.id.hello);
         } else if (createTrip) {
             rootView = inflater.inflate(R.layout.fragment_add_trip, container, false);
+            startAddressEditText = (EditText) rootView.findViewById(R.id.start_address);
+            endAddressEditText = (EditText) rootView.findViewById(R.id.end_address);
             tripDatePicker = (DatePicker) rootView.findViewById(R.id.tripDatePicker);
             tripStartTimePicker = (TimePicker) rootView.findViewById(R.id.tripStartTimePicker);
             tripEndTimePicker = (TimePicker) rootView.findViewById(R.id.tripEndTimePicker);
+            initDateAndTimeOnView();
         } else {
             rootView = inflater.inflate(R.layout.fragment_trip_inprogress, container, false);
             hasMenu = false;
@@ -90,6 +100,24 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
         setHasOptionsMenu(hasMenu);
 
         return rootView;
+    }
+
+    private void initDateAndTimeOnView() {
+        final Calendar calendar = Calendar.getInstance();
+        year = calendar.get(Calendar.YEAR);
+        month = calendar.get(Calendar.MONTH);
+        day = calendar.get(Calendar.DAY_OF_MONTH);
+        tripDatePicker.init(year, month, day, this);
+        start_hour = calendar.get(Calendar.HOUR_OF_DAY);
+        start_minute = calendar.get(Calendar.MINUTE);
+        tripStartTimePicker.setCurrentHour(start_hour);
+        tripStartTimePicker.setCurrentMinute(start_minute);
+        tripStartTimePicker.setOnTimeChangedListener(this);
+        end_hour = calendar.get(Calendar.HOUR_OF_DAY);
+        end_minute = calendar.get(Calendar.MINUTE);
+        tripEndTimePicker.setCurrentHour(end_hour);
+        tripEndTimePicker.setCurrentMinute(end_minute);
+        tripEndTimePicker.setOnTimeChangedListener(this);
     }
 
     @Override
@@ -215,10 +243,57 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
         }
     };
 
+    private DatabaseService.GeocodeCallback startGeocodeCallback = new DatabaseService.GeocodeCallback() {
+        @Override
+        public void doError(String message) {
+
+        }
+
+        @Override
+        public void doException(Exception exception) {
+
+        }
+
+        @Override
+        public void doSuccess(Address data) {
+
+        }
+    };
+
+    private DatabaseService.GeocodeCallback endGeocodeCallback = new DatabaseService.GeocodeCallback() {
+        @Override
+        public void doError(String message) {
+
+        }
+
+        @Override
+        public void doException(Exception exception) {
+
+        }
+
+        @Override
+        public void doSuccess(Address data) {
+
+        }
+    };
+
     private void saveTrip() {
+        startAddress = startAddressEditText.getText().toString();
+        endAddress = endAddressEditText.getText().toString();
+        // TODO: Handle addresses
+//        try {
+//            callback.getLocationService().getLocationFromAddressName(startAddress, startGeocodeCallback);
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//        }
+//        try {
+//            callback.getLocationService().getLocationFromAddressName(endAddress, endGeocodeCallback);
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//        }
         TripData tripData = new TripData();
         tripData.setHostId(callback.getUser().getGoogleId());
-        tripData.setStatus(TripStatus.OPEN);
+        tripData.setStatus(tripStatus);
         tripData.setStartTime(new Date(year, month, day, start_hour, start_minute));
         tripData.setEndTime(new Date(year, month, day, end_hour, end_minute));
         Trip trip = new Trip(tripData, callback.getTripDataService());

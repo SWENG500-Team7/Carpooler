@@ -2,6 +2,8 @@ package com.carpooler.ui.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -17,6 +19,7 @@ import com.carpooler.R;
 import com.carpooler.dao.DatabaseService;
 import com.carpooler.dao.TripDataService;
 import com.carpooler.dao.UserDataService;
+import com.carpooler.trips.LocationService;
 import com.carpooler.trips.TripStatus;
 import com.carpooler.users.User;
 import com.google.android.gms.common.ConnectionResult;
@@ -26,7 +29,7 @@ import com.google.android.gms.plus.model.people.Person;
 
 import java.util.Date;
 
-public class CarpoolerActivity extends AppCompatActivity implements FragmentDrawer.FragmentDrawerListener, TripDetailCallback, VehicleDetailCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, TripSearchCallback {
+public class CarpoolerActivity extends AppCompatActivity implements FragmentDrawer.FragmentDrawerListener, TripDetailCallback, VehicleDetailCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, TripSearchCallback, LocationListener {
     private Toolbar mToolbar;
     private FragmentDrawer drawerFragment;
     private DatabaseService.Connection conn;
@@ -34,6 +37,7 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
     private User user;
     private TripDataService tripDataService;
     private UserDataService userDataService;
+    private LocationService locationService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +54,7 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
         bindService(intent, conn, Context.BIND_AUTO_CREATE);
         tripDataService = new TripDataService(conn);
         userDataService = new UserDataService(conn);
+        locationService = new LocationService(this, this, conn);
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -64,6 +69,7 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        locationService.stopUsingGPS();
         unbindService(conn);
         mGoogleApiClient.disconnect();
     }
@@ -208,7 +214,8 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
         TripDetailFragment fragment = new TripDetailFragment();
         String title = getString(R.string.title_trip_detail);
         Bundle args = new Bundle();
-        args.putBoolean(TripDetailFragment.CREATE_TRIP_ARG,true);
+        args.putBoolean(TripDetailFragment.CREATE_TRIP_ARG, true);
+        args.putString(TripDetailFragment.STATUS_ARG, TripStatus.OPEN.name());
         fragment.setArguments(args);
         pushFragment(fragment, title);
     }
@@ -246,6 +253,11 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
     }
 
     @Override
+    public LocationService getLocationService() {
+        return locationService;
+    }
+
+    @Override
     public void search(double startLon, double startLat, double endLon, double endLat, Date startDate, int searchDistance, int timeRangeMinutes) {
         Bundle args = new Bundle();
         args.putDouble(TripListFragment.Search.START_LON, startLon);
@@ -257,5 +269,25 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
         args.putInt(TripListFragment.Search.TIME_RANGE, timeRangeMinutes);
         TripListFragment searchList = new TripListFragment.Search();
         transitionFragment(searchList,"Search Results");
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
     }
 }
