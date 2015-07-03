@@ -7,6 +7,11 @@
     <string name="register_instruction">Please sign in with your google account:</string>
     <string name="register_host_question">If you plan on hosting carpools, add one or more cars:</string>
     <string name="register_signed_in">Signed in as:</string>
+    <string name="register_add_trip_start_location_label">Start Address</string>
+    <string name="register_add_trip_end_location_label">End Address</string>
+    <string name="register_add_trip_start_time_label">Start Time</string>
+    <string name="register_add_trip_end_time_label">End Time</string>
+    <string name="register_add_trip_vehicle_label">Vehicle</string>
     <string name="register_add_vehicle">Add a Vehicle</string>
     <string name="register_add_vehicle_ok">Add</string>
     <string name="register_update_vehicle_ok">Update</string>
@@ -52,6 +57,9 @@
     <string name="nav_item_vehicles">Vehicles</string>
     <string name="title_trips">Trips</string>
     <string name="title_trip_detail">Trip Detail</string>
+    <string name="cancel_trip">Cancel Trip</string>
+    <string name="edit_trip">Edit Trip</string>
+    <string name="save_trip">Save Trip</string>
     <string name="action_search">Search</string>
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>

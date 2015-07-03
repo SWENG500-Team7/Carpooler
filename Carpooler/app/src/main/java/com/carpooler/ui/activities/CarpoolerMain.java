@@ -204,6 +204,16 @@ public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.F
     }
 
     @Override
+    public void onAddTrip() {
+        TripDetailFragment fragment = new TripDetailFragment();
+        String title = getString(R.string.title_trip_detail);
+        Bundle args = new Bundle();
+        args.putBoolean(TripDetailFragment.CREATE_TRIP_ARG,true);
+        fragment.setArguments(args);
+        pushFragment(fragment, title);
+    }
+
+    @Override
     public void onVehicleSelected(String plateNumber) {
         VehicleDetailFragment fragment = VehicleDetailFragment.newInstance(plateNumber);
         String title = getString(R.string.title_vehicle_detail);

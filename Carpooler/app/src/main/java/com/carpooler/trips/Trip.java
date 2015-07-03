@@ -1,5 +1,10 @@
 package com.carpooler.trips;
 
+import android.os.RemoteException;
+
+import com.carpooler.dao.DatabaseService;
+import com.carpooler.dao.TripDataService;
+import com.carpooler.dao.dto.TripData;
 import com.carpooler.users.CarpoolUser;
 import com.carpooler.users.CarpoolUserStatus;
 
@@ -14,10 +19,20 @@ import java.util.List;
  */
 public class Trip {
 
+    private TripDataService tripDataService;
+    private TripData tripData;
     private TripStatus status;
     private List<CarpoolUser> users = new ArrayList<CarpoolUser>();
     private Vehicle vehicle;
     private double fuel_split = 0.00;
+
+    public Trip() {}
+
+    public Trip(TripData tripData, TripDataService tripDataService) {
+        this.tripDataService = tripDataService;
+        this.tripData = tripData;
+        status = TripStatus.OPEN;
+    }
 
     /**
      * Adds and confirms a CarpoolUser to the list for this trip
@@ -91,6 +106,31 @@ public class Trip {
         if(userCount > 0)
             fuel_split = Math.round((fuel_split + cost/userCount)*100.0)/100.0;
         return fuel_split;
+    }
+
+    public void saveTrip() {
+        try {
+            tripDataService.createTrip(tripData, new CreateUserCallback());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private class CreateUserCallback implements DatabaseService.IndexCallback{
+
+        @Override
+        public void doError(String message) {
+        }
+
+        @Override
+        public void doException(Exception exception) {
+
+        }
+
+        @Override
+        public void doSuccess(String data) {
+
+        }
     }
 
     /**

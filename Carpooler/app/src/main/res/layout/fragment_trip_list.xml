@@ -1,10 +1,8 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin">
+    tools:context="com.carpooler.ui.activities.TripListFragment">
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/contentView"
@@ -18,4 +16,19 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
     </android.support.v4.widget.SwipeRefreshLayout>
-</RelativeLayout>
+
+    <ImageButton
+        android:id="@+id/btn_add_trip"
+        android:layout_width="@dimen/diameter"
+        android:layout_height="@dimen/diameter"
+        android:layout_gravity="end|bottom"
+        android:layout_marginBottom="@dimen/add_button_margin"
+        android:layout_marginEnd="@dimen/add_button_margin"
+        android:layout_marginRight="@dimen/add_button_margin"
+        android:tint="@android:color/white"
+        android:background="@drawable/oval_ripple"
+        android:elevation="@dimen/elevation_low"
+        android:stateListAnimator="@anim/button_elevation"
+        android:src="@android:drawable/ic_input_add"/>
+
+</FrameLayout>

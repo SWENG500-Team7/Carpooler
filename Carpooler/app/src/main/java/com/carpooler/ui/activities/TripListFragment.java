@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import com.carpooler.R;
 import com.carpooler.dao.DatabaseService;
@@ -22,12 +23,13 @@ import com.carpooler.ui.adapters.TripRecyclerAdapter;
 import java.util.Date;
 import java.util.List;
 
-public abstract class TripListFragment extends Fragment  implements DatabaseService.QueryCallback<TripData> {
+public abstract class TripListFragment extends Fragment implements DatabaseService.QueryCallback<TripData>, View.OnClickListener {
 
     private RecyclerView recyclerView;
     protected SwipeRefreshLayout refreshLayout;
     private TripRecyclerAdapter adapter;
     protected TripDetailCallback callback;
+    private ImageButton mAddButton;
 
     @Override
     public void onAttach(Activity activity) {
@@ -54,6 +56,8 @@ public abstract class TripListFragment extends Fragment  implements DatabaseServ
                 loadData();
             }
         });
+        mAddButton = (ImageButton) rootView.findViewById(R.id.btn_add_trip);
+        mAddButton.setOnClickListener(this);
         setupArgs();
         return rootView;
     }
@@ -61,6 +65,15 @@ public abstract class TripListFragment extends Fragment  implements DatabaseServ
     public void onStart() {
         super.onStart();
         loadData();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_add_trip:
+                callback.onAddTrip();
+                break;
+        }
     }
 
     @Override
