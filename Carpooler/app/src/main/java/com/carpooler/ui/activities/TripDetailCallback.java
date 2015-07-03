@@ -5,4 +5,5 @@ package com.carpooler.ui.activities;
  */
 public interface TripDetailCallback extends ServiceActivityCallback {
     public void onTripSelected(String tripId);
+    public void onAddTrip();
 }
