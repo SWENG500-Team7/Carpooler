@@ -9,6 +9,7 @@
     <string name="register_signed_in">Signed in as:</string>
     <string name="register_add_trip_start_location_label">Start Address</string>
     <string name="register_add_trip_end_location_label">End Address</string>
+    <string name="register_add_trip_date_label">Date</string>
     <string name="register_add_trip_start_time_label">Start Time</string>
     <string name="register_add_trip_end_time_label">End Time</string>
     <string name="register_add_trip_vehicle_label">Vehicle</string>
@@ -43,7 +44,7 @@
     <string name="title_activity_main">MainActivity</string>
 
     <string name="hello_world">Hello world!</string>
-    <string name="title_activity_carpooler_main">CarpoolerMain</string>
+    <string name="title_activity_carpooler">Carpooler</string>
 
     <string-array name="nav_drawer_labels">
         <item>@string/nav_item_trip_in_progress</item>

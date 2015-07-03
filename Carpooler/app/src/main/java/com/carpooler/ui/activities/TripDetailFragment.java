@@ -13,7 +13,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 import com.carpooler.R;
 import com.carpooler.dao.DatabaseService;
@@ -21,15 +23,26 @@ import com.carpooler.dao.dto.TripData;
 import com.carpooler.trips.Trip;
 import com.carpooler.trips.TripStatus;
 
+import java.util.Date;
 import java.util.List;
 
-public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemClickListener {
+public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemClickListener, DatePicker.OnDateChangedListener, TimePicker.OnTimeChangedListener {
 
     private SwipeRefreshLayout refreshLayout;
     private View rootView;
     private MenuItem miEdit;
     private MenuItem miDelete;
     private MenuItem miSave;
+    private DatePicker tripDatePicker;
+    private TimePicker tripStartTimePicker;
+    private TimePicker tripEndTimePicker;
+    private int year;
+    private int month;
+    private int day;
+    private int start_hour;
+    private int start_minute;
+    private int end_hour;
+    private int end_minute;
     private ServiceActivityCallback callback;
     public static final String TRIP_ID_ARG = "tripId";
     private String tripId;
@@ -65,6 +78,9 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
             textView = (TextView) rootView.findViewById(R.id.hello);
         } else if (createTrip) {
             rootView = inflater.inflate(R.layout.fragment_add_trip, container, false);
+            tripDatePicker = (DatePicker) rootView.findViewById(R.id.tripDatePicker);
+            tripStartTimePicker = (TimePicker) rootView.findViewById(R.id.tripStartTimePicker);
+            tripEndTimePicker = (TimePicker) rootView.findViewById(R.id.tripEndTimePicker);
         } else {
             rootView = inflater.inflate(R.layout.fragment_trip_inprogress, container, false);
             hasMenu = false;
@@ -144,7 +160,7 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
 
     public void goBack()
     {
-        CarpoolerMain activity = (CarpoolerMain) getActivity();
+        CarpoolerActivity activity = (CarpoolerActivity) getActivity();
         activity.goBack(getString(R.string.nav_item_hosted_trips));
     }
 
@@ -203,12 +219,37 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
         TripData tripData = new TripData();
         tripData.setHostId(callback.getUser().getGoogleId());
         tripData.setStatus(TripStatus.OPEN);
+        tripData.setStartTime(new Date(year, month, day, start_hour, start_minute));
+        tripData.setEndTime(new Date(year, month, day, end_hour, end_minute));
         Trip trip = new Trip(tripData, callback.getTripDataService());
         trip.saveTrip();
     }
 
     private void cancelTrip() {
-
+        TripData tripData = new TripData();
+        tripData.set_id(tripId);
+        tripData.setStatus(TripStatus.CANCELLED);
+        Trip trip = new Trip(tripData, callback.getTripDataService());
+        trip.saveTrip();
     }
 
+    @Override
+    public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+        if (view == tripDatePicker) {
+            this.year = year;
+            month = monthOfYear;
+            day = dayOfMonth;
+        }
+    }
+
+    @Override
+    public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+        if (view == tripStartTimePicker) {
+            start_hour = hourOfDay;
+            start_minute = minute;
+        } else if (view == tripEndTimePicker) {
+            end_hour = hourOfDay;
+            end_minute = minute;
+        }
+    }
 }

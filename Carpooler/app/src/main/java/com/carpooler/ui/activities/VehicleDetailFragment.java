@@ -230,7 +230,7 @@ public class VehicleDetailFragment extends Fragment implements MenuItem.OnMenuIt
 
     public void goBack()
     {
-        CarpoolerMain activity = (CarpoolerMain) getActivity();
+        CarpoolerActivity activity = (CarpoolerActivity) getActivity();
         activity.goBack(getString(R.string.title_vehicles));
     }
 

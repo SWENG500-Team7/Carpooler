@@ -34,8 +34,8 @@
         <service android:name=".dao.DatabaseService" />
 
         <activity
-            android:name=".ui.activities.CarpoolerMain"
-            android:label="@string/title_activity_carpooler_main" >
+            android:name=".ui.activities.CarpoolerActivity"
+            android:label="@string/title_activity_carpooler" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

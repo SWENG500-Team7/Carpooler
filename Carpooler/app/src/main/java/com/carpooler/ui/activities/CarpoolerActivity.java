@@ -26,7 +26,7 @@ import com.google.android.gms.plus.model.people.Person;
 
 import java.util.Date;
 
-public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.FragmentDrawerListener, TripDetailCallback, VehicleDetailCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, TripSearchCallback {
+public class CarpoolerActivity extends AppCompatActivity implements FragmentDrawer.FragmentDrawerListener, TripDetailCallback, VehicleDetailCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, TripSearchCallback {
     private Toolbar mToolbar;
     private FragmentDrawer drawerFragment;
     private DatabaseService.Connection conn;
@@ -38,7 +38,7 @@ public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.F
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_carpooler_main);
+        setContentView(R.layout.activity_carpooler);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
 
         drawerFragment = (FragmentDrawer)
@@ -71,7 +71,7 @@ public class CarpoolerMain extends AppCompatActivity implements FragmentDrawer.F
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_carpooler_main, menu);
+        getMenuInflater().inflate(R.menu.menu_carpooler, menu);
         return true;
     }
 
