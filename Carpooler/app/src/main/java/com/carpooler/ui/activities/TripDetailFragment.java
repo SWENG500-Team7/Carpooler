@@ -21,6 +21,8 @@ import android.widget.TimePicker;
 
 import com.carpooler.R;
 import com.carpooler.dao.DatabaseService;
+import com.carpooler.dao.dto.AddressData;
+import com.carpooler.dao.dto.GeoPointData;
 import com.carpooler.dao.dto.TripData;
 import com.carpooler.trips.Trip;
 import com.carpooler.trips.TripStatus;
@@ -28,6 +30,8 @@ import com.carpooler.trips.TripStatus;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemClickListener, DatePicker.OnDateChangedListener, TimePicker.OnTimeChangedListener {
 
@@ -38,8 +42,11 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
     private MenuItem miSave;
     private EditText startAddressEditText;
     private EditText endAddressEditText;
-    private String startAddress;
-    private String endAddress;
+    private Address startAddress;
+    private Address endAddress;
+    private boolean startAddressReturned = false;
+    private boolean endAddressReturned = false;
+    private boolean noAddressReturn = false;
     private DatePicker tripDatePicker;
     private TimePicker tripStartTimePicker;
     private TimePicker tripEndTimePicker;
@@ -246,54 +253,83 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
     private DatabaseService.GeocodeCallback startGeocodeCallback = new DatabaseService.GeocodeCallback() {
         @Override
         public void doError(String message) {
-
+            startAddressReturned = true;
         }
 
         @Override
         public void doException(Exception exception) {
-
+            startAddressReturned = true;
         }
 
         @Override
         public void doSuccess(Address data) {
-
+            startAddress = data;
+            startAddressReturned = true;
         }
     };
 
     private DatabaseService.GeocodeCallback endGeocodeCallback = new DatabaseService.GeocodeCallback() {
         @Override
         public void doError(String message) {
-
+            endAddressReturned = true;
         }
 
         @Override
         public void doException(Exception exception) {
-
+            endAddressReturned = true;
         }
 
         @Override
         public void doSuccess(Address data) {
-
+            endAddress = data;
+            endAddressReturned = true;
         }
     };
 
     private void saveTrip() {
-        startAddress = startAddressEditText.getText().toString();
-        endAddress = endAddressEditText.getText().toString();
         // TODO: Handle addresses
-//        try {
-//            callback.getLocationService().getLocationFromAddressName(startAddress, startGeocodeCallback);
-//        } catch (RemoteException e) {
-//            e.printStackTrace();
-//        }
-//        try {
-//            callback.getLocationService().getLocationFromAddressName(endAddress, endGeocodeCallback);
-//        } catch (RemoteException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            callback.getLocationService().getLocationFromAddressName(startAddressEditText.getText().toString(), startGeocodeCallback);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        try {
+            callback.getLocationService().getLocationFromAddressName(endAddressEditText.getText().toString(), endGeocodeCallback);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                noAddressReturn = true;
+            }
+        }, 2000);
+        while (!startAddressReturned && !endAddressReturned && !noAddressReturn) {
+            // wait for start and end addresses to return
+            // stop if noAddressReturn
+        }
+        startAddressReturned = false;
+        endAddressReturned = false;
         TripData tripData = new TripData();
         tripData.setHostId(callback.getUser().getGoogleId());
         tripData.setStatus(tripStatus);
+        // Set start address data
+        AddressData startAddressData = new AddressData();
+        GeoPointData startGeoPointData = new GeoPointData();
+        startGeoPointData.setLat(startAddress.getLatitude());
+        startGeoPointData.setLon(startAddress.getLongitude());
+        startAddressData.setStreetAddress(startAddress.getAddressLine(0));
+        startAddressData.setZip(startAddress.getPostalCode());
+        tripData.setStartLocation(startAddressData);
+        // Set end address data
+        AddressData endAddressData = new AddressData();
+        GeoPointData endGeoPointData = new GeoPointData();
+        endGeoPointData.setLat(endAddress.getLatitude());
+        endGeoPointData.setLon(endAddress.getLongitude());
+        endAddressData.setStreetAddress(endAddress.getAddressLine(0));
+        endAddressData.setZip(endAddress.getPostalCode());
+        tripData.setEndLocation(endAddressData);
+
         tripData.setStartTime(new Date(year, month, day, start_hour, start_minute));
         tripData.setEndTime(new Date(year, month, day, end_hour, end_minute));
         Trip trip = new Trip(tripData, callback.getTripDataService());
