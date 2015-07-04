@@ -4,74 +4,116 @@
     android:orientation="vertical"
     tools:context="com.carpooler.ui.activities.VehicleDetailFragment">
 
-    <TextView
-        android:text="@string/register_add_vehicle_year_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"/>
-
-    <Spinner
+    <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/dd_year"
-        android:spinnerMode="dropdown"/>
+        android:orientation="horizontal"
+        android:layout_margin="16dp">
 
-    <TextView
-        android:text="@string/register_add_vehicle_make_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"/>
+        <TextView
+            android:text="@string/vehicle_year_label"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"/>
 
-    <Spinner
+        <Spinner
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/dd_year"
+            android:spinnerMode="dropdown"/>
+
+    </LinearLayout>
+
+
+    <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/dd_make"
-        android:spinnerMode="dropdown"/>
+        android:orientation="horizontal"
+        android:layout_margin="16dp">
 
-    <TextView
-        android:text="@string/register_add_vehicle_model_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"/>
+        <TextView
+            android:text="@string/vehicle_make_label"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"/>
 
-    <Spinner
+        <Spinner
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/dd_make"
+            android:spinnerMode="dropdown"/>
+
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/dd_model"
-        android:spinnerMode="dropdown"/>
+        android:orientation="horizontal"
+        android:layout_margin="16dp">
 
-    <TextView
-        android:text="@string/register_add_vehicle_seats_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"/>
+        <TextView
+            android:text="@string/vehicle_model_label"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"/>
 
-    <Spinner
+        <Spinner
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/dd_model"
+            android:spinnerMode="dropdown"/>
+
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/dd_seats"
-        android:spinnerMode="dropdown"/>
+        android:orientation="horizontal"
+        android:layout_margin="16dp">
 
-    <TextView
-        android:text="@string/register_add_vehicle_license_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"/>
+        <TextView
+            android:text="@string/vehicle_seats_label"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"/>
 
-    <EditText
+        <Spinner
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/dd_seats"
+            android:spinnerMode="dropdown"/>
+
+    </LinearLayout>
+
+    <android.support.design.widget.TextInputLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/et_plate_number"/>
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp">
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/vehicle_license_label"
+            android:id="@+id/et_plate_number"
+            android:inputType="textCapCharacters"/>
+    </android.support.design.widget.TextInputLayout>
 
-    <TextView
-        android:text="@string/register_add_vehicle_color_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"/>
-
-    <EditText
+    <android.support.design.widget.TextInputLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/et_color"/>
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp">
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/vehicle_color_label"
+            android:id="@+id/et_color"
+            android:inputType="textCapWords"/>
+    </android.support.design.widget.TextInputLayout>
+
 
 </LinearLayout>
