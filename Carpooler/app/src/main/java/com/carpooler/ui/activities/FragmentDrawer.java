@@ -1,5 +1,6 @@
 package com.carpooler.ui.activities;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -17,10 +18,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.carpooler.R;
-import com.carpooler.dao.DatabaseService;
 import com.carpooler.ui.adapters.NavigationDrawerAdapter;
 import com.carpooler.ui.models.NavDrawerItem;
-import com.google.android.gms.plus.model.people.Person;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,9 +39,15 @@ public class FragmentDrawer extends Fragment {
     private FragmentDrawerListener drawerListener;
     private ImageView profileImage;
     private static final int PROFILE_PIC_SIZE = 70;
-
+    private ServiceActivityCallback callback;
     public FragmentDrawer() {
 
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        callback= (ServiceActivityCallback) activity;
     }
 
     public void setDrawerListener(FragmentDrawerListener listener) {
@@ -127,6 +132,11 @@ public class FragmentDrawer extends Fragment {
                 mDrawerToggle.syncState();
             }
         });
+        try {
+            setProfileImageBitmap();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -183,14 +193,7 @@ public class FragmentDrawer extends Fragment {
         public void onDrawerItemSelected(View view, int position);
     }
 
-    public void setProfileImageBitmap(Person currentPerson, DatabaseService.Connection connection){
-        String photoUrl = currentPerson.getImage().getUrl();
-        photoUrl = photoUrl.substring(0, photoUrl.length()-2) + PROFILE_PIC_SIZE;
-        try {
-            connection.loadBitmap(photoUrl, new ImageViewBitmapLoader(profileImage));
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-
+    private void setProfileImageBitmap() throws RemoteException {
+        callback.getUser().loadUserImage(profileImage,PROFILE_PIC_SIZE);
     }
 }

@@ -89,7 +89,7 @@ public class VehicleRecyclerAdapter extends RecyclerView.Adapter<VehicleRecycler
                         if (mMultiSelector.isSelected(i, 0)) {
                             Vehicle vehicle = mVehicles.get(i);
                             toRemove.add(vehicle.getPlateNumber());
-                            currentUser.removeVehicle(vehicle.getPlateNumber());
+                            currentUser.removeVehicle(vehicle);
                         }
                     }
                     for (Iterator<Vehicle> iterator = mVehicles.iterator(); iterator.hasNext(); ) {

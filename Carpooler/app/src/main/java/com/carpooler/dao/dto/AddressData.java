@@ -9,12 +9,18 @@ public class AddressData {
                 + "\"type\":\"nested\","
                 + "\"properties\":{"
                     + "\"location\":" + GeoPointData.MAPPING + ","
-                    + "\"streetAddress\":{\"type\":\"string\"},"
-                    + "\"zip\":{\"type\":\"string\"}"
+                    + "\"streetNumber\":{\"type\":\"string\", \"index\":\"not_analyzed\"},"
+                    + "\"street\":{\"type\":\"string\", \"index\":\"not_analyzed\"},"
+                    + "\"city\":{\"type\":\"string\", \"index\":\"not_analyzed\"},"
+                    + "\"state\":{\"type\":\"string\", \"index\":\"not_analyzed\"},"
+                    + "\"zip\":{\"type\":\"string\", \"index\":\"not_analyzed\"}"
                 + "}"
             + "}";
     private GeoPointData location;
-    private String streetAddress;
+    private String streetNumber;
+    private String street;
+    private String city;
+    private String state;
     private String zip;
 
     public GeoPointData getLocation() {
@@ -25,12 +31,12 @@ public class AddressData {
         this.location = location;
     }
 
-    public String getStreetAddress() {
-        return streetAddress;
+    public String getStreetNumber() {
+        return streetNumber;
     }
 
-    public void setStreetAddress(String streetAddress) {
-        this.streetAddress = streetAddress;
+    public void setStreetNumber(String streetNumber) {
+        this.streetNumber = streetNumber;
     }
 
     public String getZip() {
@@ -39,5 +45,29 @@ public class AddressData {
 
     public void setZip(String zip) {
         this.zip = zip;
+    }
+
+    public String getStreet() {
+        return street;
+    }
+
+    public void setStreet(String street) {
+        this.street = street;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 }

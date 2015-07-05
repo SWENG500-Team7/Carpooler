@@ -20,8 +20,10 @@ import io.searchbox.annotations.JestId;
                     + "trip\":{" +
                         "\"properties\":{"
                             + "\"hostId\": {\"type\": \"string\", \"index\":\"not_analyzed\"},"
+                            + "\"hostVehicle\": {\"type\": \"string\", \"index\":\"not_analyzed\"},"
                             + "\"status\": {\"type\": \"string\", \"index\":\"not_analyzed\"},"
                             + "\"fuelSplit\": {\"type\": \"double\"},"
+                            + "\"openSeats\":{\"type\":\"integer\"},"
                             + "\"startTime\": {\"type\": \"date\", \"format\":\"date_time_no_millis\"},"
                             + "\"endTime\": {\"type\": \"date\", \"format\":\"date_time_no_millis\"},"
                             + "\"startLocation\": " + AddressData.MAPPING + ","
@@ -35,13 +37,15 @@ public class TripData implements DatabaseObject{
     @JestId
     private transient String _id;
     private String hostId;
-    private TripStatus status;
+    private String hostVehicle;
+    private TripStatus status = TripStatus.OPEN;
     private AddressData startLocation;
     private AddressData endLocation;
     private Date startTime;
     private Date endTime;
     private List<CarpoolUserData> users = new ArrayList<>();
     private double fuelSplit = 0.00;
+    private int openSeats;
 
     public TripStatus getStatus() {
         return status;
@@ -114,5 +118,21 @@ public class TripData implements DatabaseObject{
 
     public void setEndTime(Date endTime) {
         this.endTime = endTime;
+    }
+
+    public String getHostVehicle() {
+        return hostVehicle;
+    }
+
+    public void setHostVehicle(String hostVehicle) {
+        this.hostVehicle = hostVehicle;
+    }
+
+    public int getOpenSeats() {
+        return openSeats;
+    }
+
+    public void setOpenSeats(int openSeats) {
+        this.openSeats = openSeats;
     }
 }

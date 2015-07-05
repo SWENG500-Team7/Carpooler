@@ -237,29 +237,17 @@ public class VehicleDetailFragment extends Fragment implements MenuItem.OnMenuIt
     private void saveVehicle() {
         User currentUser = mCallback.getUser();
 
-        //Old plate number in case it's changed
-        String oldPlateNumber = null;
-
         //Gather UI info
         if (mVehicle == null) {//If new vehicle
-            mVehicle = new Vehicle((Integer) ddSeats.getSelectedItem(),
-                    etPlateNumber.getText().toString());
-        } else {//If vehicle already exists, update it
-            oldPlateNumber = mVehicle.getPlateNumber();
-            mVehicle.setPlateNumber(oldPlateNumber);
-            mVehicle.setSeats((Integer) ddSeats.getSelectedItem());
+            mVehicle = currentUser.createVehicle();
         }
+        mVehicle.setSeats((Integer) ddSeats.getSelectedItem());
+        mVehicle.setPlateNumber(etPlateNumber.getText().toString());
         mVehicle.setYear(Integer.parseInt((String) ddYear.getSelectedItem()));
         mVehicle.setMake((String) ddMake.getSelectedItem());
         mVehicle.setModel((String) ddModel.getSelectedItem());
         mVehicle.setColor(etColor.getText().toString());
 
-        if (oldPlateNumber != null) {//If existing vehicle, remove old one
-            currentUser.removeVehicle(oldPlateNumber);
-        }
-
-        //Add vehicle to user save user to DB
-        currentUser.addVechicle(mVehicle);
         currentUser.saveUser();
     }
 
@@ -267,7 +255,7 @@ public class VehicleDetailFragment extends Fragment implements MenuItem.OnMenuIt
         User currentUser = mCallback.getUser();
 
         //Remove vehicle from user and save user to DB
-        currentUser.removeVehicle(mVehicle.getPlateNumber());
+        currentUser.removeVehicle(mVehicle);
         currentUser.saveUser();
     }
 

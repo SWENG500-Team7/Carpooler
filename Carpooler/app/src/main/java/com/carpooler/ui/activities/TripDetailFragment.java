@@ -318,7 +318,7 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
         GeoPointData startGeoPointData = new GeoPointData();
         startGeoPointData.setLat(startAddress.getLatitude());
         startGeoPointData.setLon(startAddress.getLongitude());
-        startAddressData.setStreetAddress(startAddress.getAddressLine(0));
+        startAddressData.setStreetNumber(startAddress.getAddressLine(0));
         startAddressData.setZip(startAddress.getPostalCode());
         tripData.setStartLocation(startAddressData);
         // Set end address data
@@ -326,13 +326,13 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
         GeoPointData endGeoPointData = new GeoPointData();
         endGeoPointData.setLat(endAddress.getLatitude());
         endGeoPointData.setLon(endAddress.getLongitude());
-        endAddressData.setStreetAddress(endAddress.getAddressLine(0));
+        endAddressData.setStreetNumber(endAddress.getAddressLine(0));
         endAddressData.setZip(endAddress.getPostalCode());
         tripData.setEndLocation(endAddressData);
 
         tripData.setStartTime(new Date(year, month, day, start_hour, start_minute));
         tripData.setEndTime(new Date(year, month, day, end_hour, end_minute));
-        Trip trip = new Trip(tripData, callback.getTripDataService());
+        Trip trip = new Trip(tripData, callback);
         trip.saveTrip();
     }
 
@@ -340,7 +340,7 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
         TripData tripData = new TripData();
         tripData.set_id(tripId);
         tripData.setStatus(TripStatus.CANCELLED);
-        Trip trip = new Trip(tripData, callback.getTripDataService());
+        Trip trip = new Trip(tripData, callback);
         trip.saveTrip();
     }
 

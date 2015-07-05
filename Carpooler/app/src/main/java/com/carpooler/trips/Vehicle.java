@@ -6,90 +6,65 @@ import com.carpooler.dao.dto.VehicleData;
  * Created by Aidos on 07.06.2015.
  */
 public class Vehicle {
-    private int seats;
-    private String make;
-    private String model;
-    private int year;
-    private String color;
-    private String plateNumber;
+    private final VehicleData vehicleData;
 
-    public Vehicle(int seats, String pN) {
-        this.seats = seats;
-        this.plateNumber = pN;
+    public Vehicle(VehicleData vehicleData) {
+        this.vehicleData = vehicleData;
     }
 
     public String getPlateNumber() {
-        return this.plateNumber;
+        return vehicleData.getPlateNumber();
     }
 
     public void setPlateNumber(String plateNumber) {
-        this.plateNumber = plateNumber;
+        vehicleData.setPlateNumber(plateNumber);
     }
 
     public int getSeats() {
-        return seats;
+        return vehicleData.getSeats();
     }
 
     public void setSeats(int seats) {
-        this.seats = seats;
+        vehicleData.setSeats(seats);
     }
 
     public String getMake() {
-        return make;
+        return vehicleData.getMake();
     }
 
     public void setMake(String make) {
-        this.make = make;
+        vehicleData.setMake(make);
     }
 
     public String getModel() {
-        return model;
+        return vehicleData.getModel();
     }
 
     public void setModel(String model) {
-        this.model = model;
+        vehicleData.setModel(model);
     }
 
     public int getYear() {
-        return year;
+        return vehicleData.getYear();
     }
 
     public void setYear(int year) {
-        this.year = year;
+        vehicleData.setYear(year);
     }
 
     public String getColor() {
-        return color;
+        return vehicleData.getColor();
     }
 
     public void setColor(String color) {
-        this.color = color;
-    }
-
-    public VehicleData toVehicleDTO() {
-        VehicleData vehicleDTO = new VehicleData();
-        vehicleDTO.setColor(color);
-        vehicleDTO.setPlateNumber(plateNumber);
-        vehicleDTO.setSeats(seats);
-        vehicleDTO.setMake(make);
-        vehicleDTO.setModel(model);
-        vehicleDTO.setYear(year);
-
-        return vehicleDTO;
-    }
-
-    public static Vehicle fromVehicleDTO(VehicleData data) {
-        Vehicle vehicle = new Vehicle(data.getSeats(), data.getPlateNumber());
-        vehicle.setMake(data.getMake());
-        vehicle.setModel(data.getModel());
-        vehicle.setYear(data.getYear());
-        vehicle.setColor(data.getColor());
-
-        return vehicle;
+        vehicleData.setColor(color);
     }
 
     @Override
     public String toString() {
-        return make + " " + model + " (" + plateNumber + ")";
+        return vehicleData.toString();
+    }
+    public VehicleData getData(){
+        return vehicleData;
     }
 }

@@ -47,8 +47,6 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
 
         drawerFragment = (FragmentDrawer)
                 getSupportFragmentManager().findFragmentById(R.id.fragment_navigation_drawer);
-        drawerFragment.setUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), mToolbar);
-        drawerFragment.setDrawerListener(this);
         conn = new DatabaseService.Connection();
         Intent intent = new Intent(this, DatabaseService.class);
         bindService(intent, conn, Context.BIND_AUTO_CREATE);
@@ -179,8 +177,9 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
     @Override
     public void onConnected(Bundle bundle) {
         Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
-        drawerFragment.setProfileImageBitmap(currentPerson, conn);
-        user = new User(currentPerson.getId(),userDataService);
+        user = new User(currentPerson,this);
+        drawerFragment.setUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), mToolbar);
+        drawerFragment.setDrawerListener(this);
         displayView(0);
     }
 
@@ -289,5 +288,15 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
     @Override
     public void onProviderDisabled(String provider) {
 
+    }
+
+    @Override
+    public DatabaseService.Connection getConnection() {
+        return conn;
+    }
+
+    @Override
+    public GoogleApiClient getGoogleApiClient() {
+        return mGoogleApiClient;
     }
 }

@@ -1,36 +1,62 @@
 package com.carpooler.users;
 
-import com.carpooler.GeoPoint;
+import com.carpooler.dao.dto.AddressData;
 
 /**
  * Created by raymond on 6/6/15.
  */
 public class Address {
-    private GeoPoint location;
-    private String  streetAddress;
-    private String zip;
+    private final AddressData addressData;
 
-    public GeoPoint getLocation() {
-        return location;
+    public Address(AddressData addressData) {
+        this.addressData = addressData;
     }
 
-    public void setLocation(GeoPoint location) {
-        this.location = location;
+    public double getLon(){
+        return addressData.getLocation().getLon();
+    }
+    public double getLat(){
+        return addressData.getLocation().getLat();
+    }
+    public void setLon(double lon){
+        addressData.getLocation().setLon(lon);
+    }
+    public void setLat(double lat){
+        addressData.getLocation().setLat(lat);
+    }
+    public String getStreetNumber() {
+        return addressData.getStreetNumber();
     }
 
-    public String getStreetAddress() {
-        return streetAddress;
-    }
-
-    public void setStreetAddress(String streetAddress) {
-        this.streetAddress = streetAddress;
+    public void setStreetNumber(String streetNumber) {
+        addressData.setStreetNumber(streetNumber);
     }
 
     public String getZip() {
-        return zip;
+        return addressData.getZip();
     }
 
     public void setZip(String zip) {
-        this.zip = zip;
+        addressData.setZip(zip);
+    }
+
+    public String getStreet(){
+        return addressData.getStreet();
+    }
+    public void setStreet(String street){
+        addressData.setStreet(street);
+    }
+
+    public String getCity(){
+        return addressData.getCity();
+    }
+    public void setCity(String city){
+        addressData.setCity(city);
+    }
+    public String getState(){
+        return addressData.getState();
+    }
+    public void setState(String state){
+        addressData.setState(state);
     }
 }

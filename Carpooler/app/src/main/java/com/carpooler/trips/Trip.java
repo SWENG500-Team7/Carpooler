@@ -1,15 +1,26 @@
 package com.carpooler.trips;
 
 import android.os.RemoteException;
+import android.widget.ImageView;
 
 import com.carpooler.dao.DatabaseService;
-import com.carpooler.dao.TripDataService;
+import com.carpooler.dao.dto.AddressData;
+import com.carpooler.dao.dto.CarpoolUserData;
 import com.carpooler.dao.dto.TripData;
+import com.carpooler.ui.activities.ServiceActivityCallback;
+import com.carpooler.users.Address;
 import com.carpooler.users.CarpoolUser;
 import com.carpooler.users.CarpoolUserStatus;
+import com.carpooler.users.User;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.plus.People;
+import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.model.people.Person;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * Trip manages the number of CarpoolUsers and their individual statuses
@@ -19,19 +30,20 @@ import java.util.List;
  */
 public class Trip {
 
-    private TripDataService tripDataService;
+    private final ServiceActivityCallback serviceActivityCallback;
     private TripData tripData;
-    private TripStatus status;
-    private List<CarpoolUser> users = new ArrayList<CarpoolUser>();
-    private Vehicle vehicle;
-    private double fuel_split = 0.00;
+    private User host;
+    private Queue<HostImageLoader> hostImageLoaders= new LinkedList<>();
 
-    public Trip() {}
-
-    public Trip(TripData tripData, TripDataService tripDataService) {
-        this.tripDataService = tripDataService;
+    public Trip(TripData tripData, ServiceActivityCallback serviceActivityCallback) {
+        this.serviceActivityCallback = serviceActivityCallback;
         this.tripData = tripData;
-        status = TripStatus.OPEN;
+        if (serviceActivityCallback.getUser().getGoogleId().equals(tripData.getHostId())){
+            host = serviceActivityCallback.getUser();
+        }else{
+            PendingResult<People.LoadPeopleResult> result = Plus.PeopleApi.load(serviceActivityCallback.getGoogleApiClient(),tripData.getHostId());
+            result.setResultCallback(new HostLoaderCallback());
+        }
     }
 
     /**
@@ -39,17 +51,15 @@ public class Trip {
      * @param user - a CarpoolUser
      */
     public void addCarpoolUser(CarpoolUser user) {
-        users.add(user);
         user.changeStatus(CarpoolUserStatus.CONFIRMED_FOR_PICKUP);
     }
 
-    /**
+    /**c
      * Removes a CarpoolUser for the list for this trip
      * @param user - a CarpoolUser
      */
     public void removeCarpoolUser(CarpoolUser user) {
         user.changeStatus(CarpoolUserStatus.CANCELLED);
-        users.remove(user);
     }
 
     /**
@@ -67,7 +77,7 @@ public class Trip {
      */
     public void dropoffCarpoolUser(CarpoolUser user, double cost) {
         double split = splitFuelCost(cost);
-        for(CarpoolUser carpoolUser : users) {
+        for(CarpoolUserData carpoolUser : tripData.getUsers()) {
             if(carpoolUser.getStatus() == CarpoolUserStatus.PICKED_UP)
                 carpoolUser.setPaymentAmount(split);
         }
@@ -99,21 +109,50 @@ public class Trip {
      */
     public double splitFuelCost(double cost) {
         int userCount = 0;
-        for(CarpoolUser user : users) {
+        for(CarpoolUserData user : tripData.getUsers()) {
             if(user.getStatus() == CarpoolUserStatus.PICKED_UP)
                 userCount++;
         }
         if(userCount > 0)
-            fuel_split = Math.round((fuel_split + cost/userCount)*100.0)/100.0;
-        return fuel_split;
+            tripData.setFuelSplit(Math.round((tripData.getFuelSplit()+ cost/userCount)*100.0)/100.0);
+        return tripData.getFuelSplit();
     }
 
     public void saveTrip() {
         try {
-            tripDataService.createTrip(tripData, new CreateUserCallback());
+            serviceActivityCallback.getTripDataService().createTrip(tripData, new CreateUserCallback());
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+    }
+
+    public Date getStartTime() {
+        return tripData.getStartTime();
+    }
+
+    public Date getEndTime() {
+        return tripData.getEndTime();
+    }
+
+    public Address getStartLocation() {
+        return new Address(tripData.getStartLocation());
+    }
+
+    public Address getEndLocation() {
+        return new Address(tripData.getEndLocation());
+    }
+
+    public void setStartLocation(String searchAddress, AddressErrorCallback addressErrorCallback) throws RemoteException {
+        setAddress(searchAddress,addressErrorCallback,false);
+    }
+
+    public void setEndLocation(String searchAddress, AddressErrorCallback addressErrorCallback) throws RemoteException {
+        setAddress(searchAddress,addressErrorCallback,true);
+    }
+
+    private void setAddress(String searchAddress, AddressErrorCallback addressErrorCallback, boolean destination) throws RemoteException {
+        TripAddressLoadCallback tripAddressLoadCallback = new TripAddressLoadCallback(addressErrorCallback,destination);
+        serviceActivityCallback.getConnection().geocode(searchAddress,tripAddressLoadCallback);
     }
 
     private class CreateUserCallback implements DatabaseService.IndexCallback{
@@ -137,16 +176,16 @@ public class Trip {
      * Gets the list of CarpoolUsers
      * @return users - the list of CarpoolUsers
      */
-    public List<CarpoolUser> getCarpoolUsers() {
-        return users;
-    }
+//    public List<CarpoolUser> getCarpoolUsers() {
+//        return users;
+//    }
 
     /**
      * Sets the current trip status
      * @param status - the trip status
      */
     public void setStatus(TripStatus status) {
-        this.status = status;
+        tripData.setStatus(status);
     }
 
     /**
@@ -154,7 +193,7 @@ public class Trip {
      * @return status - the trip status
      */
     public TripStatus getStatus() {
-        return status;
+        return tripData.getStatus();
     }
 
     /**
@@ -162,7 +201,7 @@ public class Trip {
      * @param vehicle - the trip vehicle
      */
     public void setVehicle(Vehicle vehicle) {
-        this.vehicle = vehicle;
+        tripData.setHostVehicle(vehicle.getPlateNumber());
     }
 
     /**
@@ -170,7 +209,70 @@ public class Trip {
      * @return vehicle - the trip vehicle
      */
     public Vehicle getVehicle() {
-        return vehicle;
+        return host.getVehicle(tripData.getHostVehicle());
+    }
+
+    public String getTripId(){
+        return tripData.get_id();
+    }
+
+    public User getHost() {
+        return host;
+    }
+
+    public void loadHostImage(ImageView imageView,int size) throws RemoteException {
+        if (host==null){
+            hostImageLoaders.add(new HostImageLoader(imageView,size));
+        }else{
+            host.loadUserImage(imageView,size);
+        }
+    }
+
+    public int getOpenSeats(){
+        return tripData.getOpenSeats();
+    }
+
+    private class HostImageLoader{
+        final ImageView imageView;
+        final int size;
+        public HostImageLoader(ImageView imageView, int size) {
+            this.imageView = imageView;
+            this.size = size;
+        }
+    }
+
+    private class HostLoaderCallback implements ResultCallback<People.LoadPeopleResult> {
+
+        @Override
+        public void onResult(People.LoadPeopleResult loadPeopleResult) {
+            Person person = loadPeopleResult.getPersonBuffer().iterator().next();
+            host = new User(person,serviceActivityCallback);
+            for (HostImageLoader hostImageLoader:hostImageLoaders){
+                try {
+                    host.loadUserImage(hostImageLoader.imageView,hostImageLoader.size);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private class TripAddressLoadCallback extends AddressLoadCallback{
+        private final boolean destination;
+
+        public TripAddressLoadCallback(AddressErrorCallback errorCallback, boolean destination) {
+            super(errorCallback);
+            this.destination = destination;
+        }
+
+        @Override
+        protected void setAddressData(AddressData addressData) {
+            if (destination){
+                tripData.setEndLocation(addressData);
+            }else{
+                tripData.setStartLocation(addressData);
+            }
+        }
     }
 
 }

@@ -1,20 +1,22 @@
 package com.carpooler.users;
 
 import android.os.RemoteException;
+import android.widget.ImageView;
 
 import com.carpooler.dao.DatabaseService;
-import com.carpooler.dao.UserDataService;
+import com.carpooler.dao.dto.TripData;
 import com.carpooler.dao.dto.UserData;
+import com.carpooler.dao.dto.UserReviewData;
 import com.carpooler.dao.dto.VehicleData;
 import com.carpooler.trips.Trip;
 import com.carpooler.trips.TripStatus;
 import com.carpooler.trips.Vehicle;
+import com.carpooler.ui.activities.ImageViewBitmapLoader;
+import com.carpooler.ui.activities.ServiceActivityCallback;
+import com.google.android.gms.plus.model.people.Person;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * User class keeps track of user google identity and payment information
@@ -23,132 +25,87 @@ import java.util.Map;
  */
 public class User {
 
-    private String mGoogleId;
-    private UserDataService userDataService;
+    private final Person googleUser;
     private UserData userData;
-    private Rating averageRating;
-    private int ratings;
-    private Map<User, String> reviews;
-    private List<Vehicle> vehicles;
-    private List<Trip> saved_trips;
+    private final  ServiceActivityCallback serviceActivityCallback;
 
-    public User(String pGoogleId) {
-        mGoogleId = pGoogleId;
-        averageRating = Rating.F;
-        ratings = 0;
-        saved_trips = new ArrayList<Trip>();
-        vehicles = new ArrayList<Vehicle>();
-        reviews = new HashMap<User, String>();
-    }
-
-    public User(String pGoogleId, UserDataService userDataService) {
-        mGoogleId = pGoogleId;
-        this.userDataService = userDataService;
+    public User(Person googleUser, ServiceActivityCallback serviceActivityCallback) {
+        this.googleUser = googleUser;
+        this.serviceActivityCallback = serviceActivityCallback;
         loadUserData();
     }
 
     public String getGoogleId() {
-        return mGoogleId;
+        return googleUser.getId();
     }
 
     public Rating getRating() {
-        return this.averageRating;
+        return userData.getAverageRating();
     }
 
-    public Map<User, String> getReviews(){
-        return this.reviews;
-    }
-
-    public List<Vehicle> getVehicles() {
-        return vehicles;
-    }
 
     public void addRating (User u, Rating r, String s) {
-        reviews.put(u, s);
+        UserReviewData userReviewData = new UserReviewData();
+        userReviewData.setUserId(u.getGoogleId());
+        userReviewData.setComment(s);
+        userData.getReviews().add(userReviewData);
         this.addRating(r);
 
     }
 
     public void addRating(Rating r) {
-        this.ratings++;
-        int average = (this.averageRating.ordinal() + r.ordinal())/this.ratings;
-        this.averageRating = Rating.values()[average];
+        int newRatings = userData.getRatings()+1;
+        userData.setRatings(newRatings);
+        int average = (userData.getAverageRating().ordinal() + r.ordinal())/newRatings;
+        userData.setAverageRating(Rating.values()[average]);
     }
 
     public Vehicle getVehicle(String plateNumber) {
         Vehicle returnVehicle = null;
-        if (vehicles != null && !vehicles.isEmpty()) {
-            for (Vehicle vehicle : vehicles) {
+        if (userData.getVehicle() != null && !userData.getVehicle().isEmpty()) {
+            VehicleData searchVehicleData = new VehicleData();
+            for (VehicleData vehicle : userData.getVehicle()) {
                 if (vehicle.getPlateNumber().equals(plateNumber)) {
-                    returnVehicle = vehicle;
+                    returnVehicle = new Vehicle(vehicle);
                 }
             }
         }
         return returnVehicle;
     }
 
-    public void addVechicle(Vehicle v) {
-        vehicles.add(v);
+    public Vehicle createVehicle(){
+        VehicleData vehicleData = new VehicleData();
+        userData.getVehicle().add(vehicleData);
+        return new Vehicle(vehicleData);
     }
 
-    public void removeVehicle(String plateNumber) {
-        if (vehicles.isEmpty()) return;
-        else {
-            for (Iterator<Vehicle> iter = this.vehicles.listIterator(); iter.hasNext();) {
-                Vehicle v2 = iter.next();
-                if (v2.getPlateNumber().equalsIgnoreCase(plateNumber)) {
-                    iter.remove();
-                    return;
-                }
-            }
-        }
+    public void removeVehicle(Vehicle vehicle){
+        userData.getVehicle().remove(vehicle.getData());
     }
 
     public Trip createTrip(Vehicle v) {
-        return new Trip ();
+        return new Trip (new TripData(),serviceActivityCallback);
     }
 
-    public void saveTrip(Trip t) {
-        saved_trips.add(t);
+    public void findHostedTrips(TripStatus tripStatus,DatabaseService.QueryCallback<TripData> callback) throws RemoteException {
+        serviceActivityCallback.getTripDataService().findTripsByHostIdAndStatus(userData.getUserId(),tripStatus,callback);
     }
 
-    public void cancelTrip(Trip t) {
-        saved_trips.remove(t);
-    }
-
-    public List<Trip> getTrips(TripStatus ts) {
-        ArrayList<Trip> temp = new ArrayList<Trip>();
-        for (Iterator<Trip> iter = this.saved_trips.listIterator(); iter.hasNext();) {
-            Trip t = iter.next();
-            if (t.getStatus() == ts)
-                temp.add(t);
-        }
-        return temp;
+    public void findParticipatingTrips(TripStatus tripStatus,DatabaseService.QueryCallback<TripData> callback) throws RemoteException {
+        serviceActivityCallback.getTripDataService().findTripsByUserIdAndStatus(userData.getUserId(), tripStatus, callback);
     }
 
     private void updateUserData() {
         //If new user create new DTO
         if (userData == null) {
             userData = new UserData();
-            userData.setUserId(mGoogleId);
+            userData.setUserId(getGoogleId());
         }
-
-        //Convert Vehicle List to DTOs and add to user DTO
-        List<VehicleData> vehicleDTOs =
-                new ArrayList<VehicleData>();
-        for (Vehicle vehicle : vehicles) {
-            vehicleDTOs.add(vehicle.toVehicleDTO());
-        }
-        userData.setVehicle(vehicleDTOs);
-
-        //TODO: add ratings
-        //TODO: add reviews
-        //TODO: add trips
     }
 
     private void loadUserData()  {
         try {
-            userDataService.getUserData(mGoogleId, new GetUserCallback());
+            serviceActivityCallback.getUserDataService().getUserData(getGoogleId(), new GetUserCallback());
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -164,11 +121,20 @@ public class User {
             updateUserData();
 
             //Persist
-            userDataService.createUser(userData, new CreateUserCallback());
+            serviceActivityCallback.getUserDataService().createUser(userData, new CreateUserCallback());
         } catch (RemoteException e) {
             e.printStackTrace();
         }
     }
+
+    public List<Vehicle> getVehicles() {
+        List<Vehicle> ret = new ArrayList<>(userData.getVehicle().size());
+        for (VehicleData vehicleData: userData.getVehicle()){
+            ret.add(new Vehicle(vehicleData));
+        }
+        return ret;
+    }
+
     private class CreateUserCallback implements DatabaseService.IndexCallback{
 
         @Override
@@ -190,7 +156,7 @@ public class User {
         @Override
         public void doError(String message) {
             userData = new UserData();
-            userData.setUserId(mGoogleId);
+            userData.setUserId(getGoogleId());
             saveUser();
         }
 
@@ -202,19 +168,12 @@ public class User {
         @Override
         public void doSuccess(UserData data) {
             userData = data;
-
-            //Convert Vehicle DTOs to Vehicle and set in User
-            vehicles = new ArrayList<Vehicle>();
-            List<VehicleData> vehicleDTOs = userData.getVehicle();
-            if (vehicleDTOs != null) {
-                for (VehicleData vehicleDTO : vehicleDTOs) {
-                    addVechicle(Vehicle.fromVehicleDTO(vehicleDTO));
-                }
-            }
-
-            //TODO: add ratings
-            //TODO: add reviews
-            //TODO: add trips
         }
+    }
+
+    public void loadUserImage(ImageView imageView, int size) throws RemoteException {
+        String photoUrl = googleUser.getImage().getUrl();
+        photoUrl = photoUrl.substring(0, photoUrl.length()-2) + size;
+        serviceActivityCallback.getConnection().loadBitmap(photoUrl,new ImageViewBitmapLoader(imageView));
     }
 }

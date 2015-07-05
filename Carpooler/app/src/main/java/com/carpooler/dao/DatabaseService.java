@@ -33,7 +33,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 import io.searchbox.client.JestClient;
 
@@ -174,7 +176,7 @@ public class DatabaseService extends Service implements SharedPreferences.OnShar
     public static class Connection implements ServiceConnection {
         private Messenger sendMessenger;
         private Messenger replyTo;
-        private List<Message> messageHolder = new ArrayList<>();
+        private Queue<Message> messageHolder = new LinkedList<>();
         public Connection() {
             this.replyTo = new Messenger(new DataHandler());
         }

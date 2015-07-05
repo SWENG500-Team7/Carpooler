@@ -17,6 +17,7 @@ import com.carpooler.dao.DatabaseService;
 import com.carpooler.dao.FindTripQuery;
 import com.carpooler.dao.dto.GeoPointData;
 import com.carpooler.dao.dto.TripData;
+import com.carpooler.trips.TripSearchResults;
 import com.carpooler.trips.TripStatus;
 import com.carpooler.ui.adapters.TripRecyclerAdapter;
 
@@ -37,8 +38,8 @@ public abstract class TripListFragment extends Fragment implements DatabaseServi
         callback = (TripDetailCallback) activity;
     }
 
-    protected void setupAdapter(List<TripData> trips) {
-        adapter = new TripRecyclerAdapter(trips, callback);
+    protected void setupAdapter(TripSearchResults tripSearchResults) {
+        adapter = new TripRecyclerAdapter(tripSearchResults, callback);
         recyclerView.setAdapter(adapter);
     }
 
@@ -47,8 +48,6 @@ public abstract class TripListFragment extends Fragment implements DatabaseServi
         View rootView = inflater.inflate(R.layout.fragment_trip_list, container, false);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.trip_list_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        adapter = new TripRecyclerAdapter(null, callback);
-        recyclerView.setAdapter(adapter);
         refreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.contentView);
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -88,7 +87,8 @@ public abstract class TripListFragment extends Fragment implements DatabaseServi
 
     @Override
     public void doSuccess(List<TripData> data) {
-        setupAdapter(data);
+        TripSearchResults tripSearchResults = new TripSearchResults(data,callback);
+        setupAdapter(tripSearchResults);
         refreshLayout.setRefreshing(false);
     }
 
@@ -111,9 +111,9 @@ public abstract class TripListFragment extends Fragment implements DatabaseServi
         protected void doLoadData() {
             try {
                 if (hosted) {
-                    callback.getTripDataService().findTripsByHostIdAndStatus(callback.getUser().getGoogleId(), tripStatus, this);
+                    callback.getUser().findHostedTrips(tripStatus, this);
                 } else {
-                    callback.getTripDataService().findTripsByUserIdAndStatus(callback.getUser().getGoogleId(), tripStatus, this);
+                    callback.getUser().findParticipatingTrips(tripStatus, this);
                 }
             } catch (RemoteException e) {
                 e.printStackTrace();

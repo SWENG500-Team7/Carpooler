@@ -1,60 +1,83 @@
 package com.carpooler.users;
 
+import android.os.RemoteException;
+
+import com.carpooler.dao.dto.AddressData;
+import com.carpooler.dao.dto.CarpoolUserData;
+import com.carpooler.trips.AddressErrorCallback;
+import com.carpooler.trips.AddressLoadCallback;
+import com.carpooler.ui.activities.ServiceActivityCallback;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.plus.People;
+import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.model.people.Person;
+
 import java.util.Date;
 
 /**
  * Created by raymond on 6/6/15.
  */
 public class CarpoolUser {
-    private Address pickupLocation;
-    private Address dropoffLocation;
-    private CarpoolUserStatus status = CarpoolUserStatus.UNLISTED;
-    private double paymentAmount;
-    private Date pickupDate;
-    private Date dropoffDate;
+    private final CarpoolUserData carpoolUserData;
+    private final ServiceActivityCallback serviceActivityCallback;
+    private User user;
+    public CarpoolUser(CarpoolUserData carpoolUserData,
+                       ServiceActivityCallback serviceActivityCallback) {
+        this.carpoolUserData = carpoolUserData;
+        this.serviceActivityCallback=serviceActivityCallback;
+        PendingResult<People.LoadPeopleResult> result = Plus.PeopleApi.load(serviceActivityCallback.getGoogleApiClient(),carpoolUserData.getUserId());
+        result.setResultCallback(new UserLoaderCallback());
+    }
 
     public Address getPickupLocation() {
-        return pickupLocation;
+        return new Address(carpoolUserData.getPickupLocation());
     }
 
-    public void setPickupLocation(Address pickupLocation) {
-        this.pickupLocation = pickupLocation;
-    }
 
     public Address getDropoffLocation() {
-        return dropoffLocation;
+        return new Address(carpoolUserData.getDropoffLocation());
     }
 
-    public void setDropoffLocation(Address dropoffLocation) {
-        this.dropoffLocation = dropoffLocation;
+    public void setPickupLocation(String searchAddress, AddressErrorCallback addressErrorCallback) throws RemoteException {
+        setAddress(searchAddress,addressErrorCallback,false);
+    }
+
+    public void setDropoffLocation(String searchAddress, AddressErrorCallback addressErrorCallback) throws RemoteException {
+        setAddress(searchAddress,addressErrorCallback,true);
+    }
+
+    private void setAddress(String searchAddress, AddressErrorCallback addressErrorCallback, boolean destination) throws RemoteException {
+        UserAddressLoadCallback tripAddressLoadCallback = new UserAddressLoadCallback(addressErrorCallback,destination);
+        serviceActivityCallback.getConnection().geocode(searchAddress,tripAddressLoadCallback);
     }
 
     public CarpoolUserStatus getStatus() {
-        return status;
+        return carpoolUserData.getStatus();
     }
 
     public double getPaymentAmount() {
-        return paymentAmount;
+        return carpoolUserData.getPaymentAmount();
     }
 
     public void setPaymentAmount(double paymentAmount) {
-        this.paymentAmount = paymentAmount;
+        carpoolUserData.setPaymentAmount(paymentAmount);
     }
 
     public Date getPickupDate() {
-        return pickupDate;
+        return carpoolUserData.getPickupDate();
     }
 
     public void setPickupDate(Date pickupDate) {
-        this.pickupDate = pickupDate;
+        carpoolUserData.setPickupDate(pickupDate);
     }
 
     public Date getDropoffDate() {
-        return dropoffDate;
+        return carpoolUserData.getDropoffDate();
     }
 
     public void setDropoffDate(Date dropoffDate) {
-        this.dropoffDate = dropoffDate;
+        carpoolUserData.setDropoffDate(dropoffDate);
     }
 
     public void confirmPickup(){
@@ -62,11 +85,40 @@ public class CarpoolUser {
     }
 
     public void changeStatus(CarpoolUserStatus nextStatus){
-        if (status.isValidateNextState(nextStatus)){
-            status = nextStatus;
+        if (carpoolUserData.getStatus().isValidateNextState(nextStatus)){
+            carpoolUserData.setStatus(nextStatus);
         }else{
-            throw new IllegalArgumentException("Invalid to move from " + status + " to " + nextStatus);
+            throw new IllegalArgumentException("Invalid to move from " + carpoolUserData.getStatus() + " to " + nextStatus);
+        }
+    }
+
+    public User getUser(){
+        return user;
+    }
+
+    private class UserLoaderCallback implements ResultCallback<People.LoadPeopleResult>{
+
+        @Override
+        public void onResult(People.LoadPeopleResult loadPeopleResult) {
+            Person person = loadPeopleResult.getPersonBuffer().get(1);
+            user = new User(person,serviceActivityCallback);
+        }
+    }
+    private class UserAddressLoadCallback extends AddressLoadCallback {
+        private final boolean destination;
+
+        public UserAddressLoadCallback(AddressErrorCallback errorCallback, boolean destination) {
+            super(errorCallback);
+            this.destination = destination;
         }
 
+        @Override
+        protected void setAddressData(AddressData addressData) {
+            if (destination){
+                carpoolUserData.setDropoffLocation(addressData);
+            }else{
+                carpoolUserData.setPickupLocation(addressData);
+            }
+        }
     }
 }

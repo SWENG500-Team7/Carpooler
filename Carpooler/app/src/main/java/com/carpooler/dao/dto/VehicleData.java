@@ -69,4 +69,20 @@ public class VehicleData {
     public void setPlateNumber(String plateNumber) {
         this.plateNumber = plateNumber;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        VehicleData that = (VehicleData) o;
+
+        return !(plateNumber != null ? !plateNumber.equals(that.plateNumber) : that.plateNumber != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return plateNumber != null ? plateNumber.hashCode() : 0;
+    }
 }
