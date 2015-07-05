@@ -19,6 +19,7 @@ import com.carpooler.R;
 import com.carpooler.dao.DatabaseService;
 import com.carpooler.dao.TripDataService;
 import com.carpooler.dao.UserDataService;
+import com.carpooler.payment.PaymentService;
 import com.carpooler.trips.LocationService;
 import com.carpooler.trips.TripStatus;
 import com.carpooler.users.User;
@@ -38,6 +39,7 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
     private TripDataService tripDataService;
     private UserDataService userDataService;
     private LocationService locationService;
+    private PaymentService paymentService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +55,7 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
         tripDataService = new TripDataService(conn);
         userDataService = new UserDataService(conn);
         locationService = new LocationService(this, this, conn);
+        paymentService = new PaymentService(this);
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -254,6 +257,11 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
     @Override
     public LocationService getLocationService() {
         return locationService;
+    }
+
+    @Override
+    public PaymentService getPaymentService() {
+        return paymentService;
     }
 
     @Override

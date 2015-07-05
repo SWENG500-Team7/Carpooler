@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 
     <uses-feature
         android:glEsVersion="0x00020000"
@@ -32,6 +33,10 @@
         <activity android:name=".ui.activities.CarpoolerSettings" />
 
         <service android:name=".dao.DatabaseService" />
+
+        <activity android:configChanges="keyboardHidden|orientation"
+            android:name="com.paypal.android.MEP.PayPalActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
         <activity
             android:name=".ui.activities.CarpoolerActivity"

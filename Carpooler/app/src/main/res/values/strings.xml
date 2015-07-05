@@ -3,35 +3,12 @@
 
     <string name="nav_back">Back</string>
 
-    <string name="register">Register</string>
-    <string name="register_instruction">Please sign in with your google account:</string>
-    <string name="register_host_question">If you plan on hosting carpools, add one or more cars:</string>
-    <string name="register_signed_in">Signed in as:</string>
     <string name="register_add_trip_start_location_label">Start Address</string>
     <string name="register_add_trip_end_location_label">End Address</string>
     <string name="register_add_trip_date_label">Date</string>
     <string name="register_add_trip_start_time_label">Start Time</string>
     <string name="register_add_trip_end_time_label">End Time</string>
     <string name="register_add_trip_vehicle_label">Vehicle</string>
-    <string name="register_add_vehicle">Add a Vehicle</string>
-    <string name="register_add_vehicle_ok">Add</string>
-    <string name="register_update_vehicle_ok">Update</string>
-    <string name="register_cancel">Cancel</string>
-    <string name="register_add_vehicle_ok_toast">Vehicle Added</string>
-    <string name="register_update_vehicle_ok_toast">Vehicle Updated</string>
-    <string name="register_add_vehicle_cancel_toast">Changes Discarded</string>
-    <string name="register_add_vehicle_year_label">Year</string>
-    <string name="register_add_vehicle_make_label">Make</string>
-    <string name="register_add_vehicle_model_label">Model</string>
-    <string name="register_add_vehicle_seats_label">Available Seats</string>
-    <string name="register_add_vehicle_license_label">License Plate Number</string>
-    <string name="register_add_vehicle_color_label">Color</string>
-    <string name="register_remove_vehicle">Remove</string>
-    <string name="register_remove_vehicle_toast">Vehicle Removed</string>
-    <string name="register_must_sign_in">You must sign in using your Google Profile to register!</string>
-    <string name="register_host_success">You are registered! You may now host your own carpools and use carpools hosted by others.</string>
-    <string name="register_user_success">You are registered! You may now use carpools hosted by others.</string>
-    <string name="register_fail">Failed to register.</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_google">GoogleActivity</string>
     <string name="title_activity_register">RegisterActivity</string>
@@ -75,6 +52,14 @@
     <string name="discard_vehicle">Discard Vehicle</string>
     <string name="edit_vehicle">Edit Vehicle</string>
     <string name="save_vehicle">Save Vehicle</string>
+    <string name="save_vehicle_toast">Vehicle Saved</string>
+    <string name="discard_vehicle_toast">Vehicle Discarded</string>
+    <string name="vehicle_year_label">Year</string>
+    <string name="vehicle_make_label">Make</string>
+    <string name="vehicle_model_label">Model</string>
+    <string name="vehicle_seats_label">Seats</string>
+    <string name="vehicle_license_label">License Plate Number</string>
+    <string name="vehicle_color_label">Color</string>
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
