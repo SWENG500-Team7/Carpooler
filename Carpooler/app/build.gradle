@@ -25,7 +25,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     compile 'io.searchbox:jest-droid:0.1.6'
     compile 'com.android.support:appcompat-v7:22.2.0'
@@ -37,4 +37,5 @@ dependencies {
     compile 'com.android.support:design:22.2.0'
     compile 'com.bignerdranch.android:recyclerview-multiselect:+'
     compile files('libs/PayPal_MPL.jar')
+    testCompile 'org.mockito:mockito-all:2.0.2-beta'
 }

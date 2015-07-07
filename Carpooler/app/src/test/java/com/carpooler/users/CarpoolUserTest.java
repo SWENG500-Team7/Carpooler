@@ -1,81 +1,80 @@
 package com.carpooler.users;
 
-import com.carpooler.users.CarpoolUser;
-import com.carpooler.users.CarpoolUserStatus;
+import android.os.RemoteException;
+
+import com.carpooler.AbstractServiceActivityMockTest;
+import com.carpooler.dao.dto.CarpoolUserData;
 
 import org.junit.Test;
 
 /**
  * Created by raymond on 6/7/15.
  */
-public class CarpoolUserTest {
+public class CarpoolUserTest extends AbstractServiceActivityMockTest {
+    private CarpoolUser carpoolUser;
+
+    @Override
+    public void setup() throws RemoteException {
+        super.setup();
+        carpoolUser = new CarpoolUser(new CarpoolUserData(),callback);
+    }
 
     @Test
     public void cancelTest() {
-        CarpoolUser user = new CarpoolUser();
-        user.changeStatus(CarpoolUserStatus.PENDING);
-        user.changeStatus(CarpoolUserStatus.CANCELLED);
+        carpoolUser.changeStatus(CarpoolUserStatus.PENDING);
+        carpoolUser.changeStatus(CarpoolUserStatus.CANCELLED);
     }
 
     @Test
     public void confirmPickupTest() {
-        CarpoolUser user = new CarpoolUser();
-        user.changeStatus(CarpoolUserStatus.CONFIRMED_FOR_PICKUP);
-        user.confirmPickup();
+        carpoolUser.changeStatus(CarpoolUserStatus.CONFIRMED_FOR_PICKUP);
+        carpoolUser.confirmPickup();
     }
 
     @Test
     public void pickupDropOffTest() {
-        CarpoolUser user = new CarpoolUser();
-        user.changeStatus(CarpoolUserStatus.CONFIRMED_FOR_PICKUP);
-        user.changeStatus(CarpoolUserStatus.PICKED_UP);
-        user.changeStatus(CarpoolUserStatus.DROPPED_OFF);
-        user.changeStatus(CarpoolUserStatus.PAID);
+        carpoolUser.changeStatus(CarpoolUserStatus.CONFIRMED_FOR_PICKUP);
+        carpoolUser.changeStatus(CarpoolUserStatus.PICKED_UP);
+        carpoolUser.changeStatus(CarpoolUserStatus.DROPPED_OFF);
+        carpoolUser.changeStatus(CarpoolUserStatus.PAID);
     }
 
     @Test
     public void noShowTest() {
-        CarpoolUser user = new CarpoolUser();
-        user.changeStatus(CarpoolUserStatus.CONFIRMED_FOR_PICKUP);
-        user.changeStatus(CarpoolUserStatus.NO_SHOW);
+        carpoolUser.changeStatus(CarpoolUserStatus.CONFIRMED_FOR_PICKUP);
+        carpoolUser.changeStatus(CarpoolUserStatus.NO_SHOW);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void cancelUnlistedTest() {
-        CarpoolUser user = new CarpoolUser();
-        user.changeStatus(CarpoolUserStatus.CANCELLED);
+        carpoolUser.changeStatus(CarpoolUserStatus.CANCELLED);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void cancelNoShowTest() {
-        CarpoolUser user = new CarpoolUser();
-        user.changeStatus(CarpoolUserStatus.NO_SHOW);
-        user.changeStatus(CarpoolUserStatus.CANCELLED);
+        carpoolUser.changeStatus(CarpoolUserStatus.NO_SHOW);
+        carpoolUser.changeStatus(CarpoolUserStatus.CANCELLED);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void cancelPickupTest() {
-        CarpoolUser user = new CarpoolUser();
-        user.changeStatus(CarpoolUserStatus.PICKED_UP);
-        user.changeStatus(CarpoolUserStatus.CANCELLED);
+        carpoolUser.changeStatus(CarpoolUserStatus.PICKED_UP);
+        carpoolUser.changeStatus(CarpoolUserStatus.CANCELLED);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void cancelDroppedOffTest() {
-        CarpoolUser user = new CarpoolUser();
-        user.changeStatus(CarpoolUserStatus.CONFIRMED_FOR_PICKUP);
-        user.changeStatus(CarpoolUserStatus.PICKED_UP);
-        user.changeStatus(CarpoolUserStatus.DROPPED_OFF);
-        user.changeStatus(CarpoolUserStatus.CANCELLED);
+        carpoolUser.changeStatus(CarpoolUserStatus.PICKED_UP);
+        carpoolUser.changeStatus(CarpoolUserStatus.DROPPED_OFF);
+        carpoolUser.changeStatus(CarpoolUserStatus.CANCELLED);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void cancelPaidTest() {
-        CarpoolUser user = new CarpoolUser();
-        user.changeStatus(CarpoolUserStatus.CONFIRMED_FOR_PICKUP);
-        user.changeStatus(CarpoolUserStatus.PICKED_UP);
-        user.changeStatus(CarpoolUserStatus.DROPPED_OFF);
-        user.changeStatus(CarpoolUserStatus.PAID);
-        user.changeStatus(CarpoolUserStatus.CANCELLED);
+        carpoolUser.changeStatus(CarpoolUserStatus.CONFIRMED_FOR_PICKUP);
+        carpoolUser.changeStatus(CarpoolUserStatus.PICKED_UP);
+        carpoolUser.changeStatus(CarpoolUserStatus.DROPPED_OFF);
+        carpoolUser.changeStatus(CarpoolUserStatus.PAID);
+        carpoolUser.changeStatus(CarpoolUserStatus.CANCELLED);
     }
 }

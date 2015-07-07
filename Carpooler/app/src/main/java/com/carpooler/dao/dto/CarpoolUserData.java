@@ -24,7 +24,7 @@ public class CarpoolUserData {
     private String userId;
     private AddressData pickupLocation;
     private AddressData dropoffLocation;
-    private CarpoolUserStatus status;
+    private CarpoolUserStatus status = CarpoolUserStatus.UNLISTED;
     private double paymentAmount;
     private Date pickupDate;
     private Date dropoffDate;

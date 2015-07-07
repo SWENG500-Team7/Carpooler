@@ -7,6 +7,7 @@ import com.carpooler.payment.PaymentService;
 import com.carpooler.trips.LocationService;
 import com.carpooler.users.User;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.plus.People;
 
 /**
  * Created by raymond on 6/24/15.
@@ -19,4 +20,5 @@ public interface ServiceActivityCallback {
     public User getUser();
     public DatabaseService.Connection getConnection();
     public GoogleApiClient getGoogleApiClient();
+    public People getPeople();
 }

@@ -10,7 +10,6 @@ import com.carpooler.ui.activities.ServiceActivityCallback;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.plus.People;
-import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 
 import java.util.Date;
@@ -26,7 +25,7 @@ public class CarpoolUser {
                        ServiceActivityCallback serviceActivityCallback) {
         this.carpoolUserData = carpoolUserData;
         this.serviceActivityCallback=serviceActivityCallback;
-        PendingResult<People.LoadPeopleResult> result = Plus.PeopleApi.load(serviceActivityCallback.getGoogleApiClient(),carpoolUserData.getUserId());
+        PendingResult<People.LoadPeopleResult> result = serviceActivityCallback.getPeople().load(serviceActivityCallback.getGoogleApiClient(), carpoolUserData.getUserId());
         result.setResultCallback(new UserLoaderCallback());
     }
 
@@ -49,7 +48,7 @@ public class CarpoolUser {
 
     private void setAddress(String searchAddress, AddressErrorCallback addressErrorCallback, boolean destination) throws RemoteException {
         UserAddressLoadCallback tripAddressLoadCallback = new UserAddressLoadCallback(addressErrorCallback,destination);
-        serviceActivityCallback.getConnection().geocode(searchAddress,tripAddressLoadCallback);
+        serviceActivityCallback.getLocationService().getLocationFromAddressName(searchAddress,tripAddressLoadCallback);
     }
 
     public CarpoolUserStatus getStatus() {

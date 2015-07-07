@@ -1,87 +1,97 @@
 package com.carpooler.trips;
 
-import com.carpooler.trips.Trip;
+import android.os.RemoteException;
+
+import com.carpooler.AbstractServiceActivityMockTest;
+import com.carpooler.dao.dto.TripData;
 import com.carpooler.users.CarpoolUser;
 import com.carpooler.users.CarpoolUserStatus;
 
-import junit.framework.TestCase;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * Created by jcsax on 6/2/15.
  */
-public class TripTest extends TestCase {
+public class TripTest extends AbstractServiceActivityMockTest {
 
-    private Trip trip = new Trip();
-    private CarpoolUser user = new CarpoolUser();
+    private Trip trip;
 
-    public void setUp() throws Exception {
-        super.setUp();
+
+    @Override
+    public void setup() throws RemoteException {
+        super.setup();
+        trip = new Trip(new TripData(),callback);
     }
 
-    public void tearDown() throws Exception {
-
-    }
-
-    public void testAddCarpoolUser() {
-        trip.addCarpoolUser(user);
-        assertEquals(1, trip.getCarpoolUsers().size());
-        assertEquals(CarpoolUserStatus.CONFIRMED_FOR_PICKUP, user.getStatus());
-    }
-
+    @Test
     public void testRemoveCarpoolUser() {
-        trip.addCarpoolUser(user);
-        assertEquals(1, trip.getCarpoolUsers().size());
-        assertEquals(CarpoolUserStatus.CONFIRMED_FOR_PICKUP, user.getStatus());
-        trip.removeCarpoolUser(user);
-        assertEquals(0, trip.getCarpoolUsers().size());
-        assertEquals(CarpoolUserStatus.CANCELLED, user.getStatus());
+        CarpoolUser carpoolUser = trip.requestJoinTrip();
+        Assert.assertTrue(trip.getCarpoolUsers().hasNext());
+        trip.confirmCarpoolUser(carpoolUser);
+        Assert.assertEquals(CarpoolUserStatus.CONFIRMED_FOR_PICKUP, carpoolUser.getStatus());
+        trip.removeCarpoolUser(carpoolUser);
+        Assert.assertTrue(trip.getCarpoolUsers().hasNext());
+        Assert.assertEquals(CarpoolUserStatus.CANCELLED, carpoolUser.getStatus());
     }
 
+    @Test
     public void testPickupCarpoolUser() {
-        trip.addCarpoolUser(user);
-        assertEquals(1, trip.getCarpoolUsers().size());
-        assertEquals(CarpoolUserStatus.CONFIRMED_FOR_PICKUP, user.getStatus());
-        trip.pickupCarpoolUser(user);
-        assertEquals(CarpoolUserStatus.PICKED_UP, user.getStatus());
+        CarpoolUser carpoolUser = trip.requestJoinTrip();
+        Assert.assertTrue(trip.getCarpoolUsers().hasNext());
+        trip.confirmCarpoolUser(carpoolUser);
+        Assert.assertEquals(CarpoolUserStatus.CONFIRMED_FOR_PICKUP, carpoolUser.getStatus());
+        trip.pickupCarpoolUser(carpoolUser);
+        Assert.assertEquals(CarpoolUserStatus.PICKED_UP, carpoolUser.getStatus());
     }
 
+    @Test
     public void testDropoffCarpoolUser() {
-        trip.addCarpoolUser(user);
-        assertEquals(1, trip.getCarpoolUsers().size());
-        assertEquals(CarpoolUserStatus.CONFIRMED_FOR_PICKUP, user.getStatus());
-        trip.pickupCarpoolUser(user);
-        assertEquals(CarpoolUserStatus.PICKED_UP, user.getStatus());
-        trip.dropoffCarpoolUser(user, 1.00);
-        assertEquals(CarpoolUserStatus.DROPPED_OFF, user.getStatus());
+        CarpoolUser carpoolUser = trip.requestJoinTrip();
+        Assert.assertTrue(trip.getCarpoolUsers().hasNext());
+        trip.confirmCarpoolUser(carpoolUser);
+        Assert.assertEquals(CarpoolUserStatus.CONFIRMED_FOR_PICKUP, carpoolUser.getStatus());
+        trip.pickupCarpoolUser(carpoolUser);
+        Assert.assertEquals(CarpoolUserStatus.PICKED_UP, carpoolUser.getStatus());
+        trip.dropoffCarpoolUser(carpoolUser, 1.00);
+        Assert.assertEquals(CarpoolUserStatus.DROPPED_OFF, carpoolUser.getStatus());
     }
 
+    @Test
     public void testSkipNoShow() {
-        trip.addCarpoolUser(user);
-        assertEquals(1, trip.getCarpoolUsers().size());
-        assertEquals(CarpoolUserStatus.CONFIRMED_FOR_PICKUP, user.getStatus());
-        trip.skipNoShow(user);
-        assertEquals(CarpoolUserStatus.NO_SHOW, user.getStatus());
+        CarpoolUser carpoolUser = trip.requestJoinTrip();
+        Assert.assertTrue(trip.getCarpoolUsers().hasNext());
+        trip.confirmCarpoolUser(carpoolUser);
+        Assert.assertEquals(CarpoolUserStatus.CONFIRMED_FOR_PICKUP, carpoolUser.getStatus());
+        trip.skipNoShow(carpoolUser);
+        Assert.assertEquals(CarpoolUserStatus.NO_SHOW, carpoolUser.getStatus());
     }
 
+    @Test
     public void testRequestPickup() {
-        trip.requestPickup(user);
-        assertEquals(CarpoolUserStatus.PENDING, user.getStatus());
+        CarpoolUser carpoolUser = trip.requestJoinTrip();
+        Assert.assertEquals(CarpoolUserStatus.PENDING, carpoolUser.getStatus());
     }
 
+    @Test
     public void testSplitFuelCost() {
-        CarpoolUser user1 = new CarpoolUser();
-        CarpoolUser user2 = new CarpoolUser();
-        CarpoolUser user3 = new CarpoolUser();
+        CarpoolUser user1 = trip.requestJoinTrip();
+        CarpoolUser user2 = trip.requestJoinTrip();
+        CarpoolUser user3 = trip.requestJoinTrip();
+        trip.confirmCarpoolUser(user1);
+        trip.confirmCarpoolUser(user2);
+        trip.confirmCarpoolUser(user3);
         double fuel_cost = 12.00;
-        trip.addCarpoolUser(user1);
-        trip.addCarpoolUser(user2);
-        trip.addCarpoolUser(user3);
-        assertEquals(3, trip.getCarpoolUsers().size());
+        Assert.assertTrue(trip.getCarpoolUsers().hasNext());
+        trip.getCarpoolUsers().next();
+        Assert.assertTrue(trip.getCarpoolUsers().hasNext());
+        trip.getCarpoolUsers().next();
+        Assert.assertTrue(trip.getCarpoolUsers().hasNext());
         trip.pickupCarpoolUser(user1);
         trip.pickupCarpoolUser(user2);
         trip.pickupCarpoolUser(user3);
         double fuel_split = trip.splitFuelCost(fuel_cost);
-        assertEquals(4.00, fuel_split);
+        Assert.assertEquals(4.00, fuel_split,.5);
     }
 
 }

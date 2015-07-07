@@ -25,6 +25,7 @@ import com.carpooler.trips.TripStatus;
 import com.carpooler.users.User;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.plus.People;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 
@@ -306,5 +307,10 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
     @Override
     public GoogleApiClient getGoogleApiClient() {
         return mGoogleApiClient;
+    }
+
+    @Override
+    public People getPeople() {
+        return Plus.PeopleApi;
     }
 }

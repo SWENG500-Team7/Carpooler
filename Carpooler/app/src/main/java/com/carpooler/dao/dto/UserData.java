@@ -31,7 +31,7 @@ public class UserData implements DatabaseObject {
     @JestId
     private String userId;
     private List<VehicleData> vehicle = new ArrayList<>();
-    private Rating averageRating;
+    private Rating averageRating = Rating.F;
     private int ratings;
     private List<UserReviewData> reviews = new ArrayList<>();
 

@@ -19,6 +19,7 @@ import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -38,20 +39,29 @@ public class Trip {
     public Trip(TripData tripData, ServiceActivityCallback serviceActivityCallback) {
         this.serviceActivityCallback = serviceActivityCallback;
         this.tripData = tripData;
-        if (serviceActivityCallback.getUser().getGoogleId().equals(tripData.getHostId())){
-            host = serviceActivityCallback.getUser();
-        }else{
-            PendingResult<People.LoadPeopleResult> result = Plus.PeopleApi.load(serviceActivityCallback.getGoogleApiClient(),tripData.getHostId());
-            result.setResultCallback(new HostLoaderCallback());
+        if (tripData.getHostId()!=null) {
+            if (serviceActivityCallback.getUser().getGoogleId().equals(tripData.getHostId())) {
+                host = serviceActivityCallback.getUser();
+            } else {
+                PendingResult<People.LoadPeopleResult> result = Plus.PeopleApi.load(serviceActivityCallback.getGoogleApiClient(), tripData.getHostId());
+                result.setResultCallback(new HostLoaderCallback());
+            }
         }
     }
 
     /**
-     * Adds and confirms a CarpoolUser to the list for this trip
-     * @param user - a CarpoolUser
+     * Adds a CarpoolUser to the list for this trip
      */
-    public void addCarpoolUser(CarpoolUser user) {
-        user.changeStatus(CarpoolUserStatus.CONFIRMED_FOR_PICKUP);
+    public CarpoolUser requestJoinTrip() {
+        CarpoolUserData carpoolUserData = new CarpoolUserData();
+        carpoolUserData.setUserId(serviceActivityCallback.getUser().getGoogleId());
+        carpoolUserData.setStatus(CarpoolUserStatus.PENDING);
+        tripData.getUsers().add(carpoolUserData);
+        return new CarpoolUser(carpoolUserData,serviceActivityCallback);
+    }
+
+    public void confirmCarpoolUser(CarpoolUser carpoolUser){
+        carpoolUser.changeStatus(CarpoolUserStatus.CONFIRMED_FOR_PICKUP);
     }
 
     /**c
@@ -93,15 +103,6 @@ public class Trip {
     }
 
     /**
-     * Allows a CarpoolUser to request a pickup on this trip;
-     * Updates the status of a CarpoolUser to PENDING for this trip
-     * @param user - a CarpoolUser
-     */
-    public void requestPickup(CarpoolUser user) {
-        user.changeStatus(CarpoolUserStatus.PENDING);
-    }
-
-    /**
      * Splits the total fuel cost evenly among the list of CarpoolUsers
      * for each trip segment and adds to current fuel split
      * @param cost - the total fuel cost for the current trip segment
@@ -120,7 +121,7 @@ public class Trip {
 
     public void saveTrip() {
         try {
-            serviceActivityCallback.getTripDataService().createTrip(tripData, new CreateUserCallback());
+            serviceActivityCallback.getTripDataService().createTrip(tripData, new CreateTripCallback());
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -152,10 +153,10 @@ public class Trip {
 
     private void setAddress(String searchAddress, AddressErrorCallback addressErrorCallback, boolean destination) throws RemoteException {
         TripAddressLoadCallback tripAddressLoadCallback = new TripAddressLoadCallback(addressErrorCallback,destination);
-        serviceActivityCallback.getConnection().geocode(searchAddress,tripAddressLoadCallback);
+        serviceActivityCallback.getLocationService().getLocationFromAddressName(searchAddress,tripAddressLoadCallback);
     }
 
-    private class CreateUserCallback implements DatabaseService.IndexCallback{
+    private class CreateTripCallback implements DatabaseService.IndexCallback{
 
         @Override
         public void doError(String message) {
@@ -241,6 +242,27 @@ public class Trip {
         }
     }
 
+    public Iterator<CarpoolUser> getCarpoolUsers(){
+        return new CarpoolUserIterator();
+    }
+
+    private class CarpoolUserIterator implements Iterator<CarpoolUser>{
+        private int currentIndex=0;
+        @Override
+        public boolean hasNext() {
+            return (!tripData.getUsers().isEmpty()) && tripData.getUsers().size()>=currentIndex;
+        }
+
+        @Override
+        public CarpoolUser next() {
+            return new CarpoolUser(tripData.getUsers().get(currentIndex++   ),serviceActivityCallback);
+        }
+
+        @Override
+        public void remove() {
+            tripData.getUsers().remove(currentIndex);
+        }
+    }
     private class HostLoaderCallback implements ResultCallback<People.LoadPeopleResult> {
 
         @Override
