@@ -1,0 +1,111 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/contentView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="From:"
+        android:id="@+id/start_loc"
+        android:layout_gravity="left|top"
+        android:layout_alignBottom="@+id/txt_startLoc"
+        android:layout_alignStart="@+id/btn_timeSelect" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPostalAddress"
+        android:ems="10"
+        android:id="@+id/txt_startLoc"
+        android:layout_gravity="center_horizontal|top"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/txt_destLoc"
+        android:focusable="true"
+        android:enabled="true"
+        android:focusableInTouchMode="true"
+        android:editable="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="To:"
+        android:id="@+id/dest_loc"
+        android:layout_gravity="left|center_vertical"
+
+        android:layout_alignBottom="@+id/txt_destLoc"
+        android:layout_alignStart="@+id/start_loc" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPostalAddress"
+        android:ems="10"
+        android:id="@+id/txt_destLoc"
+        android:layout_gravity="center"
+        android:layout_marginLeft="30dp"
+        android:layout_below="@+id/start_loc"
+        android:layout_toEndOf="@+id/dest_loc"
+        android:enabled="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:editable="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Search"
+        android:id="@+id/btn_search"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="37dp"
+        android:enabled="true" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select Date"
+        android:id="@+id/btn_dateSelect"
+        android:layout_alignTop="@+id/txt_date"
+        android:layout_alignStart="@+id/dest_loc" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select Time"
+        android:id="@+id/btn_timeSelect"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@+id/btn_search" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Large Text"
+        android:id="@+id/txt_date"
+        android:layout_marginTop="53dp"
+        android:layout_below="@+id/txt_destLoc"
+        android:layout_alignEnd="@+id/txt_destLoc" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Large Text"
+        android:id="@+id/txt_time"
+        android:layout_centerVertical="true"
+        android:layout_alignStart="@+id/txt_date" />
+
+</RelativeLayout>
