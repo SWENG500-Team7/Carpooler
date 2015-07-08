@@ -1,6 +1,7 @@
 package com.carpooler.trips;
 
 import android.os.RemoteException;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.carpooler.dao.DatabaseService;

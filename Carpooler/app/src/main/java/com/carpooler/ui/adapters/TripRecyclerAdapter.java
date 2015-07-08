@@ -2,6 +2,7 @@ package com.carpooler.ui.adapters;
 
 import android.os.RemoteException;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,9 +63,9 @@ public class TripRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             tripRowHolder.startStreet.setText(data.getStartLocation().getStreetNumber());
             tripRowHolder.startCity.setText(data.getStartLocation().getCity());
             tripRowHolder.startState.setText(data.getStartLocation().getState());
-            tripRowHolder.endStreet.setText(data.getEndLocation().getStreetNumber());
-            tripRowHolder.endCity.setText(data.getEndLocation().getCity());
-            tripRowHolder.endState.setText(data.getEndLocation().getState());
+//            tripRowHolder.endStreet.setText(data.getEndLocation().getStreetNumber());
+//            tripRowHolder.endCity.setText(data.getEndLocation().getCity());
+//            tripRowHolder.endState.setText(data.getEndLocation().getState());
         }
     }
 
