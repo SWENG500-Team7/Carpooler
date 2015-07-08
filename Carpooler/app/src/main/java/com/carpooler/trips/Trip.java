@@ -267,13 +267,15 @@ public class Trip {
 
         @Override
         public void onResult(People.LoadPeopleResult loadPeopleResult) {
-            Person person = loadPeopleResult.getPersonBuffer().iterator().next();
-            host = new User(person,serviceActivityCallback);
-            for (HostImageLoader hostImageLoader:hostImageLoaders){
-                try {
-                    host.loadUserImage(hostImageLoader.imageView,hostImageLoader.size);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
+            if (loadPeopleResult.getPersonBuffer()!=null) {
+                Person person = loadPeopleResult.getPersonBuffer().iterator().next();
+                host = new User(person, serviceActivityCallback);
+                for (HostImageLoader hostImageLoader : hostImageLoaders) {
+                    try {
+                        host.loadUserImage(hostImageLoader.imageView, hostImageLoader.size);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
