@@ -315,21 +315,25 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
         tripData.setHostId(callback.getUser().getGoogleId());
         tripData.setStatus(tripStatus);
         // Set start address data
-        AddressData startAddressData = new AddressData();
-        GeoPointData startGeoPointData = new GeoPointData();
-        startGeoPointData.setLat(startAddress.getLatitude());
-        startGeoPointData.setLon(startAddress.getLongitude());
-        startAddressData.setStreetNumber(startAddress.getAddressLine(0));
-        startAddressData.setZip(startAddress.getPostalCode());
-        tripData.setStartLocation(startAddressData);
+        if (startAddress != null) {
+            AddressData startAddressData = new AddressData();
+            GeoPointData startGeoPointData = new GeoPointData();
+            startGeoPointData.setLat(startAddress.getLatitude());
+            startGeoPointData.setLon(startAddress.getLongitude());
+            startAddressData.setStreetNumber(startAddress.getAddressLine(0));
+            startAddressData.setZip(startAddress.getPostalCode());
+            tripData.setStartLocation(startAddressData);
+        }
         // Set end address data
-        AddressData endAddressData = new AddressData();
-        GeoPointData endGeoPointData = new GeoPointData();
-        endGeoPointData.setLat(endAddress.getLatitude());
-        endGeoPointData.setLon(endAddress.getLongitude());
-        endAddressData.setStreetNumber(endAddress.getAddressLine(0));
-        endAddressData.setZip(endAddress.getPostalCode());
-        tripData.setEndLocation(endAddressData);
+        if (endAddress != null) {
+            AddressData endAddressData = new AddressData();
+            GeoPointData endGeoPointData = new GeoPointData();
+            endGeoPointData.setLat(endAddress.getLatitude());
+            endGeoPointData.setLon(endAddress.getLongitude());
+            endAddressData.setStreetNumber(endAddress.getAddressLine(0));
+            endAddressData.setZip(endAddress.getPostalCode());
+            tripData.setEndLocation(endAddressData);
+        }
 
         tripData.setStartTime(new Date(year, month, day, start_hour, start_minute));
         tripData.setEndTime(new Date(year, month, day, end_hour, end_minute));
