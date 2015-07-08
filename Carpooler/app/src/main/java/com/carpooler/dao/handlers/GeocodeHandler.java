@@ -30,8 +30,12 @@ public class GeocodeHandler extends AbstractHandler {
         try {
             List<Address> addresses = geocoder.getFromLocationName(address,1);
             if (!address.isEmpty()){
-                Address foundAddress = addresses.get(0);
-                replySuccess(message,foundAddress,callbackMessage);
+                if (addresses.size()>1){
+                    replyError(message,"Multiple Addresses Found",callbackMessage);
+                }else {
+                    Address foundAddress = addresses.get(0);
+                    replySuccess(message, foundAddress, callbackMessage);
+                }
             }else{
                 replyError(message, "Address not found", callbackMessage);
             }

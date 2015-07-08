@@ -164,6 +164,7 @@ public class DatabaseService extends Service implements SharedPreferences.OnShar
                 switch (msg.what) {
                     case DatabaseService.ERROR:
                         callbackMessage.callback.doError(callbackMessage.errorMessage);
+                        break;
                     case DatabaseService.EXCEPTION:
                         callbackMessage.callback.doException(callbackMessage.exception);
                         break;

@@ -14,8 +14,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.DatePicker;
-import android.widget.TimePicker;
 
 import com.carpooler.R;
 import com.carpooler.dao.DatabaseService;
@@ -97,6 +95,11 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
             Intent i = new Intent(this, CarpoolerSettings.class);
             startActivity(i);
             return true;
+        } else if (id == R.id.action_search){
+            Fragment fragment = new SearchTripsFragment();
+            String title = getString(R.string.title_search_trips);
+            transitionFragment(fragment,title);
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -126,9 +129,6 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
                 fragment = createVehicleManagerFragment();
                 title = getString(R.string.title_vehicles);
                 break;
-            case 4:
-                fragment = SearchTripsFragment.newInstance();
-                title = getString(R.string.title_search_trips);
             default:
                 break;
         }
@@ -281,7 +281,8 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
         args.putInt(TripListFragment.Search.SEARCH_DISTANCE, searchDistance);
         args.putInt(TripListFragment.Search.TIME_RANGE, timeRangeMinutes);
         TripListFragment searchList = new TripListFragment.Search();
-        transitionFragment(searchList,"Search Results");
+        searchList.setArguments(args);
+        pushFragment(searchList, "Search Results");
     }
 
     @Override

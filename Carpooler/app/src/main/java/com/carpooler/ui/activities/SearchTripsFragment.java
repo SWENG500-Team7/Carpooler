@@ -1,39 +1,35 @@
 package com.carpooler.ui.activities;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.location.Address;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
+import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.carpooler.R;
 import com.carpooler.dao.DatabaseService;
 
 import java.util.Calendar;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.Date;
-import android.widget.DatePicker;
-import android.widget.TimePicker;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.GregorianCalendar;
+
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
  * {@link //SearchTripsFragment.//OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link SearchTripsFragment#newInstance} factory method to
- * create an instance of this fragment.
  */
 public class SearchTripsFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
@@ -41,9 +37,6 @@ public class SearchTripsFragment extends Fragment {
 
     private Address startAddress;
     private Address endAddress;
-    private boolean startAddressReturned = false;
-    private boolean endAddressReturned = false;
-    private boolean noAddressReturn = false;
     private ServiceActivityCallback callback;
 
     public final String TAG = "Search Trips";
@@ -64,28 +57,6 @@ public class SearchTripsFragment extends Fragment {
     private int mDay;
     private int mHour;
     private int mMin;
-    private Date startDate;
-    private double mStartLong;
-    private double mStartLat;
-    private double mEndLong;
-    private double mEndLat;
-
-
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param //param1 Parameter 1.
-     * @param //param2 Parameter 2.
-     * @return A new instance of fragment SearchTripsFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static SearchTripsFragment newInstance() {
-        SearchTripsFragment fragment = new SearchTripsFragment();
-        return fragment;
-    }
-
 
     public SearchTripsFragment() {
         // Required empty public constructor
@@ -136,62 +107,35 @@ public class SearchTripsFragment extends Fragment {
         mSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    callback.getLocationService().getLocationFromAddressName(startAddressEditText.getText().toString(), startGeocodeCallback);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    callback.getLocationService().getLocationFromAddressName(endAddressEditText.getText().toString(), endGeocodeCallback);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-                setSearchData();
-                Log.i(TAG, "Search Data set.");
-                mCallback.search(mStartLong, mStartLat, mEndLong, mEndLat, startDate, 10, 20);
+                initiateSearch();
             }
         });
         mDateDisplay = (TextView) rootView.findViewById(R.id.txt_date);
         mTimeDisplay = (TextView) rootView.findViewById(R.id.txt_time);
 
         startAddressEditText = (EditText) rootView.findViewById(R.id.txt_startLoc);
-        /*startAddressEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus){
-                    try {
-                        callback.getLocationService().getLocationFromAddressName(startAddressEditText.getText().toString(), startGeocodeCallback);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });*/
+        startAddressEditText.setOnEditorActionListener(new AddressSearchActionListener(true));
 
         endAddressEditText = (EditText) rootView.findViewById(R.id.txt_destLoc);
-        /*endAddressEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    //mSearchButton.setEnabled(true);
-                    try {
-                        callback.getLocationService().getLocationFromAddressName(endAddressEditText.getText().toString(), endGeocodeCallback);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });*/
+        endAddressEditText.setOnEditorActionListener(new AddressSearchActionListener(false));
 
         setCurrentDateAndTime();
         updateDateDisplay(mYear, mMonth, mDay);
         updateTimeDisplay(mHour, mMin);
+        checkAddressesFound();
         // Inflate the layout for this fragment
 
         return rootView;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
+    private void initiateSearch(){
+        Calendar calendar = GregorianCalendar.getInstance();
+        calendar.set(mYear,mMonth,mDay,mHour,mMin);
+        Date startDate = calendar.getTime();
+        mCallback.search(startAddress.getLongitude(), startAddress.getLatitude(),
+                endAddress.getLongitude(), endAddress.getLatitude(),
+                startDate, 10, 20);
+    }
 
     @Override
     public void onDestroyView() {
@@ -205,39 +149,6 @@ public class SearchTripsFragment extends Fragment {
         mCallback = (TripSearchCallback) activity;
     }
 
-   /*@Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.btn_dateSelect:
-                dp = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker datePicker, int selectedYear, int selectedMonth, int selectedDay) {
-                        updateDateDisplay(selectedYear, selectedMonth, selectedDay);
-                    }
-                }, mYear, mMonth, mDay);
-                dp.setTitle("Select Date");
-                dp.show();
-
-                break;
-            case R.id.btn_timeSelect:
-                tp = new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                        updateTimeDisplay(selectedHour, selectedMinute);
-                    }
-                }, mHour, mMin, true);//Yes 24 hour time
-                tp.setTitle("Select Time");
-                tp.show();
-                break;
-            case R.id.btn_search:
-                setSearchData();
-                Log.i(TAG, "The activity is visible and about to be started.");
-                mCallback.search(mStartLong, mStartLat, mEndLong, mEndLat, startDate, 10, 20);
-                break;
-            default:
-                break;
-        }
-    }*/
 
     public void setCurrentDateAndTime() {
         final Calendar calendar = Calendar.getInstance();
@@ -250,44 +161,6 @@ public class SearchTripsFragment extends Fragment {
 
 
 
-    /*@Override
-    public void onFocusChange(View v, boolean hasFocus) {
-        switch (v.getId()) {
-            case R.id.txt_startLoc:
-                if (!hasFocus){
-                    try {
-                        callback.getLocationService().getLocationFromAddressName(startAddressEditText.getText().toString(), startGeocodeCallback);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                }
-                break;
-            case R.id.txt_destLoc:
-                if (!hasFocus) {
-                    //mSearchButton.setEnabled(true);
-                    try {
-                        callback.getLocationService().getLocationFromAddressName(endAddressEditText.getText().toString(), endGeocodeCallback);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                }
-                break;
-            default:
-                break;
-        }*/
-        /*new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                noAddressReturn = true;
-            }
-        }, 2000);
-        while (!startAddressReturned && !endAddressReturned && !noAddressReturn) {
-            // wait for start and end addresses to return
-            // stop if noAddressReturn
-        }
-        startAddressReturned = false;
-        endAddressReturned = false;
-    }*/
 
     @Override
     public void onDetach() {
@@ -308,75 +181,70 @@ public class SearchTripsFragment extends Fragment {
                 .append(mMonth + 1).append("-").append(mDay).append("-")
                 .append(mYear).append(" "));
     }
-
     public void updateTimeDisplay(int hour, int min) {
         mHour = hour;
         mMin = min;
         mTimeDisplay.setText(new StringBuilder().append(mHour).append(":").append(mMin).append(" "));
     }
 
-
-
-    private DatabaseService.GeocodeCallback startGeocodeCallback = new DatabaseService.GeocodeCallback() {
-        @Override
-        public void doError(String message) {
-            startAddressReturned = true;
-            Log.i(TAG, "The activity is visible and about to be started.");
+    private void checkAddressesFound(){
+        if (startAddress !=null && endAddress!=null){
+            mSearchButton.setEnabled(true);
         }
-
-        @Override
-        public void doException(Exception exception) {
-            startAddressReturned = true;
-            Log.i(TAG, "The activity is visible and about to be started.");
-        }
-
-        @Override
-        public void doSuccess(Address data) {
-            startAddress = data;
-            startAddressReturned = true;
-        }
-    };
-
-    private DatabaseService.GeocodeCallback endGeocodeCallback = new DatabaseService.GeocodeCallback() {
-        @Override
-        public void doError(String message) {
-            endAddressReturned = true;
-        }
-
-        @Override
-        public void doException(Exception exception) {
-            endAddressReturned = true;
-        }
-
-        @Override
-        public void doSuccess(Address data) {
-            endAddress = data;
-            endAddressReturned = true;
-        }
-    };
-
-    public void setSearchData() {
-        mStartLat = startAddress.getLatitude();
-        mStartLong = startAddress.getLongitude();
-        mEndLat = endAddress.getLatitude();
-        mEndLong = endAddress.getLongitude();
-        startDate = new Date(mYear, mMonth, mDay, mHour, mMin);
     }
 
+    private class AddressSearchCallback implements DatabaseService.GeocodeCallback {
+        private final TextView addressText;
+        private final boolean startAddressField;
+        private AddressSearchCallback(TextView addressText, boolean startAddressField) {
+            this.addressText = addressText;
+            this.startAddressField = startAddressField;
+        }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    /*public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
-    }*/
+        @Override
+        public void doError(String message) {
+            Toast.makeText(getActivity(),message,Toast.LENGTH_LONG).show();
+            addressText.requestFocus();
+        }
 
+        @Override
+        public void doException(Exception exception) {
+            doError(exception.getMessage());
+        }
+
+        @Override
+        public void doSuccess(Address data) {
+            StringBuilder sb = new StringBuilder();
+            for (int i=0; i<=data.getMaxAddressLineIndex();i++){
+                sb.append(data.getAddressLine(i)).append(' ');
+            }
+
+            addressText.setText(sb.toString());
+            if (startAddressField){
+                startAddress =data;
+            }else{
+                endAddress = data;
+            }
+            checkAddressesFound();
+        }
+
+    }
+
+    private class AddressSearchActionListener implements TextView.OnEditorActionListener{
+        private final boolean startAddressField;
+
+        private AddressSearchActionListener(boolean startAddressField) {
+            this.startAddressField = startAddressField;
+        }
+
+        @Override
+        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+            try {
+                callback.getLocationService().getLocationFromAddressName(v.getText().toString(), new AddressSearchCallback(v,startAddressField));
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+            return true;
+        }
+    }
 }

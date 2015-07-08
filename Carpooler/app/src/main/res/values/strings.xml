@@ -28,13 +28,11 @@
         <item>@string/nav_item_hosted_trips</item>
         <item>@string/nav_item_joined_trips</item>
         <item>@string/nav_item_vehicles</item>
-        <item>@string/nav_item_search_trips</item>
     </string-array>
     <string name="nav_item_trip_in_progress">Trip In-Progress</string>
     <string name="nav_item_hosted_trips">Hosted Trips</string>
     <string name="nav_item_joined_trips">Joined Trips</string>
     <string name="nav_item_vehicles">Vehicles</string>
-    <string name="nav_item_search_trips">Search Trips</string>
     <string name="title_trips">Trips</string>
     <string name="title_trip_detail">Trip Detail</string>
     <string name="title_search_trips">Search Trips</string>
