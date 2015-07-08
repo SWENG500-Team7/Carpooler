@@ -1,7 +1,10 @@
 package com.carpooler.trips;
 
+import android.util.Log;
+
 import com.carpooler.dao.DatabaseService;
 import com.carpooler.dao.dto.AddressData;
+import com.carpooler.dao.dto.GeoPointData;
 import com.carpooler.users.Address;
 
 /**
@@ -33,12 +36,13 @@ public abstract class AddressLoadCallback implements DatabaseService.GeocodeCall
     @Override
     public void doSuccess(android.location.Address data) {
         AddressData addressData = new AddressData();
+        addressData.setLocation(new GeoPointData());
         setAddressData(addressData);
         Address address = new Address(addressData);
         address.setZip(data.getPostalCode());
         address.setCity(data.getSubAdminArea());
         address.setState(data.getAdminArea());
-        address.setStreetNumber(data.getSubThoroughfare());
+        address.setStreetNumber(data.getAddressLine(0));
         address.setLon(data.getLongitude());
         address.setLat(data.getLatitude());
     }

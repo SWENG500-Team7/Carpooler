@@ -59,10 +59,10 @@ public class TripRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             }
             tripRowHolder.startTime.setText(data.getStartTime().toString());
             tripRowHolder.openSeats.setText(Integer.toString(data.getOpenSeats()));
-            tripRowHolder.startStreet.setText(data.getStartLocation().getStreet());
+            tripRowHolder.startStreet.setText(data.getStartLocation().getStreetNumber());
             tripRowHolder.startCity.setText(data.getStartLocation().getCity());
             tripRowHolder.startState.setText(data.getStartLocation().getState());
-            tripRowHolder.endStreet.setText(data.getEndLocation().getStreet());
+            tripRowHolder.endStreet.setText(data.getEndLocation().getStreetNumber());
             tripRowHolder.endCity.setText(data.getEndLocation().getCity());
             tripRowHolder.endState.setText(data.getEndLocation().getState());
         }

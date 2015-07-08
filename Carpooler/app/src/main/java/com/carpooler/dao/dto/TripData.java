@@ -1,5 +1,7 @@
 package com.carpooler.dao.dto;
 
+import android.util.Log;
+
 import com.carpooler.dao.annotations.ElasticData;
 import com.carpooler.trips.TripStatus;
 

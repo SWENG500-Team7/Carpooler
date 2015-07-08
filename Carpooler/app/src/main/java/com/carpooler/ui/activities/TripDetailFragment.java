@@ -1,14 +1,12 @@
 package com.carpooler.ui.activities;
 
 import android.app.Activity;
-import android.location.Address;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,9 +20,8 @@ import android.widget.TimePicker;
 
 import com.carpooler.R;
 import com.carpooler.dao.DatabaseService;
-import com.carpooler.dao.dto.AddressData;
-import com.carpooler.dao.dto.GeoPointData;
 import com.carpooler.dao.dto.TripData;
+import com.carpooler.trips.AddressErrorCallback;
 import com.carpooler.trips.Trip;
 import com.carpooler.trips.TripStatus;
 
@@ -42,10 +39,6 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
     private MenuItem miSave;
     private EditText startAddressEditText;
     private EditText endAddressEditText;
-    private Address startAddress;
-    private Address endAddress;
-    private boolean startAddressReturned = false;
-    private boolean endAddressReturned = false;
     private DatePicker tripDatePicker;
     private TimePicker tripStartTimePicker;
     private TimePicker tripEndTimePicker;
@@ -136,9 +129,9 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        miEdit = (MenuItem) menu.findItem(R.id.mi_edit_trip);
-        miDelete = (MenuItem) menu.findItem(R.id.mi_cancel_trip);
-        miSave = (MenuItem) menu.findItem(R.id.mi_save_trip);
+        miEdit = menu.findItem(R.id.mi_edit_trip);
+        miDelete = menu.findItem(R.id.mi_cancel_trip);
+        miSave = menu.findItem(R.id.mi_save_trip);
         miEdit.setOnMenuItemClickListener(this);
         miDelete.setOnMenuItemClickListener(this);
         miSave.setOnMenuItemClickListener(this);
@@ -182,7 +175,7 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
                 goBack();
                 break;
             case R.id.mi_save_trip:
-                checkAddresses();
+                saveTrip();
                 setFormEnabled(false);
                 goBack();
                 break;
@@ -249,93 +242,51 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
         }
     };
 
-    private DatabaseService.GeocodeCallback startGeocodeCallback = new DatabaseService.GeocodeCallback() {
+    private AddressErrorCallback startAddressErrorCallback = new AddressErrorCallback() {
         @Override
         public void doError(String message) {
-
+            textView.setText(message);
         }
 
         @Override
         public void doException(Exception exception) {
-
-        }
-
-        @Override
-        public void doSuccess(Address data) {
-            startAddress = data;
-            startAddressReturned = true;
-            if (endAddressReturned) {
-                saveTrip();
-            }
+            textView.setText(exception.getMessage());
         }
     };
 
-    private DatabaseService.GeocodeCallback endGeocodeCallback = new DatabaseService.GeocodeCallback() {
+    private AddressErrorCallback endAddressErrorCallback = new AddressErrorCallback() {
         @Override
         public void doError(String message) {
-
+            textView.setText(message);
         }
 
         @Override
         public void doException(Exception exception) {
-
-        }
-
-        @Override
-        public void doSuccess(Address data) {
-            endAddress = data;
-            endAddressReturned = true;
-            if (startAddressReturned) {
-                saveTrip();
-            }
+            textView.setText(exception.getMessage());
         }
     };
-
-    private void checkAddresses() {
-        try {
-            callback.getLocationService().getLocationFromAddressName(startAddressEditText.getText().toString(), startGeocodeCallback);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-        try {
-            callback.getLocationService().getLocationFromAddressName(endAddressEditText.getText().toString(), endGeocodeCallback);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-    }
 
     private void saveTrip() {
         TripData tripData = new TripData();
         tripData.setHostId(callback.getUser().getGoogleId());
-        tripData.setStatus(tripStatus);
-        // Set start address data
-        AddressData startAddressData = new AddressData();
-        GeoPointData startGeoPointData = new GeoPointData();
-        startGeoPointData.setLat(startAddress.getLatitude());
-        startGeoPointData.setLon(startAddress.getLongitude());
-        startAddressData.setStreetNumber(startAddress.getAddressLine(0));
-        startAddressData.setZip(startAddress.getPostalCode());
-        tripData.setStartLocation(startAddressData);
-        // Set end address data
-        AddressData endAddressData = new AddressData();
-        GeoPointData endGeoPointData = new GeoPointData();
-        endGeoPointData.setLat(endAddress.getLatitude());
-        endGeoPointData.setLon(endAddress.getLongitude());
-        endAddressData.setStreetNumber(endAddress.getAddressLine(0));
-        endAddressData.setZip(endAddress.getPostalCode());
-        tripData.setEndLocation(endAddressData);
-
         tripData.setStartTime(new Date(year, month, day, start_hour, start_minute));
         tripData.setEndTime(new Date(year, month, day, end_hour, end_minute));
         Trip trip = new Trip(tripData, callback);
+        trip.setStatus(tripStatus);
+        try {
+            trip.setStartLocation(startAddressEditText.getText().toString(), startAddressErrorCallback);
+            trip.setEndLocation(endAddressEditText.getText().toString(), endAddressErrorCallback);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
         trip.saveTrip();
     }
 
     private void cancelTrip() {
         TripData tripData = new TripData();
         tripData.set_id(tripId);
-        tripData.setStatus(TripStatus.CANCELLED);
         Trip trip = new Trip(tripData, callback);
+        trip.setStatus(TripStatus.CANCELLED);
         trip.saveTrip();
     }
 
