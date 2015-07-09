@@ -239,10 +239,12 @@ public class SearchTripsFragment extends Fragment {
 
         @Override
         public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-            try {
-                callback.getLocationService().getLocationFromAddressName(v.getText().toString(), new AddressSearchCallback(v,startAddressField));
-            } catch (RemoteException e) {
-                e.printStackTrace();
+            if (event.getAction()==KeyEvent.ACTION_UP) {
+                try {
+                    callback.getLocationService().getLocationFromAddressName(v.getText().toString(), new AddressSearchCallback(v, startAddressField));
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
             }
             return true;
         }

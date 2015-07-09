@@ -146,11 +146,19 @@ public class Trip {
         tripData.setEndTime(endTime);
     }
     public Address getStartLocation() {
-        return new Address(tripData.getStartLocation());
+        if (tripData.getStartLocation()!=null) {
+            return new Address(tripData.getStartLocation());
+        }else{
+            return null;
+        }
     }
 
     public Address getEndLocation() {
-        return new Address(tripData.getEndLocation());
+        if (tripData.getEndLocation()!=null) {
+            return new Address(tripData.getEndLocation());
+        }else{
+            return null;
+        }
     }
 
     public void setStartLocation(String searchAddress, AddressErrorCallback addressErrorCallback) throws RemoteException {

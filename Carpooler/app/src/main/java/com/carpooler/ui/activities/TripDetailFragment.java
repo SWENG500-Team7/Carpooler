@@ -104,7 +104,6 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
 
         //Signal to system that this fragment has it's own actionbar items
         setHasOptionsMenu(hasMenu);
-
         return rootView;
     }
 
@@ -145,6 +144,7 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
 
         //Start in mode depending if user is creating a new trip
         setFormEnabled(createTrip);
+        checkSave();
     }
 
     @Override
@@ -275,6 +275,16 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
         }
     }
 
+    private void checkSave(){
+        if (miSave!=null && trip!=null) {
+            if (trip.getStartLocation() != null && trip.getEndLocation() != null) {
+                miSave.setEnabled(true);
+            } else {
+                miSave.setEnabled(false);
+            }
+        }
+    }
+
     @Override
     public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
         if (view == tripStartTimePicker) {
@@ -307,6 +317,7 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
         @Override
         public void doSuccess(String address) {
             addressText.setText(address);
+            checkSave();
         }
     }
     private class AddressSearchActionListener implements TextView.OnEditorActionListener{
@@ -318,14 +329,16 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
 
         @Override
         public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-            try {
-                if (startAddressField){
-                    trip.setStartLocation(startAddressEditText.getText().toString(), new AddressSearchCallback(startAddressEditText));
-                }else{
-                    trip.setEndLocation(endAddressEditText.getText().toString(), new AddressSearchCallback(endAddressEditText));
+            if (event.getAction()==KeyEvent.ACTION_UP) {
+                try {
+                    if (startAddressField) {
+                        trip.setStartLocation(startAddressEditText.getText().toString(), new AddressSearchCallback(startAddressEditText));
+                    } else {
+                        trip.setEndLocation(endAddressEditText.getText().toString(), new AddressSearchCallback(endAddressEditText));
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
                 }
-            } catch (RemoteException e) {
-                e.printStackTrace();
             }
             return true;
         }
