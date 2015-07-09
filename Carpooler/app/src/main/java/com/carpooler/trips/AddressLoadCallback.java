@@ -40,7 +40,8 @@ public abstract class AddressLoadCallback implements DatabaseService.GeocodeCall
         address.setZip(data.getPostalCode());
         address.setCity(data.getSubAdminArea());
         address.setState(data.getAdminArea());
-        address.setStreetNumber(data.getAddressLine(0));
+        address.setStreetNumber(data.getSubThoroughfare());
+        address.setStreet(data.getThoroughfare());
         address.setLon(data.getLongitude());
         address.setLat(data.getLatitude());
         StringBuffer stringBuffer = new StringBuffer();

@@ -2,7 +2,6 @@ package com.carpooler.ui.adapters;
 
 import android.os.RemoteException;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +12,7 @@ import com.carpooler.R;
 import com.carpooler.trips.Trip;
 import com.carpooler.trips.TripSearchResults;
 import com.carpooler.ui.activities.TripDetailCallback;
+import com.carpooler.users.Address;
 
 /**
  * Created by raymond on 6/21/15.
@@ -60,12 +60,19 @@ public class TripRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             }
             tripRowHolder.startTime.setText(data.getStartTime().toString());
             tripRowHolder.openSeats.setText(Integer.toString(data.getOpenSeats()));
-            tripRowHolder.startStreet.setText(data.getStartLocation().getStreetNumber());
-            tripRowHolder.startCity.setText(data.getStartLocation().getCity());
-            tripRowHolder.startState.setText(data.getStartLocation().getState());
-//            tripRowHolder.endStreet.setText(data.getEndLocation().getStreetNumber());
-//            tripRowHolder.endCity.setText(data.getEndLocation().getCity());
-//            tripRowHolder.endState.setText(data.getEndLocation().getState());
+            Address startAddress = data.getStartLocation();
+            Address endAddress = data.getEndLocation();
+            if (startAddress!=null) {
+                tripRowHolder.startStreet.setText(startAddress.getStreetNumber());
+                tripRowHolder.startCity.setText(startAddress.getCity());
+                tripRowHolder.startState.setText(startAddress.getState());
+            }
+
+            if (endAddress!=null) {
+                tripRowHolder.endStreet.setText(endAddress.getStreetNumber());
+                tripRowHolder.endCity.setText(endAddress.getCity());
+                tripRowHolder.endState.setText(endAddress.getState());
+            }
         }
     }
 
