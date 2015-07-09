@@ -28,7 +28,6 @@ import com.carpooler.trips.Trip;
 import com.carpooler.trips.TripStatus;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 
@@ -252,7 +251,9 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
 
 
     private void saveTrip() {
-        trip.setStartTime(new Date(year, month, day, start_hour, start_minute));
+        Calendar startCal = Calendar.getInstance();
+        startCal.set(year,month,day,start_hour,start_minute);
+        trip.setStartTime(startCal.getTime());
         trip.setStatus(tripStatus);
         trip.saveTrip();
     }
