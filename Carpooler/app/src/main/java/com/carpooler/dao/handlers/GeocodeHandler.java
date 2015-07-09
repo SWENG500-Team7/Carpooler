@@ -29,7 +29,7 @@ public class GeocodeHandler extends AbstractHandler {
         String address = (String) callbackMessage.getRequest();
         try {
             List<Address> addresses = geocoder.getFromLocationName(address,1);
-            if (!address.isEmpty()){
+            if (!addresses.isEmpty()){
                 if (addresses.size()>1){
                     replyError(message,"Multiple Addresses Found",callbackMessage);
                 }else {
