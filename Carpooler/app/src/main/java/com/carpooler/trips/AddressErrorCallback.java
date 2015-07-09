@@ -7,4 +7,6 @@ public interface AddressErrorCallback {
     void doError(String message);
 
     void doException(Exception exception);
+
+    void doSuccess(String address);
 }

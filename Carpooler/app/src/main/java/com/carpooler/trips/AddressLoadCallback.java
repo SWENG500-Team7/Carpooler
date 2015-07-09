@@ -1,7 +1,5 @@
 package com.carpooler.trips;
 
-import android.util.Log;
-
 import com.carpooler.dao.DatabaseService;
 import com.carpooler.dao.dto.AddressData;
 import com.carpooler.dao.dto.GeoPointData;
@@ -45,5 +43,10 @@ public abstract class AddressLoadCallback implements DatabaseService.GeocodeCall
         address.setStreetNumber(data.getAddressLine(0));
         address.setLon(data.getLongitude());
         address.setLat(data.getLatitude());
+        StringBuffer stringBuffer = new StringBuffer();
+        for (int i=0; i<=data.getMaxAddressLineIndex();i++){
+            stringBuffer.append(data.getAddressLine(i)).append(' ');
+        }
+        errorCallback.doSuccess(stringBuffer.toString());
     }
 }

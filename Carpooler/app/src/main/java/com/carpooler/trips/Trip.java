@@ -1,7 +1,6 @@
 package com.carpooler.trips;
 
 import android.os.RemoteException;
-import android.util.Log;
 import android.widget.ImageView;
 
 import com.carpooler.dao.DatabaseService;
@@ -47,6 +46,9 @@ public class Trip {
                 PendingResult<People.LoadPeopleResult> result = Plus.PeopleApi.load(serviceActivityCallback.getGoogleApiClient(), tripData.getHostId());
                 result.setResultCallback(new HostLoaderCallback());
             }
+        }else{
+            host = serviceActivityCallback.getUser();
+            tripData.setHostId(host.getGoogleId());
         }
     }
 
@@ -136,6 +138,13 @@ public class Trip {
         return tripData.getEndTime();
     }
 
+    public void setStartTime(Date startTime){
+        tripData.setStartTime(startTime);
+    }
+
+    public void setEndTime(Date endTime){
+        tripData.setEndTime(endTime);
+    }
     public Address getStartLocation() {
         return new Address(tripData.getStartLocation());
     }

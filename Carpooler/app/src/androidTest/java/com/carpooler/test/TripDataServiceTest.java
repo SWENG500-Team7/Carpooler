@@ -31,7 +31,7 @@ public class TripDataServiceTest extends DatabaseServiceTest {
 
     public void testCreateTrip() throws RemoteException, InterruptedException {
         TripData tripData = new TripData();
-        tripData.setHostId("testuser");
+        tripData.setHostId("100251564284199788464");
         tripData.setStatus(TripStatus.OPEN);
         AddressData startLocation = new AddressData();
         GeoPointData startGeo = getStartGeoPointData();
@@ -100,8 +100,8 @@ public class TripDataServiceTest extends DatabaseServiceTest {
 
     private GeoPointData getEndGeoPointData() {
         GeoPointData endGeo = new GeoPointData();
-        endGeo.setLat(40.557280);
-        endGeo.setLon(-74.527352);
+        endGeo.setLat(40.9250315);
+        endGeo.setLon(-74.3199495);
         return endGeo;
     }
 }
