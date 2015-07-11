@@ -62,6 +62,17 @@
     <string name="vehicle_license_label">License Plate Number</string>
     <string name="vehicle_color_label">Color</string>
 
+    <!-- Trip Complete Fragments -->
+    <string name="title_trip_complete">Trip Complete</string>
+    <string name="complete_total_distance">Total Distance</string>
+    <string name="complete_distance_unit">miles</string>
+    <string name="complete_total_gas_cost">Total Fuel Cost</string>
+    <string name="complete_cost_unit">$</string>
+    <string name="complete_total_tolls">Total Tolls</string>
+    <string name="complete_tolls_hint">0.00</string>
+    <string name="complete_pay_host">Pay Host</string>
+    <string name="complete_user_total">Your Total</string>
+
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 

@@ -320,4 +320,20 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
     public People getPeople() {
         return Plus.PeopleApi;
     }
+
+    @Override
+    public void onHostCompleteTrip(String tripId) {
+        TripCompleteFragment fragment = TripCompleteFragment.newInstance(tripId,
+                TripCompleteFragment.TripCompleteTypeEnum.HOST.ordinal());
+        String title = getString(R.string.title_trip_complete);
+        pushFragment(fragment, title);
+    }
+
+    @Override
+    public void onUserCompleteTrip(String tripId) {
+        TripCompleteFragment fragment = TripCompleteFragment.newInstance(tripId,
+                TripCompleteFragment.TripCompleteTypeEnum.USER.ordinal());
+        String title = getString(R.string.title_trip_complete);
+        pushFragment(fragment, title);
+    }
 }

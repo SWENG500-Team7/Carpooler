@@ -74,5 +74,12 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/openSeatsLabel"
             android:layout_below="@id/tripData" />
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/payButton"
+            android:layout_below="@id/openSeatsLabel"
+            android:visibility="gone"
+            android:text="@string/complete_pay_host"/>
     </RelativeLayout>
 </android.support.v7.widget.CardView>

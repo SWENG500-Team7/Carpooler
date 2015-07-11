@@ -64,7 +64,6 @@ public class VehicleDetailFragment extends Fragment implements MenuItem.OnMenuIt
      * @param plateNumber Plate number of detailed vehicle.
      * @return A new instance of fragment VehicleDetailFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static VehicleDetailFragment newInstance(String plateNumber) {
         VehicleDetailFragment fragment = new VehicleDetailFragment();
         Bundle args = new Bundle();
@@ -79,7 +78,6 @@ public class VehicleDetailFragment extends Fragment implements MenuItem.OnMenuIt
      *
      * @return A new instance of fragment VehicleDetailFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static VehicleDetailFragment newInstance() {
         VehicleDetailFragment fragment = new VehicleDetailFragment();
         Bundle args = new Bundle();

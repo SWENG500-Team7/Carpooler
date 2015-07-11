@@ -5,12 +5,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.carpooler.R;
 import com.carpooler.trips.Trip;
 import com.carpooler.trips.TripSearchResults;
+import com.carpooler.trips.TripStatus;
 import com.carpooler.ui.activities.TripDetailCallback;
 import com.carpooler.users.Address;
 
@@ -73,6 +75,10 @@ public class TripRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 tripRowHolder.endCity.setText(endAddress.getCity());
                 tripRowHolder.endState.setText(endAddress.getState());
             }
+
+            if (data.getStatus().equals(TripStatus.COMPLETED)) {
+                tripRowHolder.payButton.setVisibility(View.VISIBLE);
+            }
         }
     }
 
@@ -91,6 +97,7 @@ public class TripRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         TextView endStreet;
         TextView endCity;
         TextView endState;
+        Button payButton;
 
         public TripRowHolder(View itemView) {
             super(itemView);
@@ -103,6 +110,15 @@ public class TripRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             endStreet = (TextView) itemView.findViewById(R.id.endStreet);
             endCity = (TextView) itemView.findViewById(R.id.endCity);
             endState = (TextView) itemView.findViewById(R.id.endState);
+            payButton = (Button) itemView.findViewById(R.id.payButton);
+            payButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int pos = getAdapterPosition();
+                    Trip data = tripSearchResults.get(pos);
+                    callback.onUserCompleteTrip(data.getTripId());
+                }
+            });
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
