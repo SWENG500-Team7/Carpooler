@@ -76,7 +76,8 @@ public class TripRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 tripRowHolder.endState.setText(endAddress.getState());
             }
 
-            if (data.getStatus().equals(TripStatus.COMPLETED)) {
+            if (data.getStatus().equals(TripStatus.COMPLETED) /*&& TODO THIS IS NEEDED ONCE ADD TRIP IS FIXED
+                    (data.getHost().getGoogleId() != callback.getUser().getGoogleId())*/) {
                 tripRowHolder.payButton.setVisibility(View.VISIBLE);
             }
         }

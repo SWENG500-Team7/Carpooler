@@ -7,6 +7,7 @@ import android.widget.RelativeLayout;
 import com.paypal.android.MEP.CheckoutButton;
 import com.paypal.android.MEP.PayPal;
 import com.paypal.android.MEP.PayPalPayment;
+import com.paypal.android.MEP.PayPalResultDelegate;
 
 import java.math.BigDecimal;
 

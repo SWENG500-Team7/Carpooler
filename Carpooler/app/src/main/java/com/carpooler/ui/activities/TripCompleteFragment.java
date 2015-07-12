@@ -1,10 +1,12 @@
 package com.carpooler.ui.activities;
 
 import android.app.Activity;
-import android.net.Uri;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.os.RemoteException;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,6 +24,7 @@ import com.carpooler.payment.PayPalResultHandler;
 import com.carpooler.trips.Trip;
 import com.carpooler.trips.TripStatus;
 import com.paypal.android.MEP.CheckoutButton;
+import com.paypal.android.MEP.PayPalActivity;
 
 /**
  * Fragment that shows a summary of the trip.
@@ -187,6 +190,43 @@ public class TripCompleteFragment extends Fragment implements MenuItem.OnMenuIte
         }
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
+        switch (resultCode) {
+            case PayPalActivity.RESULT_OK:
+                String payKey = data.getStringExtra(PayPalActivity.EXTRA_PAY_KEY);
+                //TODO set CarpoolUser as paid in Trip
+
+                goBack();
+                break;
+            case PayPalActivity.RESULT_CANCELED:
+                alertDialog.setTitle("Error");
+                alertDialog.setMessage("Your payment through PayPal was canceled. You still owe the host money.");
+                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                alertDialog.show();
+                break;
+            case PayPalActivity.RESULT_FAILURE:
+                String errorMessage = data.getStringExtra(PayPalActivity.EXTRA_ERROR_MESSAGE);
+                alertDialog.setTitle("Error");
+                alertDialog.setMessage("Your payment failed to process through PayPal. You still owe the host money. ERROR: "
+                        + errorMessage);
+                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                alertDialog.show();
+                break;
+        }
+    }
+
     public void goBack() {
         CarpoolerActivity activity = (CarpoolerActivity) getActivity();
         activity.goBack(getString(R.string.title_trips));
@@ -217,5 +257,4 @@ public class TripCompleteFragment extends Fragment implements MenuItem.OnMenuIte
             }
         }
     };
-
 }
