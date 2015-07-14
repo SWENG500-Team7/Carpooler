@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/userName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/userImage"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/userName"/>
+        <GridLayout
+            android:id="@+id/userTripData"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:rowCount="3"
+            android:columnCount="4"
+            android:layout_toRightOf="@id/userImage"
+            android:layout_below="@id/userName"
+            android:paddingLeft="5dp">
+
+            <TextView android:text="From:"
+                android:layout_columnWeight="1"
+                android:layout_columnSpan="2"
+                android:textStyle="bold"/>
+            <TextView android:text="To:"
+                android:layout_columnWeight="1"
+                android:layout_columnSpan="2"
+                android:textStyle="bold"/>
+
+            <TextView android:id="@+id/startStreet"
+                android:layout_columnWeight="1"
+                android:layout_columnSpan="2"/>
+            <TextView android:id="@+id/endStreet"
+                android:layout_columnWeight="1"
+                android:layout_columnSpan="2"/>
+            <TextView android:id="@+id/startCity"
+                android:layout_columnWeight="1"/>
+            <TextView android:id="@+id/startState"
+                android:layout_columnWeight="1"/>
+            <TextView android:id="@+id/endCity"
+                android:layout_columnWeight="1"/>
+            <TextView android:id="@+id/endState"
+                android:layout_columnWeight="1"/>
+        </GridLayout>
+
+    </RelativeLayout>
+</android.support.v7.widget.CardView>

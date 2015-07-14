@@ -98,7 +98,7 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
         } else if (id == R.id.action_search){
             Fragment fragment = new SearchTripsFragment();
             String title = getString(R.string.title_search_trips);
-            transitionFragment(fragment,title);
+            pushFragment(fragment,title);
             return true;
         }
 
@@ -133,7 +133,7 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
                 break;
         }
 
-        transitionFragment(fragment, title);
+        pushFragment(fragment, title);
 
     }
 
@@ -155,19 +155,6 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
         Fragment fragment = new TripListMainFragment();
         fragment.setArguments(args);
         return fragment;
-    }
-
-    private void transitionFragment(Fragment fragment, String title){
-        if (fragment != null) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.container_body, fragment);
-            fragmentTransaction.commit();
-
-            // set the toolbar title
-            getSupportActionBar().setTitle(title);
-        }
-
     }
 
     private void pushFragment(Fragment fragment, String title) {
@@ -209,12 +196,12 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
 
     @Override
     public void onTripSelected(String tripId) {
-        TripDetailFragment fragment = new TripDetailFragment();
+        TripViewFragment fragment = new TripViewFragment();
         String title = getString(R.string.title_trip_detail);
         Bundle args = new Bundle();
-        args.putString(TripDetailFragment.TRIP_ID_ARG,tripId);
+        args.putString(TripViewFragment.TRIP_ID_ARG,tripId);
         fragment.setArguments(args);
-        transitionFragment(fragment, title);
+        pushFragment(fragment, title);
     }
 
     @Override

@@ -73,7 +73,7 @@
     <string name="complete_pay_host">Pay Host</string>
     <string name="complete_user_total">Your Total</string>
 
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="no_trip_found">No Trips Found</string>
+    <string name="no_users_found">No Users Found</string>
 
 </resources>

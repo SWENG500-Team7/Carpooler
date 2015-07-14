@@ -6,11 +6,8 @@ import com.carpooler.dao.dto.AddressData;
 import com.carpooler.dao.dto.CarpoolUserData;
 import com.carpooler.trips.AddressErrorCallback;
 import com.carpooler.trips.AddressLoadCallback;
+import com.carpooler.trips.UserLoader;
 import com.carpooler.ui.activities.ServiceActivityCallback;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.plus.People;
-import com.google.android.gms.plus.model.people.Person;
 
 import java.util.Date;
 
@@ -20,22 +17,34 @@ import java.util.Date;
 public class CarpoolUser {
     private final CarpoolUserData carpoolUserData;
     private final ServiceActivityCallback serviceActivityCallback;
-    private User user;
+    private UserLoader userLoader;
     public CarpoolUser(CarpoolUserData carpoolUserData,
                        ServiceActivityCallback serviceActivityCallback) {
         this.carpoolUserData = carpoolUserData;
         this.serviceActivityCallback=serviceActivityCallback;
-        PendingResult<People.LoadPeopleResult> result = serviceActivityCallback.getPeople().load(serviceActivityCallback.getGoogleApiClient(), carpoolUserData.getUserId());
-        result.setResultCallback(new UserLoaderCallback());
+        if (carpoolUserData.getUserId()==null) {
+            User host = serviceActivityCallback.getUser();
+            carpoolUserData.setUserId(host.getGoogleId());
+        }
+
+        userLoader = new UserLoader(serviceActivityCallback, carpoolUserData.getUserId());
     }
 
     public Address getPickupLocation() {
-        return new Address(carpoolUserData.getPickupLocation());
+        if (carpoolUserData.getPickupLocation()==null){
+            return null;
+        }else {
+            return new Address(carpoolUserData.getPickupLocation());
+        }
     }
 
 
     public Address getDropoffLocation() {
-        return new Address(carpoolUserData.getDropoffLocation());
+        if (carpoolUserData.getDropoffLocation()==null){
+            return null;
+        }else {
+            return new Address(carpoolUserData.getDropoffLocation());
+        }
     }
 
     public void setPickupLocation(String searchAddress, AddressErrorCallback addressErrorCallback) throws RemoteException {
@@ -43,7 +52,7 @@ public class CarpoolUser {
     }
 
     public void setDropoffLocation(String searchAddress, AddressErrorCallback addressErrorCallback) throws RemoteException {
-        setAddress(searchAddress,addressErrorCallback,true);
+        setAddress(searchAddress, addressErrorCallback, true);
     }
 
     private void setAddress(String searchAddress, AddressErrorCallback addressErrorCallback, boolean destination) throws RemoteException {
@@ -91,18 +100,6 @@ public class CarpoolUser {
         }
     }
 
-    public User getUser(){
-        return user;
-    }
-
-    private class UserLoaderCallback implements ResultCallback<People.LoadPeopleResult>{
-
-        @Override
-        public void onResult(People.LoadPeopleResult loadPeopleResult) {
-            Person person = loadPeopleResult.getPersonBuffer().get(1);
-            user = new User(person,serviceActivityCallback);
-        }
-    }
     private class UserAddressLoadCallback extends AddressLoadCallback {
         private final boolean destination;
 
@@ -119,5 +116,13 @@ public class CarpoolUser {
                 carpoolUserData.setPickupLocation(addressData);
             }
         }
+    }
+
+    public void loadUserData(UserLoader.Callback callback){
+        userLoader.addCallback(callback);
+    }
+
+    public boolean isLoggedInUser(){
+        return userLoader.isLoggedInUser();
     }
 }

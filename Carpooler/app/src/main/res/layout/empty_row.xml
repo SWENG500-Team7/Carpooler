@@ -5,7 +5,6 @@
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:id="@+id/notFound"
-            android:text="No Trips Found"/>
+            android:id="@+id/notFound"/>
 
 </LinearLayout>

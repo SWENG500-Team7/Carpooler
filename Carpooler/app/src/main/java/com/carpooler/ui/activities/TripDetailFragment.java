@@ -51,8 +51,6 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
     private int end_hour;
     private int end_minute;
     private ServiceActivityCallback callback;
-    public static final String TRIP_ID_ARG = "tripId";
-    private String tripId;
     public static final String CREATE_TRIP_ARG = "createTrip";
     private boolean createTrip = false;
     public static final String STATUS_ARG = "status";
@@ -72,7 +70,6 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
                              Bundle savedInstanceState) {
         Bundle args = getArguments();
         if (args!=null) {
-            tripId = args.getString(TRIP_ID_ARG, null);
             String status = args.getString(STATUS_ARG, TripStatus.IN_ROUTE.name());
             tripStatus = TripStatus.valueOf(status);
 
@@ -82,10 +79,7 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
         }
         boolean hasMenu = true;
         // Inflate the layout for this fragment
-        if (tripId != null) {
-            rootView = inflater.inflate(R.layout.fragment_trip_detail, container, false);
-            textView = (TextView) rootView.findViewById(R.id.hello);
-        } else if (createTrip) {
+        if (createTrip) {
             rootView = inflater.inflate(R.layout.fragment_add_trip, container, false);
             startAddressEditText = (EditText) rootView.findViewById(R.id.start_address);
             endAddressEditText = (EditText) rootView.findViewById(R.id.end_address);
@@ -150,13 +144,7 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
     @Override
     public void onStart() {
         super.onStart();
-        if (tripId !=null){
-            try {
-                callback.getTripDataService().getTripData(tripId, getCallback);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        } else if (createTrip) {
+        if (createTrip) {
         } else {
             RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.trip_detail_recycler_view);
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -178,7 +166,7 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
                 setFormEnabled(true);
                 break;
             case R.id.mi_cancel_trip:
-                cancelTrip();
+//TODO                cancelTrip();
                 goBack();
                 break;
             case R.id.mi_save_trip:
@@ -215,22 +203,6 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
         }
     }
 
-    private DatabaseService.GetCallback<TripData> getCallback = new DatabaseService.GetCallback<TripData>() {
-        @Override
-        public void doError(String message) {
-            textView.setText(message);
-        }
-
-        @Override
-        public void doException(Exception exception) {
-            textView.setText(exception.getMessage());
-        }
-
-        @Override
-        public void doSuccess(TripData data) {
-            textView.setText(data.getStartTime().toString());
-        }
-    };
 
     private DatabaseService.QueryCallback<TripData> queryCallback = new DatabaseService.QueryCallback<TripData>() {
         @Override
@@ -258,13 +230,6 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
         trip.saveTrip();
     }
 
-    private void cancelTrip() {
-        TripData tripData = new TripData();
-        tripData.set_id(tripId);
-        Trip trip = new Trip(tripData, callback);
-        trip.setStatus(TripStatus.CANCELLED);
-        trip.saveTrip();
-    }
 
     @Override
     public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {

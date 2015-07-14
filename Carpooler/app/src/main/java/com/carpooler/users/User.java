@@ -43,6 +43,9 @@ public class User {
         return userData.getAverageRating();
     }
 
+    public String getName(){
+        return googleUser.getDisplayName();
+    }
 
     public void addRating (User u, Rating r, String s) {
         UserReviewData userReviewData = new UserReviewData();
