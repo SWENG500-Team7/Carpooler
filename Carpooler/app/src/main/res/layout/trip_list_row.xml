@@ -4,7 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/card_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     card_view:cardCornerRadius="4dp"
     android:layout_margin="5dp">
     <RelativeLayout
@@ -74,12 +74,55 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/openSeatsLabel"
             android:layout_below="@id/tripData" />
-        <Button
-            android:layout_width="fill_parent"
+        <GridLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/payButton"
-            android:layout_below="@id/openSeatsLabel"
-            android:visibility="gone"
-            android:text="@string/complete_pay_host"/>
+            android:layout_below="@id/openSeatsLabel">
+            <!-- host -->
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/startButton"
+                android:visibility="gone"
+                android:text="@string/start_trip"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/cancelTripButton"
+                android:visibility="gone"
+                android:text="@string/cancel_trip"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/completeTripButton"
+                android:visibility="gone"
+                android:text="@string/complete_trip"/>
+            <!-- non user -->
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/requestButton"
+                android:visibility="gone"
+                android:text="@string/request_trip"/>
+            <!-- user -->
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/payButton"
+                android:visibility="gone"
+                android:text="@string/complete_pay_host"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/cancelJoinButton"
+                android:visibility="gone"
+                android:text="@string/cancel_pickup_trip"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/confirmPickupButton"
+                android:visibility="gone"
+                android:text="@string/confirm_trip"/>
+        </GridLayout>
     </RelativeLayout>
 </android.support.v7.widget.CardView>

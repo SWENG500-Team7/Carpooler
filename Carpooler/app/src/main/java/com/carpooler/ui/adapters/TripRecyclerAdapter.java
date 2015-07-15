@@ -33,7 +33,7 @@ public class TripRecyclerAdapter extends EmptyAdapter<TripRowHolder> {
     @Override
     protected TripRowHolder getRealViewHolder(ViewGroup parent, int viewType) {
         View v =LayoutInflater.from(parent.getContext()).inflate(R.layout.trip_list_row, null);
-        TripRowHolder tripRowHolder = new TripRowHolder(v, callback);
+        TripRowHolder tripRowHolder = new TripRowHolder(v, callback,true);
         return tripRowHolder;
     }
 

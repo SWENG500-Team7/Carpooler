@@ -26,7 +26,9 @@ public class Trip {
     private final ServiceActivityCallback serviceActivityCallback;
     private TripData tripData;
     private UserLoader userLoader;
-
+    // populated for logged in carpool user
+    private CarpoolUser loggedInUser;
+    private boolean loggedInUserChecked = false;
     public Trip(TripData tripData, ServiceActivityCallback serviceActivityCallback) {
         this.serviceActivityCallback = serviceActivityCallback;
         this.tripData = tripData;
@@ -36,6 +38,19 @@ public class Trip {
         }
 
         userLoader = new UserLoader(serviceActivityCallback, tripData.getHostId());
+
+    }
+
+    private void setLoggedInUser(){
+        if (!loggedInUserChecked) {
+            for (CarpoolUser user : getCarpoolUsers()) {
+                if (user.isLoggedInUser()) {
+                    loggedInUser = user;
+                    break;
+                }
+            }
+            loggedInUserChecked = true;
+        }
     }
 
     /**
@@ -112,6 +127,24 @@ public class Trip {
         return tripData.getFuelSplit();
     }
 
+    public void completeTrip(){
+        if (canCompleteTrip()){
+            tripData.setStatus(TripStatus.COMPLETED);
+            saveTrip();
+        }else{
+            throw new IllegalArgumentException("Cannot Complete Trip");
+        }
+    }
+
+    public void cancelTrip(){
+        if (canCancelTrip()){
+            tripData.setStatus(TripStatus.CANCELLED);
+            saveTrip();
+        }else{
+            throw new IllegalArgumentException("Cannot Cancel Trip");
+        }
+
+    }
     public void saveTrip() {
         try {
             serviceActivityCallback.getTripDataService().createTrip(tripData, new CreateTripCallback());
@@ -161,7 +194,81 @@ public class Trip {
 
     private void setAddress(String searchAddress, AddressErrorCallback addressErrorCallback, boolean destination) throws RemoteException {
         TripAddressLoadCallback tripAddressLoadCallback = new TripAddressLoadCallback(addressErrorCallback,destination);
-        serviceActivityCallback.getLocationService().getLocationFromAddressName(searchAddress,tripAddressLoadCallback);
+        serviceActivityCallback.getLocationService().getLocationFromAddressName(searchAddress, tripAddressLoadCallback);
+    }
+
+    public boolean canStartTrip(){
+        return tripData.getStatus() == TripStatus.OPEN;
+    }
+
+    public boolean canCancelTrip(){
+        return tripData.getStatus() == TripStatus.OPEN;
+    }
+
+    public boolean canCompleteTrip(){
+        return tripData.getStatus() == TripStatus.IN_ROUTE;
+        // TODO add check for all users dropped off
+    }
+
+    public CarpoolUser getLoggedInCarpoolUser(){
+        setLoggedInUser();
+        return loggedInUser;
+    }
+
+    public boolean isLoggedInUserInCarpool(){
+        CarpoolUser user = getLoggedInCarpoolUser();
+        boolean ret = false;
+        if (user!=null){
+            ret=true;
+        }
+        return ret;
+    }
+    public boolean canPayHost(){
+        boolean ret = false;
+        if (isLoggedInUserInCarpool()){
+            //TODO
+        }
+        return ret;
+    }
+
+    public boolean canConfirmPickup(){
+        boolean ret = false;
+        if (isLoggedInUserInCarpool()){
+            //TODO
+        }
+        return ret;
+    }
+
+    public boolean canCancelPickup(){
+        boolean ret = false;
+        if (isLoggedInUserInCarpool()){
+            //TODO
+        }
+        return ret;
+    }
+
+    public boolean canRequestJoin(){
+        return !isLoggedInUserInCarpool() && isLoggedInUser();
+    }
+
+    public boolean canDropOffUser(CarpoolUser carpoolUser) {
+        return isLoggedInUserInCarpool() && carpoolUser.canDropoff();
+    }
+
+    public boolean canMarkNoShow(CarpoolUser carpoolUser) {
+        return isLoggedInUserInCarpool() && carpoolUser.canMarkNoShow();
+    }
+
+    public boolean canPickupUser(CarpoolUser carpoolUser) {
+        return isLoggedInUserInCarpool() && carpoolUser.canPickup();
+    }
+
+    public boolean canNavigateUser(CarpoolUser carpoolUser) {
+        return isLoggedInUserInCarpool() && carpoolUser.canNavigate();
+    }
+
+    public boolean canAcceptRequest(CarpoolUser carpoolUser) {
+        return isLoggedInUserInCarpool() && carpoolUser.canAcceptRequest();
     }
 
     private class CreateTripCallback implements DatabaseService.IndexCallback{
@@ -179,22 +286,6 @@ public class Trip {
         public void doSuccess(String data) {
 
         }
-    }
-
-    /**
-     * Sets the current trip status
-     * @param status - the trip status
-     */
-    public void setStatus(TripStatus status) {
-        tripData.setStatus(status);
-    }
-
-    /**
-     * Gets the current trip status
-     * @return status - the trip status
-     */
-    public TripStatus getStatus() {
-        return tripData.getStatus();
     }
 
     /**
@@ -226,11 +317,11 @@ public class Trip {
         return new CarpoolUserIterator();
     }
 
-    public class CarpoolUserIterator implements Iterator<CarpoolUser>{
+    public class CarpoolUserIterator implements Iterator<CarpoolUser>, Iterable<CarpoolUser>{
         private int currentIndex=0;
         @Override
         public boolean hasNext() {
-            return (!tripData.getUsers().isEmpty()) && tripData.getUsers().size()>=currentIndex;
+            return (!tripData.getUsers().isEmpty()) && tripData.getUsers().size()>currentIndex;
         }
 
         @Override
@@ -248,6 +339,15 @@ public class Trip {
         }
         public int size(){
             return tripData.getUsers().size();
+        }
+
+        @Override
+        public Iterator<CarpoolUser> iterator() {
+            reset();
+            return this;
+        }
+        public void reset(){
+            currentIndex=0;
         }
     }
 

@@ -226,7 +226,6 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
         Calendar startCal = Calendar.getInstance();
         startCal.set(year,month,day,start_hour,start_minute);
         trip.setStartTime(startCal.getTime());
-        trip.setStatus(tripStatus);
         trip.saveTrip();
     }
 

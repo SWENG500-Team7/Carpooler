@@ -4,8 +4,8 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.os.RemoteException;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,7 +22,6 @@ import com.carpooler.dao.DatabaseService;
 import com.carpooler.dao.dto.TripData;
 import com.carpooler.payment.PayPalResultHandler;
 import com.carpooler.trips.Trip;
-import com.carpooler.trips.TripStatus;
 import com.paypal.android.MEP.CheckoutButton;
 import com.paypal.android.MEP.PayPalActivity;
 
@@ -172,9 +171,7 @@ public class TripCompleteFragment extends Fragment implements MenuItem.OnMenuIte
     public boolean onMenuItemClick(MenuItem item) {
         if (item.getItemId() == R.id.mi_save_trip) {
             //TODO save the toll information in the Trip
-
-            mTrip.setStatus(TripStatus.COMPLETED);
-            mTrip.saveTrip();
+            mTrip.completeTrip();
             goBack();
         }
         return true;

@@ -16,26 +16,27 @@ import com.carpooler.R;
 import com.carpooler.dao.DatabaseService;
 import com.carpooler.dao.dto.TripData;
 import com.carpooler.trips.Trip;
-import com.carpooler.trips.TripStatus;
-import com.carpooler.ui.adapters.TripViewAdapter;
+import com.carpooler.ui.adapters.CarpoolUserAdapter;
+import com.carpooler.ui.adapters.TripRowHolder;
 
 public class TripViewFragment extends Fragment {
     private SwipeRefreshLayout refreshLayout;
     private RecyclerView recyclerView;
-    private TripViewAdapter tripViewAdapter;
+    private CarpoolUserAdapter carpoolUserAdapter;
     public static final String TRIP_ID_ARG = "tripId";
     private String tripId;
     private Trip trip;
     private TripDetailCallback callback;
-
+    private TripRowHolder tripRowHolder;
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         callback = (TripDetailCallback) activity;
     }
     protected void setupData() {
-        tripViewAdapter = new TripViewAdapter(trip,callback);
-        recyclerView.setAdapter(tripViewAdapter);
+        tripRowHolder.loadData(trip);
+        carpoolUserAdapter = new CarpoolUserAdapter(trip,callback);
+        recyclerView.setAdapter(carpoolUserAdapter);
     }
 
     @Override
@@ -55,6 +56,7 @@ public class TripViewFragment extends Fragment {
                 loadData();
             }
         });
+        tripRowHolder = new TripRowHolder(rootView,callback,false);
         return rootView;
     }
 
@@ -91,10 +93,6 @@ public class TripViewFragment extends Fragment {
         }
     };
     private void cancelTrip() {
-        TripData tripData = new TripData();
-        tripData.set_id(tripId);
-        Trip trip = new Trip(tripData, callback);
-        trip.setStatus(TripStatus.CANCELLED);
-        trip.saveTrip();
+        trip.canCancelTrip();
     }
 }

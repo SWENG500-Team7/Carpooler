@@ -57,7 +57,7 @@ public class CarpoolUser {
 
     private void setAddress(String searchAddress, AddressErrorCallback addressErrorCallback, boolean destination) throws RemoteException {
         UserAddressLoadCallback tripAddressLoadCallback = new UserAddressLoadCallback(addressErrorCallback,destination);
-        serviceActivityCallback.getLocationService().getLocationFromAddressName(searchAddress,tripAddressLoadCallback);
+        serviceActivityCallback.getLocationService().getLocationFromAddressName(searchAddress, tripAddressLoadCallback);
     }
 
     public CarpoolUserStatus getStatus() {
@@ -98,6 +98,29 @@ public class CarpoolUser {
         }else{
             throw new IllegalArgumentException("Invalid to move from " + carpoolUserData.getStatus() + " to " + nextStatus);
         }
+    }
+
+    private boolean isAllowedNextStaus(CarpoolUserStatus carpoolUserStatus){
+        return carpoolUserData.getStatus().isValidateNextState(carpoolUserStatus);
+    }
+    public boolean canDropoff() {
+        return isAllowedNextStaus(CarpoolUserStatus.DROPPED_OFF);
+    }
+
+    public boolean canMarkNoShow() {
+        return isAllowedNextStaus(CarpoolUserStatus.NO_SHOW);
+    }
+
+    public boolean canPickup() {
+        return isAllowedNextStaus(CarpoolUserStatus.PICKED_UP);
+    }
+
+    public boolean canNavigate() {
+        return isAllowedNextStaus(CarpoolUserStatus.PICKED_UP);
+    }
+
+    public boolean canAcceptRequest() {
+        return isAllowedNextStaus(CarpoolUserStatus.CONFIRMED_FOR_PICKUP);
     }
 
     private class UserAddressLoadCallback extends AddressLoadCallback {

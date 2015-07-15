@@ -36,7 +36,6 @@
     <string name="title_trips">Trips</string>
     <string name="title_trip_detail">Trip Detail</string>
     <string name="title_search_trips">Search Trips</string>
-    <string name="cancel_trip">Cancel Trip</string>
     <string name="edit_trip">Edit Trip</string>
     <string name="save_trip">Save Trip</string>
     <string name="action_search">Search</string>
@@ -70,10 +69,25 @@
     <string name="complete_cost_unit">$</string>
     <string name="complete_total_tolls">Total Tolls</string>
     <string name="complete_tolls_hint">0.00</string>
-    <string name="complete_pay_host">Pay Host</string>
     <string name="complete_user_total">Your Total</string>
 
     <string name="no_trip_found">No Trips Found</string>
     <string name="no_users_found">No Users Found</string>
+
+    <!-- Trip buttons -->
+    <string name="complete_pay_host">Pay Host</string>
+    <string name="cancel_trip">Cancel Trip</string>
+    <string name="complete_trip">Complete</string>
+    <string name="start_trip">Start Trip</string>
+    <string name="confirm_trip">Confirm Pickup</string>
+    <string name="cancel_pickup_trip">Cancel Pickup</string>
+    <string name="request_trip">Request Pickup</string>
+
+    <!-- User Buttons -->
+    <string name="dropoff_user">DropOff</string>
+    <string name="no_show_user">No Show</string>
+    <string name="pickup_user">Pickup</string>
+    <string name="navigate_user">Navigate</string>
+    <string name="accept_user">Accept User</string>
 
 </resources>
