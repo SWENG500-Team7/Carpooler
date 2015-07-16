@@ -7,12 +7,6 @@ import java.util.Collection;
  * Created by raymond on 6/6/15.
  */
 public enum CarpoolUserStatus {
-    UNLISTED{
-        @Override
-        protected CarpoolUserStatus[] getAllowedNextStates() {
-            return new CarpoolUserStatus[]{PENDING, CONFIRMED_FOR_PICKUP};
-        }
-    },
     PENDING{
         @Override
         protected CarpoolUserStatus[] getAllowedNextStates() {

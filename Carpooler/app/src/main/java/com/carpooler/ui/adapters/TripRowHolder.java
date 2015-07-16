@@ -36,6 +36,7 @@ public class TripRowHolder extends RecyclerView.ViewHolder {
     private final Button confirmPickupButton;
     private final TripDetailCallback callback;
     private String tripId;
+    private Trip trip;
 
     public TripRowHolder(View itemView, TripDetailCallback callback, boolean selectable) {
         super(itemView);
@@ -57,13 +58,6 @@ public class TripRowHolder extends RecyclerView.ViewHolder {
         cancelJoinButton = (Button) itemView.findViewById(R.id.cancelJoinButton);
         confirmPickupButton = (Button) itemView.findViewById(R.id.confirmPickupButton);
 
-
-        payButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TripRowHolder.this.callback.onUserCompleteTrip(tripId);
-            }
-        });
         if (selectable) {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -75,6 +69,7 @@ public class TripRowHolder extends RecyclerView.ViewHolder {
     }
 
     public void loadData(Trip data) {
+        trip = data;
         data.loadUserData(new UserLoader.Callback() {
             @Override
             public void loadData(User user) {
@@ -121,8 +116,14 @@ public class TripRowHolder extends RecyclerView.ViewHolder {
     private enum ButtonToggle{
         START(true, false) {
             @Override
-            public void setupButton(Button button, TripRowHolder tripRowHolder) {
-
+            public void setupButton(Button button, final TripRowHolder tripRowHolder) {
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        tripRowHolder.trip.startTrip();
+                        tripRowHolder.callback.onTripSelected(tripRowHolder.tripId);
+                    }
+                });
             }
 
             @Override
@@ -137,8 +138,15 @@ public class TripRowHolder extends RecyclerView.ViewHolder {
         },
         CANCEL_TRIP(true, false) {
             @Override
-            public void setupButton(Button button, TripRowHolder tripRowHolder) {
+            public void setupButton(Button button, final TripRowHolder tripRowHolder) {
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        tripRowHolder.trip.cancelTrip();
+                        tripRowHolder.callback.onTripSelected(tripRowHolder.tripId);
 
+                    }
+                });
             }
 
             @Override
@@ -153,8 +161,14 @@ public class TripRowHolder extends RecyclerView.ViewHolder {
         },
         COMPLETE_TRIP(true, false) {
             @Override
-            public void setupButton(Button button, TripRowHolder tripRowHolder) {
-
+            public void setupButton(Button button, final TripRowHolder tripRowHolder) {
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        tripRowHolder.trip.completeTrip();
+                        tripRowHolder.callback.onTripSelected(tripRowHolder.tripId);
+                    }
+                });
             }
 
             @Override
@@ -191,7 +205,14 @@ public class TripRowHolder extends RecyclerView.ViewHolder {
         },
         CONFIRM_PICKUP(false, true) {
             @Override
-            public void setupButton(Button button, TripRowHolder tripRowHolder) {
+            public void setupButton(Button button, final TripRowHolder tripRowHolder) {
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        tripRowHolder.trip.confirmPickup();
+                        tripRowHolder.callback.onTripSelected(tripRowHolder.tripId);
+                    }
+                });
 
             }
 
@@ -207,7 +228,14 @@ public class TripRowHolder extends RecyclerView.ViewHolder {
         },
         CANCEL_PICKUP(false, true) {
             @Override
-            public void setupButton(Button button, TripRowHolder tripRowHolder) {
+            public void setupButton(Button button, final TripRowHolder tripRowHolder) {
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        tripRowHolder.trip.cancelPickup();
+                        tripRowHolder.callback.onTripSelected(tripRowHolder.tripId);
+                    }
+                });
 
             }
 
@@ -223,8 +251,14 @@ public class TripRowHolder extends RecyclerView.ViewHolder {
         },
         REQUEST_JOIN(false, false) {
             @Override
-            public void setupButton(Button button, TripRowHolder tripRowHolder) {
-
+            public void setupButton(Button button, final TripRowHolder tripRowHolder) {
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        tripRowHolder.trip.requestJoinTrip();
+                        tripRowHolder.callback.onTripSelected(tripRowHolder.tripId);
+                    }
+                });
             }
 
             @Override

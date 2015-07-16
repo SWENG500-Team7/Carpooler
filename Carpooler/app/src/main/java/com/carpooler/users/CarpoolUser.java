@@ -38,6 +38,9 @@ public class CarpoolUser {
         }
     }
 
+    public void dropOff(){
+        changeStatus(CarpoolUserStatus.DROPPED_OFF);
+    }
 
     public Address getDropoffLocation() {
         if (carpoolUserData.getDropoffLocation()==null){
@@ -93,7 +96,7 @@ public class CarpoolUser {
     }
 
     public void changeStatus(CarpoolUserStatus nextStatus){
-        if (carpoolUserData.getStatus().isValidateNextState(nextStatus)){
+        if (isAllowedNextStaus(nextStatus)){
             carpoolUserData.setStatus(nextStatus);
         }else{
             throw new IllegalArgumentException("Invalid to move from " + carpoolUserData.getStatus() + " to " + nextStatus);
@@ -115,12 +118,40 @@ public class CarpoolUser {
         return isAllowedNextStaus(CarpoolUserStatus.PICKED_UP);
     }
 
-    public boolean canNavigate() {
+    public boolean canNavigatePickup() {
         return isAllowedNextStaus(CarpoolUserStatus.PICKED_UP);
     }
 
     public boolean canAcceptRequest() {
         return isAllowedNextStaus(CarpoolUserStatus.CONFIRMED_FOR_PICKUP);
+    }
+
+    public boolean isPaymentRequired() {
+        return isAllowedNextStaus(CarpoolUserStatus.PAID);
+    }
+
+    public boolean canConfirmPickup() {
+        return isAllowedNextStaus(CarpoolUserStatus.PICKED_UP);
+    }
+
+    public boolean canCancelPickup() {
+        return isAllowedNextStaus(CarpoolUserStatus.CANCELLED);
+    }
+
+    public void pickup() {
+        changeStatus(CarpoolUserStatus.PICKED_UP);
+    }
+
+    public void cancel() {
+        changeStatus(CarpoolUserStatus.CANCELLED);
+    }
+
+    public void acceptRequest() {
+        changeStatus(CarpoolUserStatus.CONFIRMED_FOR_PICKUP);
+    }
+
+    public boolean canNavigateDropoff() {
+        return isAllowedNextStaus(CarpoolUserStatus.DROPPED_OFF);
     }
 
     private class UserAddressLoadCallback extends AddressLoadCallback {
@@ -148,4 +179,5 @@ public class CarpoolUser {
     public boolean isLoggedInUser(){
         return userLoader.isLoggedInUser();
     }
+
 }

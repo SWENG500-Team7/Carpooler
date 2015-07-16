@@ -22,6 +22,7 @@ import com.carpooler.dao.UserDataService;
 import com.carpooler.payment.PaymentService;
 import com.carpooler.trips.LocationService;
 import com.carpooler.trips.TripStatus;
+import com.carpooler.users.Address;
 import com.carpooler.users.User;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -322,5 +323,10 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
                 TripCompleteFragment.TripCompleteTypeEnum.USER.ordinal());
         String title = getString(R.string.title_trip_complete);
         pushFragment(fragment, title);
+    }
+
+    @Override
+    public void navigate(Address address) {
+        // TODO Open Navigation Intent
     }
 }

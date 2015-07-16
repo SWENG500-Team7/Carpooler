@@ -45,7 +45,7 @@ public class CarpoolUserAdapter extends EmptyAdapter<CarpoolUserAdapter.CarpoolU
     @Override
     protected CarpoolUserRowHolder getRealViewHolder(ViewGroup parent, int viewType) {
         View v =LayoutInflater.from(parent.getContext()).inflate(R.layout.carpool_user_row, null);
-        CarpoolUserRowHolder carpoolUserRowHolder = new CarpoolUserRowHolder(v);
+        CarpoolUserRowHolder carpoolUserRowHolder = new CarpoolUserRowHolder(v, callback);
         return carpoolUserRowHolder;
     }
 
@@ -68,11 +68,16 @@ public class CarpoolUserAdapter extends EmptyAdapter<CarpoolUserAdapter.CarpoolU
         private final Button dropoffButton;
         private final Button noShowButton;
         private final Button pickupUserButton;
-        private final Button navigateButton;
+        private final Button navigatePickupButton;
+        private final Button navigateDropoffButton;
         private final Button acceptRequestButton;
+        private Trip trip;
+        private CarpoolUser carpoolUser;
+        private final TripDetailCallback callback;
 
-        public CarpoolUserRowHolder(View itemView) {
+        public CarpoolUserRowHolder(View itemView, TripDetailCallback callback) {
             super(itemView);
+            this.callback = callback;
             userName = (TextView) itemView.findViewById(R.id.userName);
             userImage = (ImageView) itemView.findViewById(R.id.userImage);
             startStreet = (TextView) itemView.findViewById(R.id.startStreet);
@@ -84,11 +89,14 @@ public class CarpoolUserAdapter extends EmptyAdapter<CarpoolUserAdapter.CarpoolU
             dropoffButton = (Button) itemView.findViewById(R.id.dropoffButton);
             noShowButton = (Button) itemView.findViewById(R.id.noShowButton);
             pickupUserButton = (Button) itemView.findViewById(R.id.pickupUserButton);
-            navigateButton = (Button) itemView.findViewById(R.id.navigateButton);
+            navigatePickupButton = (Button) itemView.findViewById(R.id.navigatePickupButton);
+            navigateDropoffButton = (Button) itemView.findViewById(R.id.navigateDropoffButton);
             acceptRequestButton = (Button) itemView.findViewById(R.id.acceptRequestButton);
         }
 
         public void loadData(Trip trip, CarpoolUser carpoolUser){
+            this.trip = trip;
+            this.carpoolUser = carpoolUser;
             carpoolUser.loadUserData(new UserLoader.Callback() {
                 @Override
                 public void loadData(User user) {
@@ -131,10 +139,16 @@ public class CarpoolUserAdapter extends EmptyAdapter<CarpoolUserAdapter.CarpoolU
     }
 
     private enum ButtonToggle{
-        DROPOFF(true, false) {
+        DROP_OFF(true, false) {
             @Override
-            public void setupButton(Button button, CarpoolUserRowHolder carpoolUserRowHolder) {
-
+            public void setupButton(Button button, final CarpoolUserRowHolder carpoolUserRowHolder) {
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        carpoolUserRowHolder.trip.dropoffCarpoolUser(carpoolUserRowHolder.carpoolUser);
+                        carpoolUserRowHolder.callback.onTripSelected(carpoolUserRowHolder.trip.getTripId());
+                    }
+                });
             }
 
             @Override
@@ -151,7 +165,14 @@ public class CarpoolUserAdapter extends EmptyAdapter<CarpoolUserAdapter.CarpoolU
         },
         NO_SHOW(true, false) {
             @Override
-            public void setupButton(Button button, CarpoolUserRowHolder carpoolUserRowHolder) {
+            public void setupButton(Button button, final CarpoolUserRowHolder carpoolUserRowHolder) {
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        carpoolUserRowHolder.trip.skipNoShow(carpoolUserRowHolder.carpoolUser);
+                        carpoolUserRowHolder.callback.onTripSelected(carpoolUserRowHolder.trip.getTripId());
+                    }
+                });
 
             }
 
@@ -168,7 +189,14 @@ public class CarpoolUserAdapter extends EmptyAdapter<CarpoolUserAdapter.CarpoolU
         },
         PICKUP(true, false) {
             @Override
-            public void setupButton(Button button, CarpoolUserRowHolder carpoolUserRowHolder) {
+            public void setupButton(Button button, final CarpoolUserRowHolder carpoolUserRowHolder) {
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        carpoolUserRowHolder.trip.pickupCarpoolUser(carpoolUserRowHolder.carpoolUser);
+                        carpoolUserRowHolder.callback.onTripSelected(carpoolUserRowHolder.trip.getTripId());
+                    }
+                });
 
             }
 
@@ -183,27 +211,62 @@ public class CarpoolUserAdapter extends EmptyAdapter<CarpoolUserAdapter.CarpoolU
             }
 
         },
-        NAVIGATE(true, false) {
+        NAVIGATE_PICKUP(true, false) {
             @Override
-            public void setupButton(Button button, CarpoolUserRowHolder carpoolUserRowHolder) {
+            public void setupButton(Button button, final CarpoolUserRowHolder carpoolUserRowHolder) {
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        carpoolUserRowHolder.callback.navigate(carpoolUserRowHolder.carpoolUser.getPickupLocation());
+                    }
+                });
 
             }
 
             @Override
             public Button getButton(CarpoolUserRowHolder carpoolUserRowHolder) {
-                return carpoolUserRowHolder.navigateButton;
+                return carpoolUserRowHolder.navigatePickupButton;
             }
 
             @Override
             public boolean isVisible(Trip trip, CarpoolUser carpoolUser) {
-                return trip.canNavigateUser(carpoolUser);
+                return trip.canNavigatePickupUser(carpoolUser);
+            }
+
+        },
+        NAVIGATE_DROPOFF(true, false) {
+            @Override
+            public void setupButton(Button button, final CarpoolUserRowHolder carpoolUserRowHolder) {
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        carpoolUserRowHolder.callback.navigate(carpoolUserRowHolder.carpoolUser.getDropoffLocation());
+                    }
+                });
+
+            }
+
+            @Override
+            public Button getButton(CarpoolUserRowHolder carpoolUserRowHolder) {
+                return carpoolUserRowHolder.navigateDropoffButton;
+            }
+
+            @Override
+            public boolean isVisible(Trip trip, CarpoolUser carpoolUser) {
+                return trip.canNavigateDropoffUser(carpoolUser);
             }
 
         },
         ACCEPT_REQUEST(true, false) {
             @Override
-            public void setupButton(Button button, CarpoolUserRowHolder carpoolUserRowHolder) {
-
+            public void setupButton(Button button, final CarpoolUserRowHolder carpoolUserRowHolder) {
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        carpoolUserRowHolder.trip.acceptPickupRequest(carpoolUserRowHolder.carpoolUser);
+                        carpoolUserRowHolder.callback.onTripSelected(carpoolUserRowHolder.trip.getTripId());
+                    }
+                });
             }
 
             @Override

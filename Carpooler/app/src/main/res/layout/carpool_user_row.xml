@@ -79,9 +79,15 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/navigateButton"
+                android:id="@+id/navigatePickupButton"
                 android:visibility="gone"
-                android:text="@string/navigate_user"/>
+                android:text="@string/navigate_pickup_user"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/navigateDropoffButton"
+                android:visibility="gone"
+                android:text="@string/navigate_dropoff_user"/>
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
