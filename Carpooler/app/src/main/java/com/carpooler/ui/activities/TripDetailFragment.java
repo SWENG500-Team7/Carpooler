@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,8 +15,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -26,12 +30,14 @@ import com.carpooler.dao.dto.TripData;
 import com.carpooler.trips.AddressErrorCallback;
 import com.carpooler.trips.Trip;
 import com.carpooler.trips.TripStatus;
+import com.carpooler.trips.Vehicle;
 
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 
 
-public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemClickListener, DatePicker.OnDateChangedListener, TimePicker.OnTimeChangedListener {
+public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemClickListener, DatePicker.OnDateChangedListener, TimePicker.OnTimeChangedListener, AdapterView.OnItemSelectedListener {
 
     private SwipeRefreshLayout refreshLayout;
     private View rootView;
@@ -43,6 +49,8 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
     private DatePicker tripDatePicker;
     private TimePicker tripStartTimePicker;
     private TimePicker tripEndTimePicker;
+    private Spinner vehicleSpinner;
+    private HashMap<String, Vehicle> vehicleMap = new HashMap<String, Vehicle>();
     private int year;
     private int month;
     private int day;
@@ -83,6 +91,8 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
             rootView = inflater.inflate(R.layout.fragment_add_trip, container, false);
             startAddressEditText = (EditText) rootView.findViewById(R.id.start_address);
             endAddressEditText = (EditText) rootView.findViewById(R.id.end_address);
+            vehicleSpinner = (Spinner) rootView.findViewById(R.id.tripVehicleDropdown);
+            vehicleSpinner.setOnItemSelectedListener(this);
             tripDatePicker = (DatePicker) rootView.findViewById(R.id.tripDatePicker);
             tripStartTimePicker = (TimePicker) rootView.findViewById(R.id.tripStartTimePicker);
             tripEndTimePicker = (TimePicker) rootView.findViewById(R.id.tripEndTimePicker);
@@ -145,6 +155,7 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
     public void onStart() {
         super.onStart();
         if (createTrip) {
+            initVehicleSpinner();
         } else {
             RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.trip_detail_recycler_view);
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -203,6 +214,19 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
         }
     }
 
+    private void initVehicleSpinner() {
+        List<Vehicle> vehicleList = callback.getUser().getVehicles();
+        String[] vehicles = new String[vehicleList.size()];
+        int i = 0;
+        for (Vehicle vehicle : vehicleList) {
+            vehicleMap.put(vehicle.getYear() + " " + vehicle.getMake() + " " + vehicle.getModel(), vehicle);
+            vehicles[i] = vehicle.getYear() + " " + vehicle.getMake() + " " + vehicle.getModel();
+            i++;
+        }
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, vehicles);
+        vehicleSpinner.setAdapter(spinnerAdapter);
+    }
+
 
     private DatabaseService.QueryCallback<TripData> queryCallback = new DatabaseService.QueryCallback<TripData>() {
         @Override
@@ -258,6 +282,19 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
             end_hour = hourOfDay;
             end_minute = minute;
         }
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        if (parent == vehicleSpinner) {
+            Vehicle vehicle = vehicleMap.get(vehicleSpinner.getItemAtPosition(position).toString());
+            trip.setVehicle(vehicle);
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        // Do nothing
     }
 
     private class AddressSearchCallback implements AddressErrorCallback{
