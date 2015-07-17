@@ -24,9 +24,7 @@ import com.carpooler.ui.adapters.TripRecyclerAdapter;
 import java.util.Date;
 import java.util.List;
 
-import io.searchbox.core.SearchResult;
-
-public abstract class TripListFragment extends Fragment implements View.OnClickListener {
+public abstract class TripListFragment extends Fragment implements DatabaseService.QueryCallback<TripData>, View.OnClickListener {
 
     private RecyclerView recyclerView;
     protected SwipeRefreshLayout refreshLayout;
@@ -77,33 +75,23 @@ public abstract class TripListFragment extends Fragment implements View.OnClickL
         }
     }
 
-    private abstract class ErrorCallback {
-        public void doError(String message) {
-            refreshLayout.setRefreshing(false);
-        }
-
-        public void doException(Exception exception) {
-            refreshLayout.setRefreshing(false);
-        }
-
+    @Override
+    public void doError(String message) {
+        refreshLayout.setRefreshing(false);
     }
-    private class TripQueryCallback extends ErrorCallback implements DatabaseService.QueryCallback<TripData> {
 
-        public void doSuccess(List<TripData> data) {
-            TripSearchResults tripSearchResults = new TripSearchResults(data,callback);
-            setupAdapter(tripSearchResults);
-            refreshLayout.setRefreshing(false);
-        }
+    @Override
+    public void doException(Exception exception) {
+        refreshLayout.setRefreshing(false);
+    }
 
+    @Override
+    public void doSuccess(List<TripData> data) {
+        TripSearchResults tripSearchResults = new TripSearchResults(data,callback);
+        setupAdapter(tripSearchResults);
+        refreshLayout.setRefreshing(false);
     }
-    private class TripHitsQueryCallback extends ErrorCallback implements DatabaseService.QueryHitsCallback<TripData> {
-        @Override
-        public void doSuccess(List<SearchResult.Hit<TripData, Void>> data) {
-            TripSearchResults tripSearchResults = new TripSearchResults(data,callback,true);
-            setupAdapter(tripSearchResults);
-            refreshLayout.setRefreshing(false);
-        }
-    }
+
     protected void loadData(){
         if (!refreshLayout.isRefreshing()) {
             refreshLayout.setRefreshing(true);
@@ -123,9 +111,9 @@ public abstract class TripListFragment extends Fragment implements View.OnClickL
         protected void doLoadData() {
             try {
                 if (hosted) {
-                    callback.getUser().findHostedTrips(tripStatus, new TripQueryCallback());
+                    callback.getUser().findHostedTrips(tripStatus, this);
                 } else {
-                    callback.getUser().findParticipatingTrips(tripStatus, new TripQueryCallback());
+                    callback.getUser().findParticipatingTrips(tripStatus, this);
                 }
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -156,7 +144,7 @@ public abstract class TripListFragment extends Fragment implements View.OnClickL
         @Override
         protected void doLoadData() {
             try {
-                callback.getTripDataService().findAvailableTrips(findTripQuery,new TripHitsQueryCallback());
+                callback.getTripDataService().findAvailableTrips(findTripQuery,this);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
