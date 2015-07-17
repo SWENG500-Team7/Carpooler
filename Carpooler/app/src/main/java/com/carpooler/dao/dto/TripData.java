@@ -3,11 +3,13 @@ package com.carpooler.dao.dto;
 import android.util.Log;
 
 import com.carpooler.dao.annotations.ElasticData;
+import com.carpooler.trips.Trip;
 import com.carpooler.trips.TripStatus;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Comparator;
 
 import io.searchbox.annotations.JestId;
 
@@ -35,7 +37,7 @@ import io.searchbox.annotations.JestId;
                     + "}"
                 + "}"
 )
-public class TripData implements DatabaseObject{
+public class TripData implements DatabaseObject, Comparable<TripData>{
     @JestId
     private transient String _id;
     private String hostId;
@@ -136,5 +138,27 @@ public class TripData implements DatabaseObject{
 
     public void setOpenSeats(int openSeats) {
         this.openSeats = openSeats;
+    }
+
+    public int compareTo (TripData t) {
+        return Comparators.TRIPDATE.compare(this, t);
+    }
+
+    public static class Comparators {
+        public static final Comparator<TripData> TRIPDATE  = new Comparator<TripData>() {
+            @Override
+            public int compare(TripData lhs, TripData rhs) {
+                return lhs.getStartTime().compareTo(rhs.getStartTime());
+            }
+        };
+
+        public static final Comparator<TripData> OPEN_SEATS = new Comparator<TripData>() {
+            @Override
+            public int compare(TripData lhs, TripData rhs) {
+                return Integer.compare(lhs.getOpenSeats(), rhs.getOpenSeats());
+            }
+        };
+
+       // public static final Comparator<TripData>
     }
 }
