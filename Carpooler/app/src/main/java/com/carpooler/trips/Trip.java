@@ -270,7 +270,7 @@ public class Trip {
     }
 
     public boolean canRequestJoin(){
-        return !isLoggedInUserInCarpool() && !isLoggedInUser();
+        return !isLoggedInUserInCarpool() && !isLoggedInUser() && getOpenSeats()>0;
     }
 
     public boolean canDropOffUser(CarpoolUser carpoolUser) {
