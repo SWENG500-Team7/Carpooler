@@ -44,6 +44,10 @@ public class TripSearchResults {
         return mode.get(index, this);
     }
 
+    public String getSearchDistanceFromStart(int index){
+        return hitData==null?"":hitData.get(index).sort.get(0);
+    }
+
     public void sortByStartDistance(){
         Collections.sort(hitData, new StartDistanceComparator());
     }
