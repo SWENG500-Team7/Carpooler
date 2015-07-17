@@ -10,7 +10,7 @@ public enum CarpoolUserStatus {
     PENDING{
         @Override
         protected CarpoolUserStatus[] getAllowedNextStates() {
-            return new CarpoolUserStatus[]{CONFIRMED_FOR_PICKUP, CANCELLED};
+            return new CarpoolUserStatus[]{CONFIRMED_FOR_PICKUP, CANCELLED, REJECTED_FOR_PICKUP};
         }
     },
     PICKED_UP {
@@ -20,6 +20,12 @@ public enum CarpoolUserStatus {
         }
     },
     CONFIRMED_FOR_PICKUP {
+        @Override
+        protected CarpoolUserStatus[] getAllowedNextStates() {
+            return new CarpoolUserStatus[]{PICKED_UP, NO_SHOW, CANCELLED};
+        }
+    },
+    REJECTED_FOR_PICKUP {
         @Override
         protected CarpoolUserStatus[] getAllowedNextStates() {
             return new CarpoolUserStatus[]{PICKED_UP, NO_SHOW, CANCELLED};

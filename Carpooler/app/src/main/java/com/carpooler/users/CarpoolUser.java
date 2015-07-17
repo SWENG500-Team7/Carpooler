@@ -154,6 +154,14 @@ public class CarpoolUser {
         return isAllowedNextStaus(CarpoolUserStatus.DROPPED_OFF);
     }
 
+    public boolean canRejectRequest() {
+        return isAllowedNextStaus(CarpoolUserStatus.REJECTED_FOR_PICKUP);
+    }
+
+    public void rejectRequest() {
+        changeStatus(CarpoolUserStatus.REJECTED_FOR_PICKUP);
+    }
+
     private class UserAddressLoadCallback extends AddressLoadCallback {
         private final boolean destination;
 

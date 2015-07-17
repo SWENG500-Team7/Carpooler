@@ -324,9 +324,22 @@ public class Trip {
     public void acceptPickupRequest(CarpoolUser carpoolUser) {
         if (canAcceptRequest(carpoolUser)){
             carpoolUser.acceptRequest();
+            tripData.setOpenSeats(tripData.getOpenSeats() - 1);
+            saveTrip();
         }else{
             throw new IllegalArgumentException("Cannot Accept Pickup");
         }
+    }
+
+    public void rejectPickupRequest(CarpoolUser carpoolUser){
+        if (canRejectRequest(carpoolUser)){
+            carpoolUser.rejectRequest();
+            saveTrip();
+        }
+    }
+
+    public boolean canRejectRequest(CarpoolUser carpoolUser) {
+        return isLoggedInUserInCarpool() && carpoolUser.canRejectRequest();
     }
 
     public boolean canNavigateDropoffUser(CarpoolUser carpoolUser) {
@@ -356,6 +369,7 @@ public class Trip {
      */
     public void setVehicle(Vehicle vehicle) {
         tripData.setHostVehicle(vehicle.getPlateNumber());
+        tripData.setOpenSeats(vehicle.getSeats());
     }
 
     public void loadVehicleData(UserLoader.VehicleCallback callback){

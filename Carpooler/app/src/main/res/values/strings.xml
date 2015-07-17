@@ -90,5 +90,6 @@
     <string name="navigate_pickup_user">Navigate Pickup</string>
     <string name="navigate_dropoff_user">Navigate Drop Off</string>
     <string name="accept_user">Accept User</string>
+    <string name="reject_user">Reject User</string>
 
 </resources>

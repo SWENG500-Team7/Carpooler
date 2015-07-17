@@ -71,6 +71,7 @@ public class CarpoolUserAdapter extends EmptyAdapter<CarpoolUserAdapter.CarpoolU
         private final Button navigatePickupButton;
         private final Button navigateDropoffButton;
         private final Button acceptRequestButton;
+        private final Button rejectRequestButton;
         private Trip trip;
         private CarpoolUser carpoolUser;
         private final TripDetailCallback callback;
@@ -92,6 +93,7 @@ public class CarpoolUserAdapter extends EmptyAdapter<CarpoolUserAdapter.CarpoolU
             navigatePickupButton = (Button) itemView.findViewById(R.id.navigatePickupButton);
             navigateDropoffButton = (Button) itemView.findViewById(R.id.navigateDropoffButton);
             acceptRequestButton = (Button) itemView.findViewById(R.id.acceptRequestButton);
+            rejectRequestButton = (Button) itemView.findViewById(R.id.rejectRequestButton);
         }
 
         public void loadData(Trip trip, CarpoolUser carpoolUser){
@@ -277,6 +279,29 @@ public class CarpoolUserAdapter extends EmptyAdapter<CarpoolUserAdapter.CarpoolU
             @Override
             public boolean isVisible(Trip trip, CarpoolUser carpoolUser) {
                 return trip.canAcceptRequest(carpoolUser);
+            }
+
+        },
+        REJECT_REQUEST(true, false) {
+            @Override
+            public void setupButton(Button button, final CarpoolUserRowHolder carpoolUserRowHolder) {
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        carpoolUserRowHolder.trip.rejectPickupRequest(carpoolUserRowHolder.carpoolUser);
+                        carpoolUserRowHolder.callback.onTripSelected(carpoolUserRowHolder.trip.getTripId());
+                    }
+                });
+            }
+
+            @Override
+            public Button getButton(CarpoolUserRowHolder carpoolUserRowHolder) {
+                return carpoolUserRowHolder.rejectRequestButton;
+            }
+
+            @Override
+            public boolean isVisible(Trip trip, CarpoolUser carpoolUser) {
+                return trip.canRejectRequest(carpoolUser);
             }
 
         };

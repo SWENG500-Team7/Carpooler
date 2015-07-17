@@ -94,6 +94,12 @@
                 android:id="@+id/acceptRequestButton"
                 android:visibility="gone"
                 android:text="@string/accept_user"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/rejectRequestButton"
+                android:visibility="gone"
+                android:text="@string/reject_user"/>
 
         </GridLayout>
 
