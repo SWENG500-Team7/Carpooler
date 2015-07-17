@@ -25,6 +25,7 @@ import com.carpooler.dao.handlers.GetDataHandler;
 import com.carpooler.dao.handlers.IndexDataHandler;
 import com.carpooler.dao.handlers.PutMappingHandler;
 import com.carpooler.dao.handlers.QueryDataHandler;
+import com.carpooler.dao.handlers.QueryDataHitsHandler;
 import com.carpooler.dao.handlers.UpdateDataHandler;
 import com.searchly.jestdroid.DroidClientConfig;
 import com.searchly.jestdroid.JestClientFactory;
@@ -125,6 +126,7 @@ public class DatabaseService extends Service implements SharedPreferences.OnShar
             handlers.add(new QueryDataHandler());
             handlers.add(new GeocodeHandler(getApplicationContext()));
             handlers.add(new BitmapLoadHandler());
+            handlers.add(new QueryDataHitsHandler());
         }
 
         @Override

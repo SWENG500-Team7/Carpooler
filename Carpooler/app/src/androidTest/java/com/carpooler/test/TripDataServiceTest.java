@@ -5,7 +5,6 @@ import android.os.RemoteException;
 import com.carpooler.dao.FindTripQuery;
 import com.carpooler.dao.TripDataService;
 import com.carpooler.dao.dto.AddressData;
-import com.carpooler.dao.dto.CarpoolUserData;
 import com.carpooler.dao.dto.GeoPointData;
 import com.carpooler.dao.dto.TripData;
 import com.carpooler.trips.TripStatus;
@@ -33,6 +32,7 @@ public class TripDataServiceTest extends DatabaseServiceTest {
         TripData tripData = new TripData();
         tripData.setHostId("100251564284199788464");
         tripData.setStatus(TripStatus.OPEN);
+        tripData.setOpenSeats(3);
         AddressData startLocation = new AddressData();
         GeoPointData startGeo = getStartGeoPointData();
         startLocation.setLocation(startGeo);
@@ -52,9 +52,9 @@ public class TripDataServiceTest extends DatabaseServiceTest {
         endLocation.setLocation(endGeo);
         endLocation.setZip("07059");
         tripData.setEndLocation(endLocation);
-        CarpoolUserData userData = new CarpoolUserData();
-        userData.setUserId("testcpuser");
-        tripData.getUsers().add(userData);
+//        CarpoolUserData userData = new CarpoolUserData();
+//        userData.setUserId("testcpuser");
+//        tripData.getUsers().add(userData);
         service.createTrip(tripData,new StringResponseCallback());
         checkResponse();
     }

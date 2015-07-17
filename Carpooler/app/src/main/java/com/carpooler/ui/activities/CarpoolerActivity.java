@@ -199,12 +199,15 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
     public void onTripSelected(String tripId) {
         TripViewFragment fragment = new TripViewFragment();
         String title = getString(R.string.title_trip_detail);
+        pushSingleTripFragment(fragment,tripId,title);
+    }
+
+    private void pushSingleTripFragment(Fragment fragment, String tripId, String title){
         Bundle args = new Bundle();
         args.putString(TripViewFragment.TRIP_ID_ARG,tripId);
         fragment.setArguments(args);
         pushFragment(fragment, title);
     }
-
     @Override
     public void onAddTrip() {
         TripDetailFragment fragment = new TripDetailFragment();
@@ -323,6 +326,14 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
                 TripCompleteFragment.TripCompleteTypeEnum.USER.ordinal());
         String title = getString(R.string.title_trip_complete);
         pushFragment(fragment, title);
+    }
+
+    @Override
+    public void onJoinTripSelected(String tripId) {
+        JoinTripFragment fragment = new JoinTripFragment();
+        String title = getString(R.string.title_join_trip);
+        pushSingleTripFragment(fragment,tripId,title);
+
     }
 
     @Override

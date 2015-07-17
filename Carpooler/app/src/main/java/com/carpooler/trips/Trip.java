@@ -58,9 +58,7 @@ public class Trip {
      */
     public CarpoolUser requestJoinTrip() {
         CarpoolUserData carpoolUserData = new CarpoolUserData();
-        carpoolUserData.setUserId(serviceActivityCallback.getUser().getGoogleId());
         carpoolUserData.setStatus(CarpoolUserStatus.PENDING);
-        tripData.getUsers().add(carpoolUserData);
         return new CarpoolUser(carpoolUserData,serviceActivityCallback);
     }
 
@@ -205,7 +203,7 @@ public class Trip {
     }
 
     public void setEndLocation(String searchAddress, AddressErrorCallback addressErrorCallback) throws RemoteException {
-        setAddress(searchAddress,addressErrorCallback,true);
+        setAddress(searchAddress, addressErrorCallback, true);
     }
 
     private void setAddress(String searchAddress, AddressErrorCallback addressErrorCallback, boolean destination) throws RemoteException {
@@ -314,7 +312,7 @@ public class Trip {
 
     public void cancelPickup() {
         if (canCancelPickup()){
-            loggedInUser.canCancelPickup();
+            loggedInUser.cancel();
             saveTrip();
         }else{
             throw new IllegalArgumentException("Cannot Cancel Pickup");
@@ -344,6 +342,15 @@ public class Trip {
 
     public boolean canNavigateDropoffUser(CarpoolUser carpoolUser) {
         return isLoggedInUser() && carpoolUser.canNavigateDropoff();
+    }
+
+    public void addUser(CarpoolUser carpoolUser) {
+        if (canRequestJoin()) {
+            tripData.getUsers().add(carpoolUser.getCarpoolUserData());
+            saveTrip();
+        }else{
+            throw new IllegalArgumentException("Cannot join trip");
+        }
     }
 
     private class CreateTripCallback implements DatabaseService.IndexCallback{

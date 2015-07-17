@@ -1,0 +1,39 @@
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:rowCount="2"
+    android:columnCount="2"
+    tools:context="com.carpooler.ui.activities.JoinTripFragment">
+
+    <TextView
+        android:text="@string/register_add_trip_start_time_label"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:id="@+id/startTime"/>
+
+    <TextView
+        android:text="@string/register_add_trip_start_location_label"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/start_address"/>
+
+
+    <TextView
+        android:text="@string/register_add_trip_end_location_label"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/end_address"/>
+
+</GridLayout>

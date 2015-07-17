@@ -7,8 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,11 +16,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import com.carpooler.R;
 import com.carpooler.dao.DatabaseService;
@@ -44,8 +40,6 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
     private MenuItem miEdit;
     private MenuItem miDelete;
     private MenuItem miSave;
-    private EditText startAddressEditText;
-    private EditText endAddressEditText;
     private DatePicker tripDatePicker;
     private TimePicker tripStartTimePicker;
     private TimePicker tripEndTimePicker;
@@ -65,7 +59,7 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
     private TripStatus tripStatus;
     private TextView textView;
     private Trip trip;
-
+    private AddressFieldsManager addressFieldsManager;
 
     @Override
     public void onAttach(Activity activity) {
@@ -89,17 +83,13 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
         // Inflate the layout for this fragment
         if (createTrip) {
             rootView = inflater.inflate(R.layout.fragment_add_trip, container, false);
-            startAddressEditText = (EditText) rootView.findViewById(R.id.start_address);
-            endAddressEditText = (EditText) rootView.findViewById(R.id.end_address);
             vehicleSpinner = (Spinner) rootView.findViewById(R.id.tripVehicleDropdown);
             vehicleSpinner.setOnItemSelectedListener(this);
             tripDatePicker = (DatePicker) rootView.findViewById(R.id.tripDatePicker);
             tripStartTimePicker = (TimePicker) rootView.findViewById(R.id.tripStartTimePicker);
             tripEndTimePicker = (TimePicker) rootView.findViewById(R.id.tripEndTimePicker);
             initDateAndTimeOnView();
-
-            startAddressEditText.setOnEditorActionListener(new AddressSearchActionListener(true));
-            endAddressEditText.setOnEditorActionListener(new AddressSearchActionListener(false));
+            addressFieldsManager = new AddressManager(rootView,R.id.start_address,R.id.end_address);
             trip = new Trip(new TripData(),callback);
         } else {
             rootView = inflater.inflate(R.layout.fragment_trip_inprogress, container, false);
@@ -297,51 +287,29 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
         // Do nothing
     }
 
-    private class AddressSearchCallback implements AddressErrorCallback{
-        private final EditText addressText;
+    private class AddressManager extends AddressFieldsManager{
 
-        private AddressSearchCallback(EditText addressText) {
-            this.addressText = addressText;
+        public AddressManager(View view, int startAddressId, int endAddressId) {
+            super(view, startAddressId, endAddressId);
         }
 
         @Override
-        public void doError(String message) {
-            Toast.makeText(getActivity(),message,Toast.LENGTH_LONG).show();
-            addressText.requestFocus();
+        protected Activity getActivity() {
+            return TripDetailFragment.this.getActivity();
         }
 
         @Override
-        public void doException(Exception exception) {
-            doError(exception.getMessage());
+        protected void checkSave() {
+            TripDetailFragment.this.checkSave();
+        }
+
+        protected void setStartLocation(String address, AddressErrorCallback callback) throws RemoteException {
+            trip.setStartLocation(address,callback);
         }
 
         @Override
-        public void doSuccess(String address) {
-            addressText.setText(address);
-            checkSave();
-        }
-    }
-    private class AddressSearchActionListener implements TextView.OnEditorActionListener{
-        private final boolean startAddressField;
-
-        private AddressSearchActionListener(boolean startAddressField) {
-            this.startAddressField = startAddressField;
-        }
-
-        @Override
-        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-            if (event.getAction()==KeyEvent.ACTION_UP) {
-                try {
-                    if (startAddressField) {
-                        trip.setStartLocation(startAddressEditText.getText().toString(), new AddressSearchCallback(startAddressEditText));
-                    } else {
-                        trip.setEndLocation(endAddressEditText.getText().toString(), new AddressSearchCallback(endAddressEditText));
-                    }
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-            }
-            return true;
+        protected void setEndLocation(String address, AddressErrorCallback callback) throws RemoteException {
+            trip.setEndLocation(address, callback);
         }
     }
 }

@@ -188,4 +188,7 @@ public class CarpoolUser {
         return userLoader.isLoggedInUser();
     }
 
+    public CarpoolUserData getCarpoolUserData() {
+        return carpoolUserData;
+    }
 }
