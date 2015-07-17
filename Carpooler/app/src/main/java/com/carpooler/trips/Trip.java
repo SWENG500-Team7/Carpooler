@@ -312,6 +312,9 @@ public class Trip {
 
     public void cancelPickup() {
         if (canCancelPickup()){
+            if (loggedInUser.canPickup()){
+                tripData.setOpenSeats(tripData.getOpenSeats()+1);
+            }
             loggedInUser.cancel();
             saveTrip();
         }else{

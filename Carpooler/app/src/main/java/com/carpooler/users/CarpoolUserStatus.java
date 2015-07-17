@@ -28,7 +28,7 @@ public enum CarpoolUserStatus {
     REJECTED_FOR_PICKUP {
         @Override
         protected CarpoolUserStatus[] getAllowedNextStates() {
-            return new CarpoolUserStatus[]{PICKED_UP, NO_SHOW, CANCELLED};
+            return new CarpoolUserStatus[]{};
         }
     },
     DROPPED_OFF {
