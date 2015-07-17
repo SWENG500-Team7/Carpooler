@@ -3,6 +3,8 @@ package com.carpooler.trips;
 import com.carpooler.dao.dto.TripData;
 import com.carpooler.ui.activities.ServiceActivityCallback;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import io.searchbox.core.SearchResult;
@@ -39,9 +41,12 @@ public class TripSearchResults {
     }
 
     public Trip get(int index){
-        return mode.get(index,this);
+        return mode.get(index, this);
     }
 
+    public void sortByStartDistance(){
+        Collections.sort(hitData, new StartDistanceComparator());
+    }
     private enum Mode{
         HIT {
             @Override
@@ -67,5 +72,15 @@ public class TripSearchResults {
         };
         public abstract int size(TripSearchResults tripSearchResults);
         public abstract Trip get(int index, TripSearchResults tripSearchResults);
+    }
+
+    private class StartDistanceComparator implements Comparator<SearchResult.Hit<TripData,Void>>{
+
+        @Override
+        public int compare(SearchResult.Hit<TripData, Void> lhs, SearchResult.Hit<TripData, Void> rhs) {
+            String s1 = lhs.sort.get(0);
+            String s2 = rhs.sort.get(0);
+            return s1.compareTo(s2);
+        }
     }
 }
