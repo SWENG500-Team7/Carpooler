@@ -71,7 +71,7 @@ public class TripDataServiceTest extends DatabaseServiceTest {
         query.setEndPoint(endPoint);
         query.setDistance(20);
 
-        service.findAvailableTrips(query, new QueryResponseCallback<TripData>());
+        service.findAvailableTrips(query, new QueryHitsResponseCallback<TripData>());
         checkResponse();
 
     }

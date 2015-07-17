@@ -255,6 +255,7 @@ public class TripRowHolder extends RecyclerView.ViewHolder {
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        // TODO needs to go to view to enter address
                         tripRowHolder.trip.requestJoinTrip();
                         tripRowHolder.callback.onTripSelected(tripRowHolder.tripId);
                     }

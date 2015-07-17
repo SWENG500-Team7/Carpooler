@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Queue;
 
 import io.searchbox.client.JestClient;
+import io.searchbox.core.SearchResult;
 
 /**
  * Created by raymond on 6/12/15.
@@ -56,6 +57,7 @@ public class DatabaseService extends Service implements SharedPreferences.OnShar
     public static final int UPDATE_INDEX = 3;
     public static final int DELETE_INDEX = 4;
     public static final int QUERY_INDEX = 5;
+    public static final int QUERY_INDEX_WITH_HITS = 6;
     public static final int GEOCODE = 100;
     public static final int BITMAP = 200;
     private Messenger serviceMessenger;
@@ -239,6 +241,10 @@ public class DatabaseService extends Service implements SharedPreferences.OnShar
             CallbackMessage callbackMessage = new CallbackMessage(callback,request);
             sendMessage(callbackMessage,QUERY_INDEX);
         }
+        public <T extends DatabaseObject> void queryHits(QueryRequest<T> request, QueryHitsCallback<T> callback) throws RemoteException {
+            CallbackMessage callbackMessage = new CallbackMessage(callback,request);
+            sendMessage(callbackMessage,QUERY_INDEX_WITH_HITS);
+        }
         public void geocode(String address, GeocodeCallback callback) throws RemoteException {
             CallbackMessage callbackMessage = new CallbackMessage(callback,address);
             sendMessage(callbackMessage,GEOCODE);
@@ -303,6 +309,8 @@ public class DatabaseService extends Service implements SharedPreferences.OnShar
     public static interface GetCallback<T extends DatabaseObject> extends Callback<T> {
     }
     public static interface QueryCallback<T extends DatabaseObject> extends Callback<List<T>> {
+    }
+    public static interface QueryHitsCallback<T extends DatabaseObject> extends Callback<List<SearchResult.Hit<T,Void>>> {
     }
     public static interface PutMappingCallback extends Callback<String> {
     }

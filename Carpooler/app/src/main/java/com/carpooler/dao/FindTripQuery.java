@@ -54,7 +54,16 @@ public class FindTripQuery {
                 +"}"
             +"}"
         +"]"
-    +"}"
+    +"},"
+    +"\"sort\": ["
+        +"{"
+            +"\"_geo_distance\": {"
+                +"\"startLocation.location\":%2$s,"
+                +"\"order\":\"asc\","
+                +"\"unit\":\"mi\""
+            +"}"
+        +"}"
+    +"]"
 +"}";
 
     private GeoPointData startPoint;

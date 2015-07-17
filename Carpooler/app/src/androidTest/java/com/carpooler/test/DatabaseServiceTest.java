@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import io.searchbox.core.SearchResult;
+
 /**
  * Created by raymond on 6/14/15.
  */
@@ -83,6 +85,14 @@ public abstract class DatabaseServiceTest extends ServiceTestCase<DatabaseServic
 
         @Override
         public void doSuccess(List<T> data) {
+            Assert.assertNotNull("Success is null", data);
+            latch.countDown();
+        }
+    }
+
+    class QueryHitsResponseCallback<T extends DatabaseObject> extends AbstractTestCallback<List<SearchResult.Hit<T,Void>>> implements DatabaseService.QueryHitsCallback<T>{
+        @Override
+        public void doSuccess(List<SearchResult.Hit<T, Void>> data) {
             Assert.assertNotNull("Success is null", data);
             latch.countDown();
         }

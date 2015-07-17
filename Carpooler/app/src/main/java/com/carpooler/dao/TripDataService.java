@@ -53,9 +53,9 @@ public class TripDataService {
         connection.putMapping(TripData.class,callback);
     }
 
-    public void findAvailableTrips(FindTripQuery query, DatabaseService.QueryCallback<TripData> callback) throws RemoteException {
+    public void findAvailableTrips(FindTripQuery query, DatabaseService.QueryHitsCallback<TripData> callback) throws RemoteException {
         QueryRequest<TripData> queryRequest = new QueryRequest<>(query.toJson(),TripData.class);
-        connection.query(queryRequest,callback);
+        connection.queryHits(queryRequest,callback);
     }
 
     public void findTripsByHostIdAndStatus(String hostId, TripStatus tripStatus, DatabaseService.QueryCallback<TripData> callback) throws RemoteException {
