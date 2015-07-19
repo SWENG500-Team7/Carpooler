@@ -51,6 +51,7 @@ public class TripCompleteFragment extends Fragment implements MenuItem.OnMenuIte
     private Trip mTrip;
     private CarpoolUser mUser;
     private ServiceActivityCallback mCallback;
+    private TripDetailCallback mTripCallback;
 
     /* UI Components */
     private EditText etTolls;
@@ -159,6 +160,7 @@ public class TripCompleteFragment extends Fragment implements MenuItem.OnMenuIte
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         mCallback = (ServiceActivityCallback) activity;
+        mTripCallback = (TripDetailCallback) activity;
     }
 
     @Override
@@ -197,7 +199,7 @@ public class TripCompleteFragment extends Fragment implements MenuItem.OnMenuIte
                 String payKey = data.getStringExtra(PayPalActivity.EXTRA_PAY_KEY);
                 mUser.setPaid();
                 mTrip.saveTrip();
-                goBack();
+                mTripCallback.onUserPaid(mTripId);
                 break;
             case PayPalActivity.RESULT_CANCELED:
                 alertDialog.setTitle("Error");

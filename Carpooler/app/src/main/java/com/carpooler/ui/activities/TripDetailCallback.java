@@ -10,6 +10,7 @@ public interface TripDetailCallback extends ServiceActivityCallback {
     public void onAddTrip();
     public void onHostCompleteTrip(String tripId);
     public void onUserCompleteTrip(String tripId);
+    public void onUserPaid(String tripId);
     public void onJoinTripSelected(String tripId);
     public void navigate(Address address);
 }
