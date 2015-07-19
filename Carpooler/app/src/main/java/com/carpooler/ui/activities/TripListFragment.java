@@ -105,7 +105,7 @@ public abstract class TripListFragment extends Fragment implements View.OnClickL
         public void doSuccess(List<SearchResult.Hit<TripData, Void>> data) {
             //TripSearchResults tripSearchResults = new TripSearchResults(data,callback,true);
             mResults = new TripSearchResults(data,callback,true);
-            setupAdapter(/*tripSearchResults*/mResults);
+            setupAdapter(mResults);
             refreshLayout.setRefreshing(false);
         }
 
@@ -164,6 +164,7 @@ public abstract class TripListFragment extends Fragment implements View.OnClickL
         private MenuItem mi_SortByStartTime;
         private MenuItem mi_SortBySeats;
         private MenuItem mi_SortByPickupDistance;
+        private MenuItem mi_Sort;
 
         @Override
         protected void doLoadData() {
@@ -213,20 +214,27 @@ public abstract class TripListFragment extends Fragment implements View.OnClickL
         }
 
         public void onPrepareOptionsMenu(Menu menu) {
+            mi_Sort = menu.findItem(R.id.mi_sortBy);
             mi_SortByStartTime = menu.findItem(R.id.mi_sort_time);
             mi_SortBySeats = menu.findItem(R.id.mi_sort_seats);
             mi_SortByPickupDistance = menu.findItem(R.id.mi_sort_pickupRadius);
             mi_SortByStartTime.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
-                    return false;
+                    mResults.sortByStartTime();
+                    setupAdapter(mResults);
+                    refreshLayout.setRefreshing(false);
+                    return true;
                 }
             });
 
             mi_SortBySeats.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
-                    return false;
+                    mResults.sortByOpenSeats();
+                    setupAdapter(mResults);
+                    refreshLayout.setRefreshing(false);
+                    return true;
                 }
             });
 
@@ -234,9 +242,12 @@ public abstract class TripListFragment extends Fragment implements View.OnClickL
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
                     mResults.sortByStartDistance();
+                    setupAdapter(mResults);
+                    refreshLayout.setRefreshing(false);
                     return true;
                 }
             });
+            mi_Sort.setVisible(true);
             mi_SortBySeats.setVisible(true);
             mi_SortByStartTime.setVisible(true);
             mi_SortByPickupDistance.setVisible(true);

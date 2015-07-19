@@ -6,6 +6,7 @@ import com.carpooler.ui.activities.ServiceActivityCallback;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Date;
 
 import io.searchbox.core.SearchResult;
 
@@ -51,6 +52,15 @@ public class TripSearchResults {
     public void sortByStartDistance(){
         Collections.sort(hitData, new StartDistanceComparator());
     }
+
+    public void sortByOpenSeats(){
+        Collections.sort(hitData, new SeatsComparator());
+    }
+
+    public void sortByStartTime(){
+        Collections.sort(hitData, new StartTimeComparator());
+    }
+
     private enum Mode{
         HIT {
             @Override
@@ -93,6 +103,14 @@ public class TripSearchResults {
         @Override
         public int compare(SearchResult.Hit<TripData, Void> lhs, SearchResult.Hit<TripData, Void> rhs) {
             return Integer.compare(lhs.source.getOpenSeats(), rhs.source.getOpenSeats());
+        }
+    }
+
+    private class StartTimeComparator implements Comparator<SearchResult.Hit<TripData, Void>> {
+
+        @Override
+        public int compare(SearchResult.Hit<TripData, Void> lhs, SearchResult.Hit<TripData, Void> rhs) {
+            return lhs.source.getStartTime().compareTo(rhs.source.getStartTime());
         }
     }
 }
