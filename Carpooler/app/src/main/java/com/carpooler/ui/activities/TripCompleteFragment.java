@@ -22,8 +22,11 @@ import com.carpooler.dao.DatabaseService;
 import com.carpooler.dao.dto.TripData;
 import com.carpooler.payment.PayPalResultHandler;
 import com.carpooler.trips.Trip;
+import com.carpooler.users.CarpoolUser;
 import com.paypal.android.MEP.CheckoutButton;
 import com.paypal.android.MEP.PayPalActivity;
+
+import java.text.NumberFormat;
 
 /**
  * Fragment that shows a summary of the trip.
@@ -46,6 +49,7 @@ public class TripCompleteFragment extends Fragment implements MenuItem.OnMenuIte
     private TripCompleteTypeEnum mFragType;
     private String mTripId;
     private Trip mTrip;
+    private CarpoolUser mUser;
     private ServiceActivityCallback mCallback;
 
     /* UI Components */
@@ -170,7 +174,7 @@ public class TripCompleteFragment extends Fragment implements MenuItem.OnMenuIte
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         if (item.getItemId() == R.id.mi_save_trip) {
-            //TODO save the toll information in the Trip
+            mTrip.setTolls(Double.parseDouble(etTolls.getText().toString()));
             mTrip.completeTrip();
             goBack();
         }
@@ -180,10 +184,8 @@ public class TripCompleteFragment extends Fragment implements MenuItem.OnMenuIte
     @Override
     public void onClick(View v) {
         if (v.getId() == 0) {
-            //TODO insert actual user cost amount
-
             startActivityForResult(mCallback.getPaymentService().payToUser("host@carpooler.com",
-                    3.50, new PayPalResultHandler()), 1);
+                    mUser.getPaymentAmount(), new PayPalResultHandler()), 1);
         }
     }
 
@@ -193,8 +195,8 @@ public class TripCompleteFragment extends Fragment implements MenuItem.OnMenuIte
         switch (resultCode) {
             case PayPalActivity.RESULT_OK:
                 String payKey = data.getStringExtra(PayPalActivity.EXTRA_PAY_KEY);
-                //TODO set CarpoolUser as paid in Trip
-
+                mUser.setPaid();
+                mTrip.saveTrip();
                 goBack();
                 break;
             case PayPalActivity.RESULT_CANCELED:
@@ -244,13 +246,13 @@ public class TripCompleteFragment extends Fragment implements MenuItem.OnMenuIte
         public void doSuccess(TripData data) {
             mTrip = new Trip(data, mCallback);
 
-            //TODO Populate UI with actual Trip info
-            //TODO Make sure info is different depending on if host or user is looking
+            tvDistance.setText("117");//TODO update with actual distance
+            tvFuel.setText(NumberFormat.getCurrencyInstance().format(mTrip.getFuelTotal()));
 
-            tvDistance.setText("117");
-            tvFuel.setText("67.89");
             if (mFragType.equals(TripCompleteTypeEnum.USER)) {
-                tvTolls.setText("3.50");
+                mUser = mTrip.getLoggedInCarpoolUser();
+                tvTolls.setText(NumberFormat.getCurrencyInstance().format(mTrip.getTolls()));
+                tvUserTotal.setText(NumberFormat.getCurrencyInstance().format(mUser.getPaymentAmount()));
             }
         }
     };

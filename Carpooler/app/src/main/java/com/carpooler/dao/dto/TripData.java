@@ -25,6 +25,8 @@ import io.searchbox.annotations.JestId;
                             + "\"hostVehicle\": {\"type\": \"string\", \"index\":\"not_analyzed\"},"
                             + "\"status\": {\"type\": \"string\", \"index\":\"not_analyzed\"},"
                             + "\"fuelSplit\": {\"type\": \"double\"},"
+                            + "\"fuelTotal\": {\"type\": \"double\"},"
+                            + "\"tolls\": {\"type\": \"double\"},"
                             + "\"openSeats\":{\"type\":\"integer\"},"
                             + "\"startTime\": {\"type\": \"date\", \"format\":\"date_time_no_millis\"},"
                             + "\"endTime\": {\"type\": \"date\", \"format\":\"date_time_no_millis\"},"
@@ -47,6 +49,8 @@ public class TripData implements DatabaseObject{
     private Date endTime;
     private List<CarpoolUserData> users = new ArrayList<>();
     private double fuelSplit = 0.00;
+    private double fuelTotal = 0.00;
+    private double tolls = 0.00;
     private int openSeats;
 
     public TripStatus getStatus() {
@@ -74,8 +78,15 @@ public class TripData implements DatabaseObject{
     }
 
     public double getFuelSplit() {
-
         return fuelSplit;
+    }
+
+    public double getFuelTotal() {
+        return fuelTotal;
+    }
+
+    public double getTolls() {
+        return tolls;
     }
 
     public String getHostId() {
@@ -88,6 +99,14 @@ public class TripData implements DatabaseObject{
 
     public void setFuelSplit(double fuelSplit) {
         this.fuelSplit = fuelSplit;
+    }
+
+    public void setFuelTotal(double fuelTotal) {
+        this.fuelTotal = fuelTotal;
+    }
+
+    public void setTolls(double tolls) {
+        this.tolls = tolls;
     }
 
     public AddressData getStartLocation() {
