@@ -39,7 +39,7 @@ import io.searchbox.annotations.JestId;
                     + "}"
                 + "}"
 )
-public class TripData implements DatabaseObject, Comparable<TripData>{
+public class TripData implements DatabaseObject{
     @JestId
     private transient String _id;
     private String hostId;
@@ -159,25 +159,4 @@ public class TripData implements DatabaseObject, Comparable<TripData>{
         this.openSeats = openSeats;
     }
 
-    public int compareTo (TripData t) {
-        return Comparators.TRIPDATE.compare(this, t);
-    }
-
-    public static class Comparators {
-        public static final Comparator<TripData> TRIPDATE  = new Comparator<TripData>() {
-            @Override
-            public int compare(TripData lhs, TripData rhs) {
-                return lhs.getStartTime().compareTo(rhs.getStartTime());
-            }
-        };
-
-        public static final Comparator<TripData> OPEN_SEATS = new Comparator<TripData>() {
-            @Override
-            public int compare(TripData lhs, TripData rhs) {
-                return Integer.compare(lhs.getOpenSeats(), rhs.getOpenSeats());
-            }
-        };
-
-       // public static final Comparator<TripData>
-    }
 }
