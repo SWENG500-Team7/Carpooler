@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -11,15 +13,18 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.carpooler.GeoPoint;
 import com.carpooler.R;
 import com.carpooler.dao.DatabaseService;
 import com.carpooler.dao.TripDataService;
 import com.carpooler.dao.UserDataService;
 import com.carpooler.payment.PaymentService;
+import com.carpooler.trips.FuelPrice;
 import com.carpooler.trips.LocationService;
 import com.carpooler.trips.TripStatus;
 import com.carpooler.users.Address;
@@ -42,6 +47,17 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
     private UserDataService userDataService;
     private LocationService locationService;
     private PaymentService paymentService;
+    private GeoPoint geoPoint;
+    private double fuel_price = 0.0;
+
+    private class FuelPriceCollector extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            fuel_price = new FuelPrice().getFuelUnitPrice(geoPoint);
+            return null;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -278,7 +294,8 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
 
     @Override
     public void onLocationChanged(Location location) {
-
+        Log.i("CarpoolerActivity", "Latitude: " + location.getLatitude() + "; Longitude: " + location.getLongitude());
+        geoPoint = new GeoPoint(location.getLongitude(), location.getLatitude());
     }
 
     @Override
@@ -338,6 +355,9 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
 
     @Override
     public void navigate(Address address) {
-        // TODO Open Navigation Intent
+        Uri gmmIntentUri = Uri.parse("google.navigation:q="+address.getLat()+","+address.getLon());
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+        mapIntent.setPackage("com.google.android.apps.maps");
+        startActivity(mapIntent);
     }
 }

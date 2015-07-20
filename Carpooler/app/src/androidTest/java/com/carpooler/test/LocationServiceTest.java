@@ -8,6 +8,7 @@ import android.os.RemoteException;
 import android.util.Log;
 
 import com.carpooler.dao.DatabaseService;
+import com.carpooler.dao.dto.AddressData;
 import com.carpooler.trips.LocationService;
 
 import junit.framework.Assert;
@@ -69,22 +70,28 @@ public class LocationServiceTest extends DatabaseServiceTest {
     }
 
     public void testSelectNextDestination() {
-        Location start = new Location("");
-        start.setLatitude(37.374412);
-        start.setLongitude(-122.065147);
-        Location destination1 = new Location("");
-        destination1.setLatitude(37.414771);
-        destination1.setLongitude(-122.081119);
-        Location destination2 = new Location("");
-        destination2.setLatitude(37.439293);
-        destination2.setLongitude(-122.173539);
-        List<Location> destinations = new ArrayList<Location>();
+        AddressData startAddressData = new AddressData();
+        startAddressData.setStreetNumber("183 Dawn Circle");
+        startAddressData.setCity("Galt");
+        startAddressData.setState("CA");
+        com.carpooler.users.Address start = new com.carpooler.users.Address(startAddressData);
+        AddressData destination1AddressData = new AddressData();
+        destination1AddressData.setStreetNumber("450 Serra Mall");
+        destination1AddressData.setCity("Stanford");
+        destination1AddressData.setState("CA");
+        com.carpooler.users.Address destination1 = new com.carpooler.users.Address(destination1AddressData);
+        AddressData destination2AddressData = new AddressData();
+        destination2AddressData.setStreetNumber("1500 Shoreline Blvd");
+        destination2AddressData.setCity("Mountain View");
+        destination2AddressData.setState("CA");
+        com.carpooler.users.Address destination2 = new com.carpooler.users.Address(destination2AddressData);
+
+        List<com.carpooler.users.Address> destinations = new ArrayList<com.carpooler.users.Address>();
         destinations.add(destination1);
         destinations.add(destination2);
-        Location location = mLocationService.selectNextDestination(start, destinations);
-        assertNotNull(location);
-        assertEquals(37.414771, location.getLatitude());
-        assertEquals(-122.081119, location.getLongitude());
+
+        com.carpooler.users.Address nextDestination = mLocationService.selectNextDestination(start, destinations);
+        assertEquals("1500 Shoreline Blvd", nextDestination.getStreetNumber());
     }
 
     class AddressResponseCallback extends AbstractTestCallback<Address> implements DatabaseService.GeocodeCallback{

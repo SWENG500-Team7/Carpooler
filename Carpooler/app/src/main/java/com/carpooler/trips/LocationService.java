@@ -7,8 +7,19 @@ import android.location.LocationManager;
 import android.os.RemoteException;
 import android.util.Log;
 
+import com.carpooler.GeoPoint;
 import com.carpooler.dao.DatabaseService;
+import com.carpooler.users.Address;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -18,6 +29,9 @@ public class LocationService {
 
     private static final String TAG = LocationService.class.getSimpleName();
     private final Context mContext;
+    private LocationManager locationManager;
+    private LocationListener mListener;
+    private DatabaseService.Connection connection;
 
     // flag for GPS status
     private boolean isGPSEnabled = false;
@@ -35,11 +49,6 @@ public class LocationService {
     private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 0;
 
     private Location location;
-    protected LocationManager locationManager;
-
-    private LocationListener mListener;
-
-    private DatabaseService.Connection connection;
 
     public LocationService(Context context, LocationListener listener, DatabaseService.Connection connection) {
         mContext = context;
@@ -115,24 +124,65 @@ public class LocationService {
 
     /**
      * Determines the next destination based on which is the closest
-     * @param start current Location
-     * @param destinations a list of Locations
+     * @param start Address
+     * @param destinations a list of Addresses
      * @return nextDestination
      */
-    public Location selectNextDestination(Location start, List<Location> destinations) {
-        Location nextDestination = null;
-        for (Location destination : destinations) {
-            if(nextDestination == null) {
-                nextDestination = destination;
-            } else {
-                float first_distance = start.distanceTo(nextDestination);
-                float second_distance = start.distanceTo(destination);
-                if(second_distance < first_distance) {
-                    nextDestination = destination;
-                }
+    public Address selectNextDestination(Address start, List<Address> destinations) {
+        int[] durations = new int[destinations.size()];
+        String requestUrlString = "https://maps.googleapis.com/maps/api/distancematrix/json?origins="
+                +start.getStreetNumber().replace(" ", "+")+"+"+start.getCity().replace(" ", "+")+"+"+start.getState().replace(" ", "+")
+                +"&destinations=";
+        for (Address destination : destinations) {
+            requestUrlString = requestUrlString + destination.getStreetNumber().replace(" ", "+")+"+"
+                    +destination.getCity().replace(" ", "+")+"+"+destination.getState().replace(" ", "+")+"|";
+        }
+        requestUrlString = requestUrlString.substring(0, requestUrlString.length()-1);
+        Log.i("LocationService", requestUrlString);
+        //Make the connection and get the JSON
+        HttpURLConnection urlConnection = null;
+        ByteArrayOutputStream buffer = null;
+        try {
+            URL requestUrl = new URL(requestUrlString);
+            urlConnection = (HttpURLConnection) requestUrl.openConnection();
+            InputStreamReader in = new InputStreamReader(urlConnection.getInputStream());
+
+            //Ensure all data is read from connection
+            buffer = new ByteArrayOutputStream();
+            int data;
+            while ((data = in.read()) > -1) {
+                buffer.write(data);
+            }
+            in.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (urlConnection != null) {
+                urlConnection.disconnect();
             }
         }
-        return nextDestination;
+        try {
+            String jsonString = buffer.toString();
+            Log.i("LocationService", jsonString);
+            JSONObject json = new JSONObject(jsonString);
+            JSONArray elements = json.getJSONArray("rows").getJSONObject(0).getJSONArray("elements");
+            for (int i=0; i<durations.length; i++) {
+                durations[i] = elements.getJSONObject(i).getJSONObject("duration").getInt("value");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        int pos = -1;
+        int shortestDuration = -1;
+        for (int i=0; i<durations.length; i++) {
+            if (i == 0) {
+                shortestDuration = durations[i];
+            } else if (durations[i] < shortestDuration) {
+                shortestDuration = durations[i];
+                pos = i;
+            }
+        }
+        return destinations.get(pos);
     }
 
 }
