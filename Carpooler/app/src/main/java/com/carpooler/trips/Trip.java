@@ -158,6 +158,10 @@ public class Trip {
      * @return fuel_split - the fuel split for the current trip segment
      */
     public double splitFuelCost(double cost) {
+        //Update total of trip
+        tripData.setFuelTotal(tripData.getFuelTotal() + cost);
+
+        //Split total and update users
         int userCount = 0;
         for(CarpoolUserData user : tripData.getUsers()) {
             if(user.getStatus() == CarpoolUserStatus.PICKED_UP)
@@ -191,6 +195,31 @@ public class Trip {
             serviceActivityCallback.getTripDataService().createTrip(tripData, new CreateTripCallback());
         } catch (RemoteException e) {
             e.printStackTrace();
+        }
+    }
+
+    public double getTolls() {
+        return tripData.getTolls();
+    }
+
+    public double getFuelTotal() {
+        return tripData.getFuelTotal();
+    }
+
+    public void setTolls(double tolls) {
+        //Set total tolls
+        tripData.setTolls(tolls);
+
+        //Split tolls between users
+        int numUsers = 0;
+        for(CarpoolUserData carpoolUser : tripData.getUsers()) {
+            if(carpoolUser.getStatus() == CarpoolUserStatus.DROPPED_OFF)
+                numUsers++;
+        }
+        for(CarpoolUserData carpoolUser : tripData.getUsers()) {
+            if(carpoolUser.getStatus() == CarpoolUserStatus.DROPPED_OFF)
+                carpoolUser.setPaymentAmount(Math.round((carpoolUser.getPaymentAmount()
+                        + tolls/numUsers)*100.0)/100.0);
         }
     }
 
@@ -271,6 +300,20 @@ public class Trip {
         boolean ret = false;
         if (isLoggedInUserInCarpool()){
             CarpoolUser user = getLoggedInCarpoolUser();
+//            if (getTripId().equals("AU5fMY2mtHTBJzAXf60c")) {//TODO remove, just for testing paying host
+//                tripData.setFuelSplit(0);
+//                tripData.setFuelTotal(0);
+//                for(CarpoolUserData carpoolUser : tripData.getUsers()) {//Pikcup everyone
+//                    carpoolUser.setStatus(CarpoolUserStatus.PICKED_UP);
+//                    carpoolUser.setPaymentAmount(0);
+//                }
+//                user.setPaymentAmount(splitFuelCost(60));//Complete the journey and split gas
+//                for(CarpoolUserData carpoolUser : tripData.getUsers()) {//Everyone gets out
+//                    carpoolUser.setStatus(CarpoolUserStatus.DROPPED_OFF);
+//                }
+//                setTolls(7.50);//Set and split tolls
+//                saveTrip();
+//            }//TODO remove, just for testing paying host
             ret = user.isPaymentRequired();
         }
         return ret;

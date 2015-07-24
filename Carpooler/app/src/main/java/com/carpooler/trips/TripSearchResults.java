@@ -1,11 +1,20 @@
 package com.carpooler.trips;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.os.RemoteException;
+import android.widget.Toast;
+
+import com.carpooler.dao.DatabaseService;
 import com.carpooler.dao.dto.TripData;
+import com.carpooler.dao.dto.UserData;
 import com.carpooler.ui.activities.ServiceActivityCallback;
+import com.carpooler.users.Rating;
 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Date;
 
 import io.searchbox.core.SearchResult;
 
@@ -17,6 +26,7 @@ public class TripSearchResults {
     private final List<SearchResult.Hit<TripData, Void>> hitData;
     private final ServiceActivityCallback serviceActivityCallback;
     private final Mode mode;
+    private UserData ud;
 
     public TripSearchResults(List<TripData> tripDatas, ServiceActivityCallback serviceActivityCallback) {
         this(tripDatas,null,serviceActivityCallback);
@@ -51,6 +61,15 @@ public class TripSearchResults {
     public void sortByStartDistance(){
         Collections.sort(hitData, new StartDistanceComparator());
     }
+
+    public void sortByOpenSeats(){
+        Collections.sort(hitData, new SeatsComparator());
+    }
+
+    public void sortByStartTime(){
+        Collections.sort(hitData, new StartTimeComparator());
+    }
+
     private enum Mode{
         HIT {
             @Override
@@ -78,6 +97,19 @@ public class TripSearchResults {
         public abstract Trip get(int index, TripSearchResults tripSearchResults);
     }
 
+    private class UserDataCallback implements DatabaseService.GetCallback<UserData> {
+        public void doError(String message) {
+
+        }
+        public void doException(Exception exception){
+            exception.printStackTrace();
+        }
+
+        public void doSuccess(UserData data){
+            ud = data;
+        }
+    }
+
     private class StartDistanceComparator implements Comparator<SearchResult.Hit<TripData,Void>>{
 
         @Override
@@ -85,6 +117,47 @@ public class TripSearchResults {
             String s1 = lhs.sort.get(0);
             String s2 = rhs.sort.get(0);
             return s1.compareTo(s2);
+        }
+    }
+
+    private class SeatsComparator implements Comparator<SearchResult.Hit<TripData, Void>> {
+
+        @Override
+        public int compare(SearchResult.Hit<TripData, Void> lhs, SearchResult.Hit<TripData, Void> rhs) {
+            return Integer.compare(lhs.source.getOpenSeats(), rhs.source.getOpenSeats());
+        }
+    }
+
+    private class StartTimeComparator implements Comparator<SearchResult.Hit<TripData, Void>> {
+
+        @Override
+        public int compare(SearchResult.Hit<TripData, Void> lhs, SearchResult.Hit<TripData, Void> rhs) {
+            return lhs.source.getStartTime().compareTo(rhs.source.getStartTime());
+        }
+    }
+
+    private class RatingComparator implements Comparator<SearchResult.Hit<TripData, Void>> {
+        private Rating lhsRating;
+        private Rating rhsRating;
+
+        @Override
+        public int compare(SearchResult.Hit<TripData, Void> lhs, SearchResult.Hit<TripData, Void> rhs) {
+            try {
+                serviceActivityCallback.getUserDataService().getUserData(lhs.source.getHostId(), new UserDataCallback());
+            } catch (RemoteException e) {
+                    e.printStackTrace();
+            }
+
+            lhsRating = ud.getAverageRating();
+
+            try {
+                serviceActivityCallback.getUserDataService().getUserData(rhs.source.getHostId(), new UserDataCallback());
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+            rhsRating = ud.getAverageRating();
+
+            return Integer.compare(lhsRating.ordinal(), rhsRating.ordinal());
         }
     }
 }

@@ -239,6 +239,19 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
         pushFragment(fragment, title);
     }
 
+    public void goToHome() {
+        //clear back stack
+        FragmentManager fm = getSupportFragmentManager();
+        for(int i = 0; i < fm.getBackStackEntryCount(); ++i) {
+            fm.popBackStack();
+        }
+
+        //go to home
+        Fragment fragment = createTripListFragment(false);
+        String title = getString(R.string.nav_item_joined_trips);
+        pushFragment(fragment, title);
+    }
+
     public void goBack(String title) {
         FragmentManager fm = getSupportFragmentManager();
         fm.popBackStack();
@@ -332,6 +345,13 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
         TripCompleteFragment fragment = TripCompleteFragment.newInstance(tripId,
                 TripCompleteFragment.TripCompleteTypeEnum.USER.ordinal());
         String title = getString(R.string.title_trip_complete);
+        pushFragment(fragment, title);
+    }
+
+    @Override
+    public void onUserPaid(String tripId) {
+        UserReviewFragment fragment = UserReviewFragment.newInstance(tripId);
+        String title = getString(R.string.review);
         pushFragment(fragment, title);
     }
 

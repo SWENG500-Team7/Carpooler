@@ -8,6 +8,9 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -33,6 +36,7 @@ public abstract class TripListFragment extends Fragment implements View.OnClickL
     private TripRecyclerAdapter adapter;
     protected TripDetailCallback callback;
     private ImageButton mAddButton;
+    protected TripSearchResults mResults;
 
     @Override
     public void onAttach(Activity activity) {
@@ -99,10 +103,13 @@ public abstract class TripListFragment extends Fragment implements View.OnClickL
     private class TripHitsQueryCallback extends ErrorCallback implements DatabaseService.QueryHitsCallback<TripData> {
         @Override
         public void doSuccess(List<SearchResult.Hit<TripData, Void>> data) {
-            TripSearchResults tripSearchResults = new TripSearchResults(data,callback,true);
-            setupAdapter(tripSearchResults);
+            //TripSearchResults tripSearchResults = new TripSearchResults(data,callback,true);
+            mResults = new TripSearchResults(data,callback,true);
+            setupAdapter(mResults);
             refreshLayout.setRefreshing(false);
         }
+
+
     }
     protected void loadData(){
         if (!refreshLayout.isRefreshing()) {
@@ -153,6 +160,12 @@ public abstract class TripListFragment extends Fragment implements View.OnClickL
         public static final String START_DATE = "startDate";
         public static final String SEARCH_DISTANCE = "searchDistance";
         public static final String TIME_RANGE = "timeRange";
+
+        private MenuItem mi_SortByStartTime;
+        private MenuItem mi_SortBySeats;
+        private MenuItem mi_SortByPickupDistance;
+        private MenuItem mi_Sort;
+
         @Override
         protected void doLoadData() {
             try {
@@ -184,6 +197,61 @@ public abstract class TripListFragment extends Fragment implements View.OnClickL
             findTripQuery.setStartTime(startDate);
             findTripQuery.setStartPoint(startPoint);
             findTripQuery.setEndPoint(endPoint);
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            super.setHasOptionsMenu(true);
+            return super.onCreateView(inflater, container, savedInstanceState);
+        }
+
+        @Override
+        public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+            // Inflate the menu; this adds items to the action bar if it is present.
+            super.onCreateOptionsMenu(menu, inflater);
+            menu.clear();
+            inflater.inflate(R.menu.menu_sort_triplist, menu);
+        }
+
+        public void onPrepareOptionsMenu(Menu menu) {
+            mi_Sort = menu.findItem(R.id.mi_sortBy);
+            mi_SortByStartTime = menu.findItem(R.id.mi_sort_time);
+            mi_SortBySeats = menu.findItem(R.id.mi_sort_seats);
+            mi_SortByPickupDistance = menu.findItem(R.id.mi_sort_pickupRadius);
+            mi_SortByStartTime.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    mResults.sortByStartTime();
+                    setupAdapter(mResults);
+                    refreshLayout.setRefreshing(false);
+                    return true;
+                }
+            });
+
+            mi_SortBySeats.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    mResults.sortByOpenSeats();
+                    setupAdapter(mResults);
+                    refreshLayout.setRefreshing(false);
+                    return true;
+                }
+            });
+
+            mi_SortByPickupDistance.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    mResults.sortByStartDistance();
+                    setupAdapter(mResults);
+                    refreshLayout.setRefreshing(false);
+                    return true;
+                }
+            });
+            mi_Sort.setVisible(true);
+            mi_SortBySeats.setVisible(true);
+            mi_SortByStartTime.setVisible(true);
+            mi_SortByPickupDistance.setVisible(true);
+
         }
     }
 }

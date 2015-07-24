@@ -166,8 +166,7 @@ public class TripRowHolder extends RecyclerView.ViewHolder {
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        tripRowHolder.trip.completeTrip();
-                        tripRowHolder.callback.onTripSelected(tripRowHolder.tripId);
+                        tripRowHolder.callback.onHostCompleteTrip(tripRowHolder.tripId);
                     }
                 });
             }

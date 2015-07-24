@@ -46,13 +46,6 @@
             android:textSize="16sp"/>
 
         <TextView
-            android:text="@string/complete_cost_unit"
-            android:layout_width="10dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:textAppearance="?android:textAppearanceSmall"/>
-
-        <TextView
             android:text="0.00"
             android:id="@+id/tv_cost"
             android:layout_width="100dp"
@@ -73,13 +66,6 @@
             android:layout_width="140dp"
             android:layout_height="wrap_content"
             android:textSize="16sp"/>
-
-        <TextView
-            android:text="@string/complete_cost_unit"
-            android:layout_width="10dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:textAppearance="?android:textAppearanceSmall"/>
 
         <TextView
             android:text="0.00"
@@ -124,13 +110,6 @@
                 android:layout_width="140dp"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"/>
-
-            <TextView
-                android:text="@string/complete_cost_unit"
-                android:layout_width="10dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:textAppearance="?android:textAppearanceSmall"/>
 
             <TextView
                 android:text="0.00"

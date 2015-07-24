@@ -160,6 +160,10 @@ public class CarpoolUser {
         changeStatus(CarpoolUserStatus.CONFIRMED_FOR_PICKUP);
     }
 
+    public void setPaid() {
+        changeStatus(CarpoolUserStatus.PAID);
+    }
+
     public boolean canNavigateDropoff() {
         return isAllowedNextStaus(CarpoolUserStatus.DROPPED_OFF);
     }
