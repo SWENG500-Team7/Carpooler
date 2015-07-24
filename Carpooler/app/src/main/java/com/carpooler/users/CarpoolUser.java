@@ -18,6 +18,8 @@ public class CarpoolUser {
     private final CarpoolUserData carpoolUserData;
     private final ServiceActivityCallback serviceActivityCallback;
     private UserLoader userLoader;
+    private int distance_travelled = 0;
+
     public CarpoolUser(CarpoolUserData carpoolUserData,
                        ServiceActivityCallback serviceActivityCallback) {
         this.carpoolUserData = carpoolUserData;
@@ -28,6 +30,14 @@ public class CarpoolUser {
         }
 
         userLoader = new UserLoader(serviceActivityCallback, carpoolUserData.getUserId());
+    }
+
+    public void setDistanceTravelled(int distance) {
+        distance_travelled = distance;
+    }
+
+    public int getDistanceTravelled() {
+        return distance_travelled;
     }
 
     public Address getPickupLocation() {

@@ -48,16 +48,6 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
     private LocationService locationService;
     private PaymentService paymentService;
     private GeoPoint geoPoint;
-    private double fuel_price = 0.0;
-
-    private class FuelPriceCollector extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            fuel_price = new FuelPrice().getFuelUnitPrice(geoPoint);
-            return null;
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

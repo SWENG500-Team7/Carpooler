@@ -1,7 +1,9 @@
 package com.carpooler.trips;
 
+import android.os.AsyncTask;
 import android.os.RemoteException;
 
+import com.carpooler.GeoPoint;
 import com.carpooler.dao.DatabaseService;
 import com.carpooler.dao.dto.AddressData;
 import com.carpooler.dao.dto.CarpoolUserData;
@@ -29,6 +31,8 @@ public class Trip {
     // populated for logged in carpool user
     private CarpoolUser loggedInUser;
     private boolean loggedInUserChecked = false;
+    private double fuel_price = 0.0;
+
     public Trip(TripData tripData, ServiceActivityCallback serviceActivityCallback) {
         this.serviceActivityCallback = serviceActivityCallback;
         this.tripData = tripData;
@@ -39,6 +43,29 @@ public class Trip {
 
         userLoader = new UserLoader(serviceActivityCallback, tripData.getHostId());
 
+    }
+
+    private class FuelPriceCollector extends AsyncTask<Void, Void, Void> {
+
+        private GeoPoint geoPoint;
+
+        public FuelPriceCollector(GeoPoint geoPoint) {
+            this.geoPoint = geoPoint;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            fuel_price = new FuelPrice().getFuelUnitPrice(geoPoint);
+            return null;
+        }
+    }
+
+    public void setFuelPrice() {
+        new FuelPriceCollector(new GeoPoint(getStartLocation().getLon(), getStartLocation().getLat())).execute();
+    }
+
+    public double getFuelPrice() {
+        return fuel_price;
     }
 
     private void setLoggedInUser(){

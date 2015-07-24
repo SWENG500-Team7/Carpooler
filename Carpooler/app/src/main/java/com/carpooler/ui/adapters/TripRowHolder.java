@@ -122,6 +122,7 @@ public class TripRowHolder extends RecyclerView.ViewHolder {
                     public void onClick(View v) {
                         tripRowHolder.trip.startTrip();
                         tripRowHolder.callback.onTripSelected(tripRowHolder.tripId);
+                        tripRowHolder.trip.setFuelPrice();
                     }
                 });
             }

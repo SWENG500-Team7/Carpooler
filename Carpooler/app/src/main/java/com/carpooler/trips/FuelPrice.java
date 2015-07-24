@@ -29,7 +29,6 @@ public class FuelPrice {
     private static final String myGasFeedURL = "http://devapi.mygasfeed.com/stations/radius/";
     private static final String ARRAY_KEY = "stations";
     private static final String ELEMENT_KEY = "reg_price";
-    private static final int CONNECTION_ATTEMPTS = 5;
 
     /**
      * Get the fuel unit cost around a particular location
@@ -53,27 +52,21 @@ public class FuelPrice {
         InputStream in = null;
         String result = null;
 
-        //Make multiple attempts if it initially fails
-        for (int i = 0; i < CONNECTION_ATTEMPTS; i++) {
-            try {
-                //Make the connection and get the response
-                URL requestUrl = new URL(url);
-                urlConnection = (HttpURLConnection) requestUrl.openConnection();
-                in = new BufferedInputStream(urlConnection.getInputStream());
+        try {
+            //Make the connection and get the response
+            URL requestUrl = new URL(url);
+            urlConnection = (HttpURLConnection) requestUrl.openConnection();
+            in = new BufferedInputStream(urlConnection.getInputStream());
+            urlConnection.disconnect();
+
+            // convert inputstream to string
+            if (in != null)
+                result = convertInputStreamToString(in);
+
+        } catch (Exception e) {
+            Log.d("FuelPrice", e.getLocalizedMessage());
+            if (urlConnection != null) {
                 urlConnection.disconnect();
-
-                // convert inputstream to string
-                if (in != null)
-                    result = convertInputStreamToString(in);
-
-            } catch (Exception e) {
-                Log.d("FuelPrice", e.getLocalizedMessage());
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-            }
-            if(result != null) {
-                break;
             }
         }
 
