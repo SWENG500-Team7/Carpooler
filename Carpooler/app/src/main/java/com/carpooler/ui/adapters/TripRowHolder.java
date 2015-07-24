@@ -34,6 +34,7 @@ public class TripRowHolder extends RecyclerView.ViewHolder {
     private final Button requestButton;
     private final Button cancelJoinButton;
     private final Button confirmPickupButton;
+    private final Button confirmDropoff;
     private final TripDetailCallback callback;
     private String tripId;
     private Trip trip;
@@ -57,6 +58,7 @@ public class TripRowHolder extends RecyclerView.ViewHolder {
         requestButton = (Button) itemView.findViewById(R.id.requestButton);
         cancelJoinButton = (Button) itemView.findViewById(R.id.cancelJoinButton);
         confirmPickupButton = (Button) itemView.findViewById(R.id.confirmPickupButton);
+        confirmDropoff = (Button) itemView.findViewById(R.id.confirmDropoff);
 
         if (selectable) {
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -201,6 +203,29 @@ public class TripRowHolder extends RecyclerView.ViewHolder {
             @Override
             public boolean isVisible(Trip trip) {
                 return trip.canPayHost();
+            }
+        },
+        CONFIRM_DROPOFF(false, true) {
+            @Override
+            public void setupButton(Button button, final TripRowHolder tripRowHolder) {
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        tripRowHolder.trip.confirmDropoff();
+                        tripRowHolder.callback.onTripSelected(tripRowHolder.tripId);
+                    }
+                });
+
+            }
+
+            @Override
+            public Button getButton(TripRowHolder tripRowHolder) {
+                return tripRowHolder.confirmDropoff;
+            }
+
+            @Override
+            public boolean isVisible(Trip trip) {
+                return trip.canConfirmDropoff();
             }
         },
         CONFIRM_PICKUP(false, true) {
