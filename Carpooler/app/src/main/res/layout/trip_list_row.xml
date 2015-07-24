@@ -123,6 +123,12 @@
                 android:id="@+id/confirmPickupButton"
                 android:visibility="gone"
                 android:text="@string/confirm_trip"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/confirmDropoff"
+                android:visibility="gone"
+                android:text="@string/confirm_dropoff"/>
         </GridLayout>
     </RelativeLayout>
 </android.support.v7.widget.CardView>

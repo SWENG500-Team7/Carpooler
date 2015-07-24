@@ -81,6 +81,7 @@
     <string name="complete_trip">Complete</string>
     <string name="start_trip">Start Trip</string>
     <string name="confirm_trip">Confirm Pickup</string>
+    <string name="confirm_dropoff">Confirm Dropoff</string>
     <string name="cancel_pickup_trip">Cancel Pickup</string>
     <string name="request_trip">Request Pickup</string>
 
