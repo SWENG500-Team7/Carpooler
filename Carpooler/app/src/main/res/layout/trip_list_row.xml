@@ -13,221 +13,239 @@
         card_view:cardCornerRadius="4dp"
         card_view:cardUseCompatPadding="true">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-
-
-        <TextView
-            android:id="@+id/startTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_marginLeft="4dp"
-            android:layout_marginTop="2dp"
-            android:textSize="20sp"
-            android:textStyle="bold"/>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/startTime"
-            android:layout_marginLeft="4dp"
-            android:id="@+id/llSeats">
-            <TextView
-                android:id="@+id/openSeats"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/colorAccent"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Open Seats"
-                android:id="@+id/openSeatsLabel"
-                android:textColor="@color/colorAccent"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"/>
-        </LinearLayout>
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="4dp"
-            android:id="@+id/hostImage"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@id/llSeats"/>
-
-        <LinearLayout
-            android:id="@+id/tripData"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/hostImage"
-            android:layout_below="@id/llSeats"
-            android:paddingLeft="5dp">
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="fill_parent">
-
-                <TextView android:id="@+id/startStreet"
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    android:singleLine="true"
-                    android:ellipsize="marquee"/>
-                <TextView android:id="@+id/startCity"
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    android:singleLine="true"
-                    android:ellipsize="marquee"/>
-                <TextView android:id="@+id/startState"
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"/>
-
-            </LinearLayout>
+            android:layout_height="wrap_content">
 
 
-            <TextView android:text="TO"
-                android:layout_width="24dp"
-                android:layout_height="fill_parent"
-                android:layout_marginRight="12dp"
-                android:gravity="center_vertical"
+
+            <TextView
+                android:id="@+id/startTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="4dp"
+                android:layout_marginTop="2dp"
+                android:textSize="20sp"
                 android:textStyle="bold"/>
 
             <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="fill_parent">
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/startTime"
+                android:layout_marginLeft="4dp"
+                android:id="@+id/llSeats">
+                <TextView
+                    android:id="@+id/openSeats"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorAccent"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Open Seats"
+                    android:id="@+id/openSeatsLabel"
+                    android:textColor="@color/colorAccent"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"/>
+            </LinearLayout>
 
-                <TextView android:id="@+id/endStreet"
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    android:singleLine="true"
-                    android:ellipsize="marquee"/>
-                <TextView android:id="@+id/endCity"
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    android:singleLine="true"
-                    android:ellipsize="marquee"/>
-                <TextView android:id="@+id/endState"
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"/>
+            <ImageView
+                android:layout_width="150px"
+                android:layout_height="150px"
+                android:layout_margin="4dp"
+                android:id="@+id/hostImage"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@id/llSeats"/>
+
+            <LinearLayout
+                android:id="@+id/tripData"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/hostImage"
+                android:layout_below="@id/llSeats"
+                android:paddingLeft="5dp">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="fill_parent">
+
+                    <TextView android:id="@+id/startStreet"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:singleLine="true"
+                        android:ellipsize="marquee"/>
+                    <TextView android:id="@+id/startCity"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:singleLine="true"
+                        android:ellipsize="marquee"/>
+                    <TextView android:id="@+id/startState"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"/>
+
+                </LinearLayout>
+
+
+                <TextView android:text="TO"
+                    android:layout_width="24dp"
+                    android:layout_height="fill_parent"
+                    android:layout_marginRight="12dp"
+                    android:gravity="center_vertical"
+                    android:textStyle="bold"/>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="fill_parent">
+
+                    <TextView android:id="@+id/endStreet"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:singleLine="true"
+                        android:ellipsize="marquee"/>
+                    <TextView android:id="@+id/endCity"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:singleLine="true"
+                        android:ellipsize="marquee"/>
+                    <TextView android:id="@+id/endState"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"/>
+
+                </LinearLayout>
 
             </LinearLayout>
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_below="@id/hostImage">
-            <!-- host -->
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="32dp"
-                android:id="@+id/startButton"
-                android:visibility="gone"
-                android:layout_weight="1"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="4dp"
-                style="@style/CarpoolerButton"
-                android:background="@color/colorAccent"
-                android:text="@string/start_trip"/>
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="32dp"
-                android:id="@+id/cancelTripButton"
-                android:visibility="gone"
-                android:layout_weight="1"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="4dp"
-                style="@style/CarpoolerButton"
-                android:background="@color/colorAccent"
-                android:text="@string/cancel_trip"/>
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="32dp"
-                android:layout_weight="1"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="4dp"
-                style="@style/CarpoolerButton"
-                android:background="@color/colorAccent"
-                android:id="@+id/completeTripButton"
-                android:visibility="gone"
-                android:text="@string/complete_trip"/>
-            <!-- non user -->
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="32dp"
-                android:layout_weight="1"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="4dp"
-                style="@style/CarpoolerButton"
-                android:background="@color/colorAccent"
-                android:id="@+id/requestButton"
-                android:visibility="gone"
-                android:text="@string/request_trip"/>
-            <!-- user -->
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="32dp"
-                android:layout_weight="1"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="4dp"
-                style="@style/CarpoolerButton"
-                android:background="@color/colorAccent"
-                android:id="@+id/payButton"
-                android:visibility="gone"
-                android:text="@string/complete_pay_host"/>
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="32dp"
-                android:layout_weight="1"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="4dp"
-                style="@style/CarpoolerButton"
-                android:background="@color/colorAccent"
-                android:id="@+id/cancelJoinButton"
-                android:visibility="gone"
-                android:text="@string/cancel_pickup_trip"/>
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="32dp"
-                android:layout_weight="1"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="4dp"
-                style="@style/CarpoolerButton"
-                android:background="@color/colorAccent"
-                android:id="@+id/confirmPickupButton"
-                android:visibility="gone"
-                android:text="@string/confirm_trip"/>
-            <Button
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/confirmDropoff"
-                android:visibility="gone"
-                android:text="@string/confirm_dropoff"/>
-        </GridLayout>
-        </LinearLayout>
-    </RelativeLayout>
+                android:orientation="horizontal"
+                android:layout_below="@id/hostImage">
+
+                <!-- host -->
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:id="@+id/startButton"
+                    android:visibility="gone"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    style="@style/CarpoolerButton"
+                    android:background="@color/colorAccent"
+                    android:text="@string/start_trip"/>
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:id="@+id/cancelTripButton"
+                    android:visibility="gone"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    style="@style/CarpoolerButton"
+                    android:background="@color/colorAccent"
+                    android:text="@string/cancel_trip"/>
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    style="@style/CarpoolerButton"
+                    android:background="@color/colorAccent"
+                    android:id="@+id/completeTripButton"
+                    android:visibility="gone"
+                    android:text="@string/complete_trip"/>
+
+                <!-- non user -->
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    style="@style/CarpoolerButton"
+                    android:background="@color/colorAccent"
+                    android:id="@+id/requestButton"
+                    android:visibility="gone"
+                    android:text="@string/request_trip"/>
+
+                <!-- user -->
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    style="@style/CarpoolerButton"
+                    android:background="@color/colorAccent"
+                    android:id="@+id/payButton"
+                    android:visibility="gone"
+                    android:text="@string/complete_pay_host"/>
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    style="@style/CarpoolerButton"
+                    android:background="@color/colorAccent"
+                    android:id="@+id/cancelJoinButton"
+                    android:visibility="gone"
+                    android:text="@string/cancel_pickup_trip"/>
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    style="@style/CarpoolerButton"
+                    android:background="@color/colorAccent"
+                    android:id="@+id/confirmPickupButton"
+                    android:visibility="gone"
+                    android:text="@string/confirm_trip"/>
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    style="@style/CarpoolerButton"
+                    android:background="@color/colorAccent"
+                    android:id="@+id/confirmDropoff"
+                    android:visibility="gone"
+                    android:text="@string/confirm_dropoff"/>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
     </android.support.v7.widget.CardView>
+
 </LinearLayout>

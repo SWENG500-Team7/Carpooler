@@ -273,20 +273,20 @@ public class Trip {
         boolean ret = false;
         if (isLoggedInUserInCarpool()){
             CarpoolUser user = getLoggedInCarpoolUser();
-            if (getTripId().equals("AU5fMY2mtHTBJzAXf60c")) {//TODO remove, just for testing paying host
-                tripData.setFuelSplit(0);
-                tripData.setFuelTotal(0);
-                for(CarpoolUserData carpoolUser : tripData.getUsers()) {//Pikcup everyone
-                    carpoolUser.setStatus(CarpoolUserStatus.PICKED_UP);
-                    carpoolUser.setPaymentAmount(0);
-                }
-                user.setPaymentAmount(splitFuelCost(60));//Complete the journey and split gas
-                for(CarpoolUserData carpoolUser : tripData.getUsers()) {//Everyone gets out
-                    carpoolUser.setStatus(CarpoolUserStatus.DROPPED_OFF);
-                }
-                setTolls(7.50);//Set and split tolls
-                saveTrip();
-            }//TODO remove, just for testing paying host
+//            if (getTripId().equals("AU5fMY2mtHTBJzAXf60c")) {//TODO remove, just for testing paying host
+//                tripData.setFuelSplit(0);
+//                tripData.setFuelTotal(0);
+//                for(CarpoolUserData carpoolUser : tripData.getUsers()) {//Pikcup everyone
+//                    carpoolUser.setStatus(CarpoolUserStatus.PICKED_UP);
+//                    carpoolUser.setPaymentAmount(0);
+//                }
+//                user.setPaymentAmount(splitFuelCost(60));//Complete the journey and split gas
+//                for(CarpoolUserData carpoolUser : tripData.getUsers()) {//Everyone gets out
+//                    carpoolUser.setStatus(CarpoolUserStatus.DROPPED_OFF);
+//                }
+//                setTolls(7.50);//Set and split tolls
+//                saveTrip();
+//            }//TODO remove, just for testing paying host
             ret = user.isPaymentRequired();
         }
         return ret;
@@ -441,6 +441,10 @@ public class Trip {
     public void setVehicle(Vehicle vehicle) {
         tripData.setHostVehicle(vehicle.getPlateNumber());
         tripData.setOpenSeats(vehicle.getSeats());
+    }
+
+    public String getVehiclePlatNumber() {
+        return tripData.getHostVehicle();
     }
 
     public void loadVehicleData(UserLoader.VehicleCallback callback){

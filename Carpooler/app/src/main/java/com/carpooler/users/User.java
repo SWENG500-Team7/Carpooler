@@ -16,7 +16,9 @@ import com.carpooler.ui.activities.ServiceActivityCallback;
 import com.google.android.gms.plus.model.people.Person;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 /**
  * User class keeps track of user google identity and payment information
@@ -28,6 +30,7 @@ public class User {
     private final Person googleUser;
     private UserData userData;
     private final  ServiceActivityCallback serviceActivityCallback;
+    private Queue<Callback> callbacks = new LinkedList<>();
 
     public User(Person googleUser, ServiceActivityCallback serviceActivityCallback) {
         this.googleUser = googleUser;
@@ -98,6 +101,14 @@ public class User {
         serviceActivityCallback.getTripDataService().findTripsByUserIdAndStatus(userData.getUserId(), tripStatus, callback);
     }
 
+    public void addCallback(Callback callback){
+        if (userData==null){
+            callbacks.add(callback);
+        }else{
+            callback.userLoaded();
+        }
+    }
+
     private void updateUserData() {
         //If new user create new DTO
         if (userData == null) {
@@ -128,6 +139,10 @@ public class User {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+    }
+
+    public List<UserReviewData> getReviews() {
+        return userData.getReviews();
     }
 
     public List<Vehicle> getVehicles() {
@@ -171,6 +186,9 @@ public class User {
         @Override
         public void doSuccess(UserData data) {
             userData = data;
+            for (Callback callback:callbacks){
+                callback.userLoaded();
+            }
         }
     }
 
@@ -178,5 +196,9 @@ public class User {
         String photoUrl = googleUser.getImage().getUrl();
         photoUrl = photoUrl.substring(0, photoUrl.length()-2) + size;
         serviceActivityCallback.getConnection().loadBitmap(photoUrl,new ImageViewBitmapLoader(imageView));
+    }
+
+    public interface Callback{
+        public void userLoaded();
     }
 }
