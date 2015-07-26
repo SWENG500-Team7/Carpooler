@@ -166,6 +166,14 @@ public class CarpoolUser {
         changeStatus(CarpoolUserStatus.REJECTED_FOR_PICKUP);
     }
 
+    public boolean canConfirmDropoff() {
+        return isAllowedNextStaus(CarpoolUserStatus.CONFIRMED_DROPPED_OFF);
+    }
+
+    public void confirmDropoff() {
+        changeStatus(CarpoolUserStatus.CONFIRMED_DROPPED_OFF);
+    }
+
     private class UserAddressLoadCallback extends AddressLoadCallback {
         private final boolean destination;
 

@@ -34,6 +34,12 @@ public enum CarpoolUserStatus {
     DROPPED_OFF {
         @Override
         protected CarpoolUserStatus[] getAllowedNextStates() {
+            return new CarpoolUserStatus[]{CONFIRMED_DROPPED_OFF};
+        }
+    },
+    CONFIRMED_DROPPED_OFF {
+        @Override
+        protected CarpoolUserStatus[] getAllowedNextStates() {
             return new CarpoolUserStatus[]{PAID};
         }
     },

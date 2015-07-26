@@ -399,6 +399,24 @@ public class Trip {
         }
     }
 
+    public boolean canConfirmDropoff() {
+        boolean ret = false;
+        if (isLoggedInUserInCarpool()){
+            CarpoolUser user = getLoggedInCarpoolUser();
+            ret = user.canConfirmDropoff();
+        }
+        return ret;
+    }
+
+    public void confirmDropoff() {
+        if (canConfirmPickup()){
+            loggedInUser.confirmDropoff();
+            saveTrip();
+        }else{
+            throw new IllegalArgumentException("Cannot Confirm Dropoff");
+        }
+    }
+
     private class CreateTripCallback implements DatabaseService.IndexCallback{
 
         @Override
