@@ -143,10 +143,7 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
     }
     
     private Fragment createTripDetailFragment(TripStatus status) {
-        Bundle args = new Bundle();
-        args.putString(TripDetailFragment.STATUS_ARG, status.name());
-        Fragment fragment = new TripDetailFragment();
-        fragment.setArguments(args);
+        Fragment fragment = new TripInProgressFragment();
         return fragment;
     }
 
@@ -210,12 +207,8 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
     }
     @Override
     public void onAddTrip() {
-        TripDetailFragment fragment = new TripDetailFragment();
+        TripAddFragment fragment = new TripAddFragment();
         String title = getString(R.string.title_trip_detail);
-        Bundle args = new Bundle();
-        args.putBoolean(TripDetailFragment.CREATE_TRIP_ARG, true);
-        args.putString(TripDetailFragment.STATUS_ARG, TripStatus.OPEN.name());
-        fragment.setArguments(args);
         pushFragment(fragment, title);
     }
 
