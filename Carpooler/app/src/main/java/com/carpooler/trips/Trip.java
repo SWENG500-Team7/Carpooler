@@ -58,12 +58,15 @@ public class Trip {
      */
     public CarpoolUser requestJoinTrip() {
         CarpoolUserData carpoolUserData = new CarpoolUserData();
-        carpoolUserData.setStatus(CarpoolUserStatus.PENDING);
         return new CarpoolUser(carpoolUserData,serviceActivityCallback);
     }
 
     public void confirmCarpoolUser(CarpoolUser carpoolUser){
-        carpoolUser.changeStatus(CarpoolUserStatus.CONFIRMED_FOR_PICKUP);
+        if (canConfirmPickup()) {
+            carpoolUser.confirmPickup();
+        }else{
+            throw new IllegalArgumentException("Cannot confirm pickup");
+        }
     }
 
     public boolean isLoggedInUser(){
@@ -97,19 +100,6 @@ public class Trip {
             throw new IllegalArgumentException("Cannot dropoff user");
         }
     }
-    /**
-     * Updates the status of a CarpoolUser to DROPPED_OFF for this trip
-     * @param user - a CarpoolUser
-     * @param cost - the total fuel cost for the current trip segment
-     */
-    public void dropoffCarpoolUser(CarpoolUser user, double cost) {
-        double split = splitFuelCost(cost);
-        for(CarpoolUserData carpoolUser : tripData.getUsers()) {
-            if(carpoolUser.getStatus() == CarpoolUserStatus.PICKED_UP)
-                carpoolUser.setPaymentAmount(split);
-        }
-        user.changeStatus(CarpoolUserStatus.DROPPED_OFF);
-    }
 
     /**
      * Updates the status of a CarpoolUser to NO_SHOW for this trip
@@ -117,7 +107,7 @@ public class Trip {
      */
     public void skipNoShow(CarpoolUser user) {
         if (canMarkNoShow(user)) {
-            user.changeStatus(CarpoolUserStatus.NO_SHOW);
+            user.markNoShow();
             saveTrip();
         }else{
             throw new IllegalArgumentException("Cannot no show user");
@@ -147,7 +137,7 @@ public class Trip {
 
     public void completeTrip(){
         if (canCompleteTrip()){
-            tripData.setStatus(TripStatus.COMPLETED);
+            changeStatus(TripStatus.COMPLETED);
             saveTrip();
         }else{
             throw new IllegalArgumentException("Cannot Complete Trip");
@@ -156,7 +146,7 @@ public class Trip {
 
     public void cancelTrip(){
         if (canCancelTrip()){
-            tripData.setStatus(TripStatus.CANCELLED);
+            changeStatus(TripStatus.CANCELLED);
             saveTrip();
         }else{
             throw new IllegalArgumentException("Cannot Cancel Trip");
@@ -239,6 +229,14 @@ public class Trip {
         TripAddressLoadCallback tripAddressLoadCallback = new TripAddressLoadCallback(addressErrorCallback,destination);
         serviceActivityCallback.getLocationService().getLocationFromAddressName(searchAddress, tripAddressLoadCallback);
     }
+
+    private void changeStatus(TripStatus status){
+        if (isAllowedNextStaus(status)){
+            tripData.setStatus(status);
+        }else{
+            throw new IllegalArgumentException("Invalid move from " + tripData.getStatus() + " to " + status);
+        }
+    }
     private boolean isAllowedNextStaus(TripStatus tripStatus){
         return tripData.getStatus().isValidateNextState(tripStatus);
     }
@@ -252,7 +250,7 @@ public class Trip {
     }
 
     public boolean canCompleteTrip(){
-        return tripData.getStatus() == TripStatus.IN_ROUTE;
+        return isAllowedNextStaus(TripStatus.COMPLETED);
         // TODO add check for all users dropped off
     }
 
@@ -336,7 +334,7 @@ public class Trip {
 
     public void startTrip() {
         if (canStartTrip()){
-            tripData.setStatus(TripStatus.IN_ROUTE);
+            changeStatus(TripStatus.IN_ROUTE);
             saveTrip();
         }else{
             throw new IllegalArgumentException("Cannot Start Trip");
@@ -355,10 +353,8 @@ public class Trip {
 
     public void cancelPickup() {
         if (canCancelPickup()){
-            if (loggedInUser.canPickup()){
-                tripData.setOpenSeats(tripData.getOpenSeats()+1);
-            }
             loggedInUser.cancel();
+            tripData.setOpenSeats(tripData.getOpenSeats()+1);
             saveTrip();
         }else{
             throw new IllegalArgumentException("Cannot Cancel Pickup");
@@ -409,11 +405,27 @@ public class Trip {
     }
 
     public void confirmDropoff() {
-        if (canConfirmPickup()){
+        if (canConfirmDropoff()){
             loggedInUser.confirmDropoff();
             saveTrip();
         }else{
             throw new IllegalArgumentException("Cannot Confirm Dropoff");
+        }
+    }
+
+    public void navigatePickupUser(CarpoolUser carpoolUser) {
+        if (canNavigatePickupUser(carpoolUser)){
+            carpoolUser.navigatePickup();
+        }else{
+            throw new IllegalArgumentException("Cannot navigate pickup");
+        }
+    }
+
+    public void navigateDropoff(CarpoolUser carpoolUser) {
+        if (canNavigateDropoffUser(carpoolUser)){
+            carpoolUser.navigateDropoff();
+        }else{
+            throw new IllegalArgumentException("Cannot navigate dropoff");
         }
     }
 
