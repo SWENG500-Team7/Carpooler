@@ -21,7 +21,6 @@ import com.carpooler.dao.TripDataService;
 import com.carpooler.dao.UserDataService;
 import com.carpooler.payment.PaymentService;
 import com.carpooler.trips.LocationService;
-import com.carpooler.trips.TripStatus;
 import com.carpooler.users.Address;
 import com.carpooler.users.User;
 import com.google.android.gms.common.ConnectionResult;
@@ -115,7 +114,7 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
         String title = getString(R.string.app_name);
         switch (position) {
             case 0:
-                fragment = createTripDetailFragment(TripStatus.IN_ROUTE);
+                fragment = createTripInProgressFragment();
                 title = getString(R.string.nav_item_trip_in_progress);
                 break;
             case 1:
@@ -142,7 +141,7 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
         return VehicleListFragment.newInstance(VehicleListFragment.VehicleListType.MANAGER);
     }
     
-    private Fragment createTripDetailFragment(TripStatus status) {
+    private Fragment createTripInProgressFragment() {
         Fragment fragment = new TripInProgressFragment();
         return fragment;
     }
