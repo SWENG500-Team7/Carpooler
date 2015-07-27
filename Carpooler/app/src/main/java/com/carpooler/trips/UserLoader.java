@@ -46,7 +46,12 @@ public class UserLoader implements ResultCallback<People.LoadPeopleResult>{
             Person person = loadPeopleResult.getPersonBuffer().iterator().next();
             loadPeopleResult.getPersonBuffer().release();
             user = new User(person, serviceActivityCallback);
-            executeCallbacks();
+            user.addCallback(new User.Callback() {
+                @Override
+                public void userLoaded() {
+                    executeCallbacks();
+                }
+            });
         }
     }
 

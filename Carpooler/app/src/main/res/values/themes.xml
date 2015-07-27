@@ -16,4 +16,10 @@
         <item name="background">?android:colorPrimary</item>
     </style>
 
+    <style name="CarpoolerButton" parent="@android:style/Widget.Button.Small">
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
 </resources>

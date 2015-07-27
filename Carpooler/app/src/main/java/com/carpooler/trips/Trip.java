@@ -455,6 +455,10 @@ public class Trip {
         tripData.setOpenSeats(vehicle.getSeats());
     }
 
+    public String getVehiclePlatNumber() {
+        return tripData.getHostVehicle();
+    }
+
     public void loadVehicleData(UserLoader.VehicleCallback callback){
         userLoader.addCallback(callback);
     }
