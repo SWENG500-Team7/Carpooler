@@ -242,11 +242,11 @@ public class Trip {
     }
 
     public boolean canStartTrip(){
-        return tripData.getStatus() == TripStatus.OPEN;
+        return isOpenTrip();
     }
 
     public boolean canCancelTrip(){
-        return tripData.getStatus() == TripStatus.OPEN;
+        return isOpenTrip();
     }
 
     public boolean canCompleteTrip(){
@@ -269,7 +269,7 @@ public class Trip {
     }
     public boolean canPayHost(){
         boolean ret = false;
-        if (isLoggedInUserInCarpool()){
+        if (isCompleted() && isLoggedInUserInCarpool()){
             CarpoolUser user = getLoggedInCarpoolUser();
 //            if (getTripId().equals("AU5fMY2mtHTBJzAXf60c")) {//TODO remove, just for testing paying host
 //                tripData.setFuelSplit(0);
@@ -292,7 +292,7 @@ public class Trip {
 
     public boolean canConfirmPickup(){
         boolean ret = false;
-        if (isLoggedInUserInCarpool()){
+        if (isInRoute() && isLoggedInUserInCarpool()){
             CarpoolUser user = getLoggedInCarpoolUser();
             ret = user.canConfirmPickup();
         }
@@ -301,15 +301,25 @@ public class Trip {
 
     public boolean canCancelPickup(){
         boolean ret = false;
-        if (isLoggedInUserInCarpool()){
+        if (isOpenTrip() && isLoggedInUserInCarpool()){
             CarpoolUser user = getLoggedInCarpoolUser();
             ret = user.canCancelPickup();
         }
         return ret;
     }
 
+    private boolean isOpenTrip(){
+        return tripData.getStatus()==TripStatus.OPEN;
+    }
+    private boolean isInRoute(){
+        return tripData.getStatus()==TripStatus.IN_ROUTE;
+    }
+    private boolean isCompleted(){
+        return tripData.getStatus()==TripStatus.COMPLETED;
+    }
+
     public boolean canRequestJoin(){
-        return !isLoggedInUserInCarpool() && !isLoggedInUser() && getOpenSeats()>0;
+        return isOpenTrip() && !isLoggedInUserInCarpool() && !isLoggedInUser() && getOpenSeats()>0;
     }
 
     public boolean canDropOffUser(CarpoolUser carpoolUser) {
@@ -329,7 +339,7 @@ public class Trip {
     }
 
     public boolean canAcceptRequest(CarpoolUser carpoolUser) {
-        return isLoggedInUserInCarpool() && carpoolUser.canAcceptRequest();
+        return isOpenTrip() && isLoggedInUserInCarpool() && carpoolUser.canAcceptRequest();
     }
 
     public void startTrip() {
@@ -379,7 +389,7 @@ public class Trip {
     }
 
     public boolean canRejectRequest(CarpoolUser carpoolUser) {
-        return isLoggedInUserInCarpool() && carpoolUser.canRejectRequest();
+        return isOpenTrip() && isLoggedInUserInCarpool() && carpoolUser.canRejectRequest();
     }
 
     public boolean canNavigateDropoffUser(CarpoolUser carpoolUser) {
@@ -397,7 +407,7 @@ public class Trip {
 
     public boolean canConfirmDropoff() {
         boolean ret = false;
-        if (isLoggedInUserInCarpool()){
+        if (isInRoute() && isLoggedInUserInCarpool()){
             CarpoolUser user = getLoggedInCarpoolUser();
             ret = user.canConfirmDropoff();
         }
