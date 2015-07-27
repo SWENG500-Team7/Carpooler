@@ -7,7 +7,6 @@ import android.location.LocationListener;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -45,6 +44,17 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                if (fragmentManager.getBackStackEntryCount()>0) {
+                    String name = fragmentManager.getBackStackEntryAt(fragmentManager.getBackStackEntryCount()-1).getName();
+                    getSupportActionBar().setTitle(name);
+                }
+            }
+        });
         setContentView(R.layout.activity_carpooler);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
 
@@ -157,10 +167,10 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
     private void pushFragment(Fragment fragment, String title) {
         if (fragment != null) {
             FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.addToBackStack(title);
-            fragmentTransaction.replace(R.id.container_body, fragment);
-            fragmentTransaction.commit();
+            fragmentManager.beginTransaction()
+                    .addToBackStack(title)
+                    .replace(R.id.container_body, fragment)
+                    .commit();
 
             // set the toolbar title
             getSupportActionBar().setTitle(title);
