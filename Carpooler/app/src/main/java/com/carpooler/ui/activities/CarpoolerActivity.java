@@ -2,6 +2,7 @@ package com.carpooler.ui.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.location.Location;
 import android.location.LocationListener;
 import android.net.Uri;
@@ -28,6 +29,7 @@ import com.carpooler.trips.LocationService;
 import com.carpooler.users.Address;
 import com.carpooler.users.User;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.People;
 import com.google.android.gms.plus.Plus;
@@ -46,6 +48,8 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
     private LocationService locationService;
     private PaymentService paymentService;
     private GeoPoint geoPoint;
+    private boolean mIntentInProgress = false;
+    private int GPlusSignIn = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -199,7 +203,33 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
+        if (!connectionResult.hasResolution()) {
+            GooglePlayServicesUtil.getErrorDialog(connectionResult.getErrorCode(), this,
+                    0).show();
+            return;
+        }
+        if (!mIntentInProgress) {
+            if (connectionResult.hasResolution()) {
+                try {
+                    mIntentInProgress = true;
+                    connectionResult.startResolutionForResult(this, GPlusSignIn);
+                } catch (IntentSender.SendIntentException e) {
+                    mIntentInProgress = false;
+                    mGoogleApiClient.connect();
+                }
+            }
+        }
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int responseCode,
+                                    Intent intent) {
+        if (requestCode == GPlusSignIn) {
+            mIntentInProgress = false;
+            if (!mGoogleApiClient.isConnecting()) {
+                mGoogleApiClient.connect();
+            }
+        }
     }
 
     @Override
