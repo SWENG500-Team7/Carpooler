@@ -80,7 +80,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            android:hint="@string/complete_tolls_hint"
+            android:text="@string/complete_tolls_hint"
             android:id="@+id/et_toll"
             android:inputType="numberDecimal"
             android:textAppearance="?android:textAppearanceLarge"/>

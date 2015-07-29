@@ -229,6 +229,7 @@ public class CarpoolUserAdapter extends EmptyAdapter<CarpoolUserAdapter.CarpoolU
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        carpoolUserRowHolder.trip.navigatePickupUser(carpoolUserRowHolder.carpoolUser);
                         carpoolUserRowHolder.callback.navigate(carpoolUserRowHolder.carpoolUser.getPickupLocation());
                     }
                 });
@@ -252,6 +253,7 @@ public class CarpoolUserAdapter extends EmptyAdapter<CarpoolUserAdapter.CarpoolU
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        carpoolUserRowHolder.trip.navigateDropoff(carpoolUserRowHolder.carpoolUser);
                         carpoolUserRowHolder.callback.navigate(carpoolUserRowHolder.carpoolUser.getDropoffLocation());
                     }
                 });

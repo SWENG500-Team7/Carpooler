@@ -165,7 +165,7 @@ public class CarpoolUser {
     }
 
     public boolean canNavigateDropoff() {
-        return isAllowedNextStaus(CarpoolUserStatus.DROPPED_OFF);
+        return isAllowedNextStaus(CarpoolUserStatus.PENDING_DROPOFF);
     }
 
     public boolean canRejectRequest() {
@@ -182,6 +182,18 @@ public class CarpoolUser {
 
     public void confirmDropoff() {
         changeStatus(CarpoolUserStatus.CONFIRMED_DROPPED_OFF);
+    }
+
+    public void markNoShow() {
+        changeStatus(CarpoolUserStatus.NO_SHOW);
+    }
+
+    public void navigatePickup() {
+        changeStatus(CarpoolUserStatus.PENDING_PICK_UP);
+    }
+
+    public void navigateDropoff() {
+        changeStatus(CarpoolUserStatus.PENDING_DROPOFF);
     }
 
     private class UserAddressLoadCallback extends AddressLoadCallback {

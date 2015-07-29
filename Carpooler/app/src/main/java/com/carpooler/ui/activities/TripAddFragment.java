@@ -4,9 +4,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,15 +14,12 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.carpooler.R;
-import com.carpooler.dao.DatabaseService;
 import com.carpooler.dao.dto.TripData;
 import com.carpooler.trips.AddressErrorCallback;
 import com.carpooler.trips.Trip;
-import com.carpooler.trips.TripStatus;
 import com.carpooler.trips.Vehicle;
 
 import java.util.Calendar;
@@ -33,9 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 
 
-public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemClickListener, DatePicker.OnDateChangedListener, TimePicker.OnTimeChangedListener, AdapterView.OnItemSelectedListener {
+public class TripAddFragment extends Fragment implements MenuItem.OnMenuItemClickListener, DatePicker.OnDateChangedListener, TimePicker.OnTimeChangedListener, AdapterView.OnItemSelectedListener {
 
-    private SwipeRefreshLayout refreshLayout;
     private View rootView;
     private MenuItem miEdit;
     private MenuItem miDelete;
@@ -53,11 +46,6 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
     private int end_hour;
     private int end_minute;
     private ServiceActivityCallback callback;
-    public static final String CREATE_TRIP_ARG = "createTrip";
-    private boolean createTrip = false;
-    public static final String STATUS_ARG = "status";
-    private TripStatus tripStatus;
-    private TextView textView;
     private Trip trip;
     private AddressFieldsManager addressFieldsManager;
 
@@ -70,34 +58,18 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Bundle args = getArguments();
-        if (args!=null) {
-            String status = args.getString(STATUS_ARG, TripStatus.IN_ROUTE.name());
-            tripStatus = TripStatus.valueOf(status);
-
-            createTrip = args.getBoolean(CREATE_TRIP_ARG, false);
-        }else{
-            tripStatus = TripStatus.IN_ROUTE;
-        }
-        boolean hasMenu = true;
-        // Inflate the layout for this fragment
-        if (createTrip) {
-            rootView = inflater.inflate(R.layout.fragment_add_trip, container, false);
-            vehicleSpinner = (Spinner) rootView.findViewById(R.id.tripVehicleDropdown);
-            vehicleSpinner.setOnItemSelectedListener(this);
-            tripDatePicker = (DatePicker) rootView.findViewById(R.id.tripDatePicker);
-            tripStartTimePicker = (TimePicker) rootView.findViewById(R.id.tripStartTimePicker);
-            tripEndTimePicker = (TimePicker) rootView.findViewById(R.id.tripEndTimePicker);
-            initDateAndTimeOnView();
-            addressFieldsManager = new AddressManager(rootView,R.id.start_address,R.id.end_address);
-            trip = new Trip(new TripData(),callback);
-        } else {
-            rootView = inflater.inflate(R.layout.fragment_trip_inprogress, container, false);
-            hasMenu = false;
-        }
+        rootView = inflater.inflate(R.layout.fragment_trip_add, container, false);
+        vehicleSpinner = (Spinner) rootView.findViewById(R.id.tripVehicleDropdown);
+        vehicleSpinner.setOnItemSelectedListener(this);
+        tripDatePicker = (DatePicker) rootView.findViewById(R.id.tripDatePicker);
+        tripStartTimePicker = (TimePicker) rootView.findViewById(R.id.tripStartTimePicker);
+        tripEndTimePicker = (TimePicker) rootView.findViewById(R.id.tripEndTimePicker);
+        initDateAndTimeOnView();
+        addressFieldsManager = new AddressManager(rootView,R.id.start_address,R.id.end_address);
+        trip = new Trip(new TripData(),callback);
 
         //Signal to system that this fragment has it's own actionbar items
-        setHasOptionsMenu(hasMenu);
+        setHasOptionsMenu(true);
         return rootView;
     }
 
@@ -137,27 +109,14 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
         miSave.setOnMenuItemClickListener(this);
 
         //Start in mode depending if user is creating a new trip
-        setFormEnabled(createTrip);
+        setFormEnabled(true);
         checkSave();
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        if (createTrip) {
-            initVehicleSpinner();
-        } else {
-            RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.trip_detail_recycler_view);
-            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-            refreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.contentView);
-            refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    loadData();
-                }
-            });
-            loadData();
-        }
+        initVehicleSpinner();
     }
 
     @Override
@@ -194,16 +153,6 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
         miDelete.setVisible(!enabled);
     }
 
-    private void loadData(){
-        try {
-            if (!refreshLayout.isRefreshing()){
-                refreshLayout.setRefreshing(true);
-            }
-            callback.getTripDataService().findTripsByUserIdAndStatus(callback.getUser().getGoogleId(), tripStatus, queryCallback);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-    }
 
     private void initVehicleSpinner() {
         List<Vehicle> vehicleList = callback.getUser().getVehicles();
@@ -217,25 +166,6 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, vehicles);
         vehicleSpinner.setAdapter(spinnerAdapter);
     }
-
-
-    private DatabaseService.QueryCallback<TripData> queryCallback = new DatabaseService.QueryCallback<TripData>() {
-        @Override
-        public void doError(String message) {
-            refreshLayout.setRefreshing(false);
-        }
-
-        @Override
-        public void doException(Exception exception) {
-            refreshLayout.setRefreshing(false);
-        }
-
-        @Override
-        public void doSuccess(List<TripData> data) {
-            refreshLayout.setRefreshing(false);
-        }
-    };
-
 
     private void saveTrip() {
         Calendar startCal = Calendar.getInstance();
@@ -296,12 +226,12 @@ public class TripDetailFragment extends Fragment implements MenuItem.OnMenuItemC
 
         @Override
         protected Activity getActivity() {
-            return TripDetailFragment.this.getActivity();
+            return TripAddFragment.this.getActivity();
         }
 
         @Override
         protected void checkSave() {
-            TripDetailFragment.this.checkSave();
+            TripAddFragment.this.checkSave();
         }
 
         protected void setStartLocation(String address, AddressErrorCallback callback) throws RemoteException {

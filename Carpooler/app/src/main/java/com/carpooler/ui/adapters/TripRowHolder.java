@@ -16,6 +16,8 @@ import com.carpooler.users.Address;
 import com.carpooler.users.User;
 import com.google.common.collect.Lists;
 
+import java.text.SimpleDateFormat;
+
 /**
  * Created by raymond on 7/12/15.
  */
@@ -85,18 +87,20 @@ public class TripRowHolder extends RecyclerView.ViewHolder implements Destinatio
             }
         });
 
-        startTime.setText(data.getStartTime().toString());
+        startTime.setText((new SimpleDateFormat("EEE, MMM d ''yy h:mm aaa")).format(data.getStartTime()));
         openSeats.setText(Integer.toString(data.getOpenSeats()));
         Address startAddress = data.getStartLocation();
         Address endAddress = data.getEndLocation();
         if (startAddress != null) {
-            startStreet.setText(startAddress.getStreetNumber());
+            startStreet.setText((startAddress.getStreetNumber() == null ? "" : startAddress.getStreetNumber() + " ")
+                    + (startAddress.getStreet() == null ? "" : startAddress.getStreet()));
             startCity.setText(startAddress.getCity());
             startState.setText(startAddress.getState());
         }
 
         if (endAddress != null) {
-            endStreet.setText(endAddress.getStreetNumber());
+            endStreet.setText((endAddress.getStreetNumber() == null ? "" : endAddress.getStreetNumber() + " ")
+                    + (endAddress.getStreet() == null ? "" : endAddress.getStreet()));
             endCity.setText(endAddress.getCity());
             endState.setText(endAddress.getState());
         }

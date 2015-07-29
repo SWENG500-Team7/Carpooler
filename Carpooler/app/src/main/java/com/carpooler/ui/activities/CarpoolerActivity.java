@@ -9,7 +9,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -26,7 +25,6 @@ import com.carpooler.dao.UserDataService;
 import com.carpooler.payment.PaymentService;
 import com.carpooler.trips.FuelPrice;
 import com.carpooler.trips.LocationService;
-import com.carpooler.trips.TripStatus;
 import com.carpooler.users.Address;
 import com.carpooler.users.User;
 import com.google.android.gms.common.ConnectionResult;
@@ -52,6 +50,17 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                if (fragmentManager.getBackStackEntryCount()>0) {
+                    String name = fragmentManager.getBackStackEntryAt(fragmentManager.getBackStackEntryCount()-1).getName();
+                    getSupportActionBar().setTitle(name);
+                }
+            }
+        });
         setContentView(R.layout.activity_carpooler);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
 
@@ -121,7 +130,7 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
         String title = getString(R.string.app_name);
         switch (position) {
             case 0:
-                fragment = createTripDetailFragment(TripStatus.IN_ROUTE);
+                fragment = createTripInProgressFragment();
                 title = getString(R.string.nav_item_trip_in_progress);
                 break;
             case 1:
@@ -148,11 +157,8 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
         return VehicleListFragment.newInstance(VehicleListFragment.VehicleListType.MANAGER);
     }
     
-    private Fragment createTripDetailFragment(TripStatus status) {
-        Bundle args = new Bundle();
-        args.putString(TripDetailFragment.STATUS_ARG, status.name());
-        Fragment fragment = new TripDetailFragment();
-        fragment.setArguments(args);
+    private Fragment createTripInProgressFragment() {
+        Fragment fragment = new TripInProgressFragment();
         return fragment;
     }
 
@@ -167,10 +173,10 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
     private void pushFragment(Fragment fragment, String title) {
         if (fragment != null) {
             FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.addToBackStack(title);
-            fragmentTransaction.replace(R.id.container_body, fragment);
-            fragmentTransaction.commit();
+            fragmentManager.beginTransaction()
+                    .addToBackStack(title)
+                    .replace(R.id.container_body, fragment)
+                    .commit();
 
             // set the toolbar title
             getSupportActionBar().setTitle(title);
@@ -216,12 +222,8 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
     }
     @Override
     public void onAddTrip() {
-        TripDetailFragment fragment = new TripDetailFragment();
+        TripAddFragment fragment = new TripAddFragment();
         String title = getString(R.string.title_trip_detail);
-        Bundle args = new Bundle();
-        args.putBoolean(TripDetailFragment.CREATE_TRIP_ARG, true);
-        args.putString(TripDetailFragment.STATUS_ARG, TripStatus.OPEN.name());
-        fragment.setArguments(args);
         pushFragment(fragment, title);
     }
 
