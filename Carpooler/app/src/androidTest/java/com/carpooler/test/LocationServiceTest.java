@@ -90,7 +90,7 @@ public class LocationServiceTest extends DatabaseServiceTest {
         destinations.add(destination1);
         destinations.add(destination2);
 
-        com.carpooler.users.Address nextDestination = mLocationService.selectNextDestination(start, destinations);
+        com.carpooler.users.Address nextDestination = mLocationService.selectNextDestination(start, destinations, null);
         assertEquals("1500 Shoreline Blvd", nextDestination.getStreetNumber());
     }
 

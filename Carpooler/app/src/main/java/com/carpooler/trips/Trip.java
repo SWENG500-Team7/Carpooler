@@ -14,8 +14,10 @@ import com.carpooler.users.CarpoolUser;
 import com.carpooler.users.CarpoolUserStatus;
 import com.carpooler.users.User;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Trip manages the number of CarpoolUsers and their individual statuses
@@ -31,7 +33,9 @@ public class Trip {
     // populated for logged in carpool user
     private CarpoolUser loggedInUser;
     private boolean loggedInUserChecked = false;
+    private Vehicle vehicle;
     private double fuel_price = 0.0;
+    private static final double METERS_PER_MILE = 1609.34;
 
     public Trip(TripData tripData, ServiceActivityCallback serviceActivityCallback) {
         this.serviceActivityCallback = serviceActivityCallback;
@@ -151,6 +155,19 @@ public class Trip {
         }
     }
 
+    // TODO: Need to build new unit test for this
+    public void splitFuelCost() {
+        double pricePerMile = fuel_price/getVehicle().getMPG();
+        Iterator<CarpoolUser> users = getCarpoolUsers().iterator();
+        while (users.hasNext()) {
+            CarpoolUser user = users.next();
+            double miles_travelled = user.getDistanceTravelled()/METERS_PER_MILE;
+            double fuel_split = (Math.round(pricePerMile*miles_travelled)*100.0)/100.0;
+            user.setPaymentAmount(user.getPaymentAmount() + fuel_split);
+        }
+    }
+
+    // TODO: Remove this as it does not perform the desired function. Replaced by above method.
     /**
      * Splits the total fuel cost evenly among the list of CarpoolUsers
      * for each trip segment and adds to current fuel split
@@ -196,6 +213,19 @@ public class Trip {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+    }
+
+    public List<Address> getDestinations() {
+        List<Address> destinations = new ArrayList<>();
+        while (getCarpoolUsers().iterator().hasNext()) {
+            CarpoolUser user = getCarpoolUsers().iterator().next();
+            if (user.getStatus() == CarpoolUserStatus.CONFIRMED_FOR_PICKUP) {
+                destinations.add(user.getPickupLocation());
+            } else if (user.getStatus() == CarpoolUserStatus.PICKED_UP) {
+                destinations.add(user.getDropoffLocation());
+            }
+        }
+        return destinations;
     }
 
     public double getTolls() {
@@ -466,8 +496,13 @@ public class Trip {
      * @param vehicle - the trip vehicle
      */
     public void setVehicle(Vehicle vehicle) {
+        this.vehicle = vehicle;
         tripData.setHostVehicle(vehicle.getPlateNumber());
         tripData.setOpenSeats(vehicle.getSeats());
+    }
+
+    public Vehicle getVehicle() {
+        return vehicle;
     }
 
     public void loadVehicleData(UserLoader.VehicleCallback callback){
