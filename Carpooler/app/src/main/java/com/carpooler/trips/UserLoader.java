@@ -1,5 +1,7 @@
 package com.carpooler.trips;
 
+import android.support.v4.util.LruCache;
+
 import com.carpooler.ui.activities.ServiceActivityCallback;
 import com.carpooler.users.User;
 import com.google.android.gms.common.api.PendingResult;
@@ -19,6 +21,7 @@ public class UserLoader implements ResultCallback<People.LoadPeopleResult>{
     private final boolean loggedInUser;
     private Queue<Callback> callbacks = new LinkedList<>();
     private Queue<VehicleCallback> vehicleCallbacks = new LinkedList<>();
+    private static LruCache<String,User> userCache = new LruCache<String,User>(10);
     public UserLoader(ServiceActivityCallback serviceActivityCallback, String userId) {
         this.serviceActivityCallback = serviceActivityCallback;
         if (userId==null){
@@ -29,8 +32,11 @@ public class UserLoader implements ResultCallback<People.LoadPeopleResult>{
                 user = serviceActivityCallback.getUser();
                 loggedInUser = true;
             } else {
-                PendingResult<People.LoadPeopleResult> result = serviceActivityCallback.getPeople().load(serviceActivityCallback.getGoogleApiClient(), userId);
-                result.setResultCallback(this);
+                user = userCache.get(userId);
+                if (userId==null) {
+                    PendingResult<People.LoadPeopleResult> result = serviceActivityCallback.getPeople().load(serviceActivityCallback.getGoogleApiClient(), userId);
+                    result.setResultCallback(this);
+                }
                 loggedInUser = false;
             }
         }
@@ -52,6 +58,7 @@ public class UserLoader implements ResultCallback<People.LoadPeopleResult>{
                     executeCallbacks();
                 }
             });
+            userCache.put(user.getGoogleId(),user);
         }
     }
 

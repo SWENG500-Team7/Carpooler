@@ -1,6 +1,6 @@
 package com.carpooler.users;
 
-import android.util.Log;
+import android.location.Location;
 
 import com.carpooler.dao.dto.AddressData;
 
@@ -60,5 +60,16 @@ public class Address {
     }
     public void setState(String state){
         addressData.setState(state);
+    }
+    public Location convert(){
+        Location ret = new Location("carpooler");
+        ret.setLatitude(addressData.getLocation().getLat());
+        ret.setLongitude(addressData.getLocation().getLon());
+        return ret;
+    }
+
+    public boolean matches(Location location){
+        return location.getLongitude()==addressData.getLocation().getLon()
+                && location.getLatitude() == addressData.getLocation().getLat();
     }
 }

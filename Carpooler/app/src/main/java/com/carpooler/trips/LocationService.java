@@ -8,6 +8,7 @@ import android.os.RemoteException;
 import android.util.Log;
 
 import com.carpooler.dao.DatabaseService;
+import com.carpooler.users.CarpoolUser;
 
 import java.util.List;
 
@@ -135,4 +136,28 @@ public class LocationService {
         return nextDestination;
     }
 
+    public CarpoolUser selectNextDestination(Location start, List<CarpoolUser> users, boolean pickup) {
+        CarpoolUser nextDestination = null;
+        for (CarpoolUser destination : users) {
+            if(nextDestination == null) {
+                nextDestination = destination;
+            } else {
+                Location nextAddress;
+                Location destinationAddress;
+                if (pickup){
+                    nextAddress = nextDestination.getPickupLocation().convert();
+                    destinationAddress = destination.getPickupLocation().convert();
+                }else{
+                    nextAddress = nextDestination.getDropoffLocation().convert();
+                    destinationAddress = destination.getDropoffLocation().convert();
+                }
+                float first_distance = start.distanceTo(nextAddress);
+                float second_distance = start.distanceTo(destinationAddress);
+                if(second_distance < first_distance) {
+                    nextDestination = destination;
+                }
+            }
+        }
+        return nextDestination;
+    }
 }

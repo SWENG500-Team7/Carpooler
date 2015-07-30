@@ -119,7 +119,7 @@ public class CarpoolUser {
     }
 
     public boolean canNavigatePickup() {
-        return isAllowedNextStaus(CarpoolUserStatus.PICKED_UP);
+        return isAllowedNextStaus(CarpoolUserStatus.PICKED_UP) && getPickupLocation()!=null;
     }
 
     public boolean canAcceptRequest() {
@@ -214,5 +214,21 @@ public class CarpoolUser {
 
     public CarpoolUserData getCarpoolUserData() {
         return carpoolUserData;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CarpoolUser user = (CarpoolUser) o;
+
+        return !(carpoolUserData != null ? !carpoolUserData.equals(user.carpoolUserData) : user.carpoolUserData != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return carpoolUserData != null ? carpoolUserData.hashCode() : 0;
     }
 }

@@ -1,5 +1,6 @@
 package com.carpooler.trips;
 
+import android.location.Location;
 import android.os.RemoteException;
 
 import com.carpooler.dao.DatabaseService;
@@ -12,8 +13,10 @@ import com.carpooler.users.CarpoolUser;
 import com.carpooler.users.CarpoolUserStatus;
 import com.carpooler.users.User;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Trip manages the number of CarpoolUsers and their individual statuses
@@ -29,6 +32,8 @@ public class Trip {
     // populated for logged in carpool user
     private CarpoolUser loggedInUser;
     private boolean loggedInUserChecked = false;
+    private CarpoolUser nextPickupUser;
+    private CarpoolUser nextDropoffUser;
     public Trip(TripData tripData, ServiceActivityCallback serviceActivityCallback) {
         this.serviceActivityCallback = serviceActivityCallback;
         this.tripData = tripData;
@@ -218,7 +223,7 @@ public class Trip {
     }
 
     public void setStartLocation(String searchAddress, AddressErrorCallback addressErrorCallback) throws RemoteException {
-        setAddress(searchAddress,addressErrorCallback,false);
+        setAddress(searchAddress, addressErrorCallback, false);
     }
 
     public void setEndLocation(String searchAddress, AddressErrorCallback addressErrorCallback) throws RemoteException {
@@ -335,7 +340,11 @@ public class Trip {
     }
 
     public boolean canNavigatePickupUser(CarpoolUser carpoolUser) {
-        return isLoggedInUser() && carpoolUser.canNavigatePickup();
+        checkNavigateUsers(true);
+        return isLoggedInUser()
+                && isInRoute()
+                && carpoolUser.canNavigatePickup()
+                && carpoolUser.equals(nextPickupUser);
     }
 
     public boolean canAcceptRequest(CarpoolUser carpoolUser) {
@@ -364,7 +373,7 @@ public class Trip {
     public void cancelPickup() {
         if (canCancelPickup()){
             loggedInUser.cancel();
-            tripData.setOpenSeats(tripData.getOpenSeats()+1);
+            tripData.setOpenSeats(tripData.getOpenSeats() + 1);
             saveTrip();
         }else{
             throw new IllegalArgumentException("Cannot Cancel Pickup");
@@ -393,7 +402,47 @@ public class Trip {
     }
 
     public boolean canNavigateDropoffUser(CarpoolUser carpoolUser) {
-        return isLoggedInUser() && carpoolUser.canNavigateDropoff();
+        checkNavigateUsers(false);
+        return isLoggedInUser()
+                && isInRoute()
+                && carpoolUser.canNavigateDropoff()
+                && carpoolUser.equals(nextDropoffUser);
+    }
+
+    private void checkNavigateUsers(boolean pickup){
+        CarpoolUser nextUser;
+        if (pickup){
+            nextUser = nextPickupUser;
+        }else{
+            nextUser = nextDropoffUser;
+        }
+        if (isLoggedInUser()
+                && isInRoute()
+                && nextUser==null){
+            Location startLocation = serviceActivityCallback.getLocationService().initialize();
+            CarpoolUserIterator carpoolUsers = getCarpoolUsers();
+            List<CarpoolUser> navigatableUsers = new ArrayList<CarpoolUser>();
+            for (CarpoolUser user:carpoolUsers){
+                if (pickup){
+                    if (user.canNavigatePickup()){
+                        navigatableUsers.add(user);
+                    }
+                }else{
+                    if (user.canNavigateDropoff()){
+                        navigatableUsers.add(user);
+                    }
+                }
+            }
+            carpoolUsers.reset();
+            if (!navigatableUsers.isEmpty()){
+                nextUser = serviceActivityCallback.getLocationService().selectNextDestination(startLocation,navigatableUsers,pickup);
+                if (pickup){
+                    nextPickupUser = nextUser;
+                }else{
+                    nextDropoffUser = nextUser;
+                }
+            }
+        }
     }
 
     public void addUser(CarpoolUser carpoolUser) {
