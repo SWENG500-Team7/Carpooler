@@ -12,7 +12,8 @@ public class VehicleData {
                     + "\"model\":{\"type\":\"string\"},"
                     + "\"color\":{\"type\":\"string\"},"
                     + "\"plateNumber\":{\"type\":\"string\"},"
-                    + "\"year\":{\"type\":\"integer\"}"
+                    + "\"year\":{\"type\":\"integer\"},"
+                    + "\"mpg\":{\"type\":\"integer\"}"
                 + "}"
             + "}";
     private int seats;
@@ -21,6 +22,7 @@ public class VehicleData {
     private int year;
     private String color;
     private String plateNumber;
+    private int mpg;
 
     public int getSeats() {
         return seats;
@@ -68,6 +70,14 @@ public class VehicleData {
 
     public void setPlateNumber(String plateNumber) {
         this.plateNumber = plateNumber;
+    }
+
+    public int getMPG() {
+        return mpg;
+    }
+
+    public void setMPG(int mpg) {
+        this.mpg = mpg;
     }
 
     @Override

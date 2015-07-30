@@ -10,7 +10,6 @@ import com.carpooler.dao.dto.VehicleData;
  */
 public class Vehicle {
     private final VehicleData vehicleData;
-    private int mpg = 0;
 
     public Vehicle(VehicleData vehicleData) {
         this.vehicleData = vehicleData;
@@ -68,13 +67,13 @@ public class Vehicle {
 
         @Override
         protected Void doInBackground(Void... params) {
-            mpg = VehicleRestService.getMPG(getMake(), getModel(), String.valueOf(getYear()));
+            vehicleData.setMPG(VehicleRestService.getMPG(getMake(), getModel(), String.valueOf(getYear())));
             return null;
         }
     }
 
     public int getMPG() {
-        return mpg;
+        return vehicleData.getMPG();
     }
 
     public void setMPG() {
