@@ -130,6 +130,7 @@ public class TripAddFragment extends Fragment implements MenuItem.OnMenuItemClic
                 goBack();
                 break;
             case R.id.mi_save_trip:
+                trip.getVehicle().setMPG();
                 saveTrip();
                 setFormEnabled(false);
                 goBack();

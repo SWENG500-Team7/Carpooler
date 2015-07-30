@@ -1,10 +1,8 @@
 package com.carpooler.ui.activities;
 
 import android.content.DialogInterface;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -69,7 +67,7 @@ public class TripViewFragment extends AbstractTripView {
         trip.loadVehicleData(new UserLoader.VehicleCallback() {
             @Override
             public String getVehicleId() {
-                return trip.getVehiclePlatNumber();
+                return trip.getVehiclePlateNumber();
             }
 
             @Override

@@ -2,27 +2,34 @@ package com.carpooler.ui.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.location.Location;
 import android.location.LocationListener;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.carpooler.GeoPoint;
 import com.carpooler.R;
 import com.carpooler.dao.DatabaseService;
 import com.carpooler.dao.TripDataService;
 import com.carpooler.dao.UserDataService;
 import com.carpooler.payment.PaymentService;
+import com.carpooler.trips.FuelPrice;
 import com.carpooler.trips.LocationService;
 import com.carpooler.users.Address;
 import com.carpooler.users.User;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.People;
 import com.google.android.gms.plus.Plus;
@@ -40,6 +47,9 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
     private UserDataService userDataService;
     private LocationService locationService;
     private PaymentService paymentService;
+    private GeoPoint geoPoint;
+    private boolean mIntentInProgress = false;
+    private int GPlusSignIn = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -193,7 +203,33 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
+        if (!connectionResult.hasResolution()) {
+            GooglePlayServicesUtil.getErrorDialog(connectionResult.getErrorCode(), this,
+                    0).show();
+            return;
+        }
+        if (!mIntentInProgress) {
+            if (connectionResult.hasResolution()) {
+                try {
+                    mIntentInProgress = true;
+                    connectionResult.startResolutionForResult(this, GPlusSignIn);
+                } catch (IntentSender.SendIntentException e) {
+                    mIntentInProgress = false;
+                    mGoogleApiClient.connect();
+                }
+            }
+        }
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int responseCode,
+                                    Intent intent) {
+        if (requestCode == GPlusSignIn) {
+            mIntentInProgress = false;
+            if (!mGoogleApiClient.isConnecting()) {
+                mGoogleApiClient.connect();
+            }
+        }
     }
 
     @Override
@@ -293,7 +329,8 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
 
     @Override
     public void onLocationChanged(Location location) {
-
+        Log.i("CarpoolerActivity", "Latitude: " + location.getLatitude() + "; Longitude: " + location.getLongitude());
+        geoPoint = new GeoPoint(location.getLongitude(), location.getLatitude());
     }
 
     @Override
@@ -360,6 +397,9 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
 
     @Override
     public void navigate(Address address) {
-        // TODO Open Navigation Intent
+        Uri gmmIntentUri = Uri.parse("google.navigation:q="+address.getLat()+","+address.getLon());
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+        mapIntent.setPackage("com.google.android.apps.maps");
+        startActivity(mapIntent);
     }
 }

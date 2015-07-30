@@ -18,6 +18,7 @@ public class CarpoolUser {
     private final CarpoolUserData carpoolUserData;
     private final ServiceActivityCallback serviceActivityCallback;
     private UserLoader userLoader;
+
     public CarpoolUser(CarpoolUserData carpoolUserData,
                        ServiceActivityCallback serviceActivityCallback) {
         this.carpoolUserData = carpoolUserData;
