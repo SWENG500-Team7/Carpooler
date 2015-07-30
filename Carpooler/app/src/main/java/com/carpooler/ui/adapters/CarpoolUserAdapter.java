@@ -156,7 +156,7 @@ public class CarpoolUserAdapter extends EmptyAdapter<CarpoolUserAdapter.CarpoolU
                         carpoolUserRowHolder.trip.dropoffCarpoolUser(carpoolUserRowHolder.carpoolUser);
                         carpoolUserRowHolder.callback.onTripSelected(carpoolUserRowHolder.trip.getTripId());
                         // TODO: Need to change user status here for next destination selection to work.
-                        carpoolUserRowHolder.callback.getLocationService().selectNextDestination(carpoolUserRowHolder.callback.getLocationService().getLastDestination(), carpoolUserRowHolder.trip.getDestinations(), carpoolUserRowHolder.trip.getCarpoolUsers().iterator(), carpoolUserRowHolder);
+                        carpoolUserRowHolder.callback.getLocationService().selectNextDestination(carpoolUserRowHolder.callback.getLocationService().getLastDestination(), carpoolUserRowHolder.trip.getDestinations(), carpoolUserRowHolder.trip, carpoolUserRowHolder);
                     }
                 });
             }
@@ -206,7 +206,7 @@ public class CarpoolUserAdapter extends EmptyAdapter<CarpoolUserAdapter.CarpoolU
                         carpoolUserRowHolder.trip.pickupCarpoolUser(carpoolUserRowHolder.carpoolUser);
                         carpoolUserRowHolder.callback.onTripSelected(carpoolUserRowHolder.trip.getTripId());
                         // TODO: Need to change user status here for next destination selection to work.
-                        carpoolUserRowHolder.callback.getLocationService().selectNextDestination(carpoolUserRowHolder.callback.getLocationService().getLastDestination(), carpoolUserRowHolder.trip.getDestinations(), carpoolUserRowHolder.trip.getCarpoolUsers().iterator(), carpoolUserRowHolder);
+                        carpoolUserRowHolder.callback.getLocationService().selectNextDestination(carpoolUserRowHolder.callback.getLocationService().getLastDestination(), carpoolUserRowHolder.trip.getDestinations(), carpoolUserRowHolder.trip, carpoolUserRowHolder);
                     }
                 });
 

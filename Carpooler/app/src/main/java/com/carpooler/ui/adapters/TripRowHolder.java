@@ -136,7 +136,7 @@ public class TripRowHolder extends RecyclerView.ViewHolder implements Destinatio
                         tripRowHolder.trip.startTrip();
                         tripRowHolder.callback.onTripSelected(tripRowHolder.tripId);
                         tripRowHolder.trip.setFuelPrice();
-                        tripRowHolder.callback.getLocationService().selectNextDestination(tripRowHolder.trip.getStartLocation(), tripRowHolder.trip.getDestinations(), tripRowHolder.trip.getCarpoolUsers().iterator(), tripRowHolder);
+                        tripRowHolder.callback.getLocationService().selectNextDestination(tripRowHolder.trip.getStartLocation(), tripRowHolder.trip.getDestinations(), tripRowHolder.trip, tripRowHolder);
                     }
                 });
             }
@@ -181,7 +181,6 @@ public class TripRowHolder extends RecyclerView.ViewHolder implements Destinatio
                     @Override
                     public void onClick(View v) {
                         tripRowHolder.callback.onHostCompleteTrip(tripRowHolder.tripId);
-                        tripRowHolder.trip.splitFuelCost();
                     }
                 });
             }

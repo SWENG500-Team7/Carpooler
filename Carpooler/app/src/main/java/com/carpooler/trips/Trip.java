@@ -146,14 +146,16 @@ public class Trip {
     }
 
     // TODO: Need to build new unit test for this
-    public void splitFuelCost() {
+    public void splitFuelCost(int distance_in_km) {
         double pricePerMile = fuel_price/getVehicle().getMPG();
+        double distance_in_miles = distance_in_km / METERS_PER_MILE;
+        double fuel_split = (Math.round(pricePerMile * distance_in_miles) * 100.0) / 100.0;
         Iterator<CarpoolUser> users = getCarpoolUsers().iterator();
         while (users.hasNext()) {
             CarpoolUser user = users.next();
-            double miles_travelled = user.getDistanceTravelled()/METERS_PER_MILE;
-            double fuel_split = (Math.round(pricePerMile*miles_travelled)*100.0)/100.0;
-            user.setPaymentAmount(user.getPaymentAmount() + fuel_split);
+            if (user.getStatus() == CarpoolUserStatus.PICKED_UP) {
+                user.setPaymentAmount(user.getPaymentAmount() + fuel_split);
+            }
         }
     }
 

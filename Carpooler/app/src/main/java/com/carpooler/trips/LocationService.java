@@ -8,10 +8,8 @@ import android.os.AsyncTask;
 import android.os.RemoteException;
 import android.util.Log;
 
-import com.carpooler.GeoPoint;
 import com.carpooler.dao.DatabaseService;
 import com.carpooler.users.Address;
-import com.carpooler.users.CarpoolUser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -131,17 +128,17 @@ public class LocationService {
 
         private Address start;
         private List<Address> destinations;
-        private Iterator<CarpoolUser> users;
+        private Trip trip;
 
-        public DestinationSelector(Address start, List<Address> destinations, Iterator<CarpoolUser> users) {
+        public DestinationSelector(Address start, List<Address> destinations, Trip trip) {
             this.start = start;
             this.destinations = destinations;
-            this.users = users;
+            this.trip = trip;
         }
 
         @Override
         protected Void doInBackground(Void... params) {
-            Address destination = selectNextDestination(start, destinations, users);
+            Address destination = selectNextDestination(start, destinations, trip);
             last_destination = destination;
             if (mCallback != null) {
                 mCallback.onDestinationSelected(destination);
@@ -154,9 +151,9 @@ public class LocationService {
         return last_destination;
     }
 
-    public void selectNextDestination(Address start, List<Address> destinations, Iterator<CarpoolUser> users, DestinationSelectionCallback callback) {
+    public void selectNextDestination(Address start, List<Address> destinations, Trip trip, DestinationSelectionCallback callback) {
         mCallback = callback;
-        new DestinationSelector(start, destinations, users).execute();
+        new DestinationSelector(start, destinations, trip).execute();
     }
 
     /**
@@ -165,7 +162,7 @@ public class LocationService {
      * @param destinations a list of Addresses
      * @return nextDestination
      */
-    public Address selectNextDestination(Address start, List<Address> destinations, Iterator<CarpoolUser> users) {
+    public Address selectNextDestination(Address start, List<Address> destinations, Trip trip) {
         int[] durations = new int[destinations.size()];
         String requestUrlString = "https://maps.googleapis.com/maps/api/distancematrix/json?origins="
                 +start.getStreetNumber().replace(" ", "+")+"+"+start.getCity().replace(" ", "+")+"+"+start.getState().replace(" ", "+")
@@ -217,10 +214,8 @@ public class LocationService {
                 }
             }
             int distance = elements.getJSONObject(pos).getJSONObject("distance").getInt("value");
-            if (users != null) {
-                while (users.hasNext()) {
-                    users.next().setDistanceTravelled(users.next().getDistanceTravelled() + distance);
-                }
+            if (trip != null) {
+                trip.splitFuelCost(distance);
             }
         } catch (JSONException e) {
             e.printStackTrace();
