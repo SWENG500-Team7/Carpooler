@@ -28,7 +28,6 @@ import io.searchbox.annotations.JestId;
                             + "\"hostVehicle\": " + VehicleData.MAPPING + ","
                             + "\"status\": {\"type\": \"string\", \"index\":\"not_analyzed\"},"
                             + "\"fuelPrice\": {\"type\": \"double\"},"
-                            + "\"fuelSplit\": {\"type\": \"double\"},"
                             + "\"fuelTotal\": {\"type\": \"double\"},"
                             + "\"tolls\": {\"type\": \"double\"},"
                             + "\"openSeats\":{\"type\":\"integer\"},"
@@ -54,7 +53,6 @@ public class TripData implements DatabaseObject{
     private Date endTime;
     private List<CarpoolUserData> users = new ArrayList<>();
     private double fuelPrice = 0.00;
-    private double fuelSplit = 0.00;
     private double fuelTotal = 0.00;
     private double tolls = 0.00;
     private int openSeats;
@@ -92,10 +90,6 @@ public class TripData implements DatabaseObject{
         this.fuelPrice = fuelPrice;
     }
 
-    public double getFuelSplit() {
-        return fuelSplit;
-    }
-
     public double getFuelTotal() {
         return fuelTotal;
     }
@@ -110,10 +104,6 @@ public class TripData implements DatabaseObject{
 
     public void setHostId(String hostId) {
         this.hostId = hostId;
-    }
-
-    public void setFuelSplit(double fuelSplit) {
-        this.fuelSplit = fuelSplit;
     }
 
     public void setFuelTotal(double fuelTotal) {

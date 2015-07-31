@@ -143,7 +143,6 @@ public class Trip {
         }
     }
 
-    // TODO: Need to build new unit test for this
     public void splitFuelCost(int distance_in_km) {
         double pricePerMile = getFuelPrice()/getHostVehicle().getMPG();
         double distance_in_miles = distance_in_km / METERS_PER_MILE;
@@ -152,31 +151,12 @@ public class Trip {
         while (users.hasNext()) {
             CarpoolUser user = users.next();
             if (user.canNavigateDropoff()) {
+                //Update each user's payment amount
                 user.setPaymentAmount(user.getPaymentAmount() + fuel_split);
+                //Update fuel total of trip
+                tripData.setFuelTotal(tripData.getFuelTotal() + fuel_split);
             }
         }
-    }
-
-    // TODO: Remove this as it does not perform the desired function. Replaced by above method.
-    /**
-     * Splits the total fuel cost evenly among the list of CarpoolUsers
-     * for each trip segment and adds to current fuel split
-     * @param cost - the total fuel cost for the current trip segment
-     * @return fuel_split - the fuel split for the current trip segment
-     */
-    public double splitFuelCost(double cost) {
-        //Update total of trip
-        tripData.setFuelTotal(tripData.getFuelTotal() + cost);
-
-        //Split total and update users
-        int userCount = 0;
-        for(CarpoolUserData user : tripData.getUsers()) {
-            if(user.getStatus() == CarpoolUserStatus.PICKED_UP)
-                userCount++;
-        }
-        if(userCount > 0)
-            tripData.setFuelSplit(Math.round((tripData.getFuelSplit()+ cost/userCount)*100.0)/100.0);
-        return tripData.getFuelSplit();
     }
 
     public void completeTrip(){
