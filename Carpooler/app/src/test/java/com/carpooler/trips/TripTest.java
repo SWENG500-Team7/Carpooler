@@ -97,9 +97,9 @@ public class TripTest extends AbstractServiceActivityMockTest {
         trip.pickupCarpoolUser(user2);
         trip.pickupCarpoolUser(user3);
         trip.splitFuelCost(16093);
-        Assert.assertEquals(1.17, user1.getPaymentAmount(), .5);
-        Assert.assertEquals(1.17, user2.getPaymentAmount(), .5);
-        Assert.assertEquals(1.17, user3.getPaymentAmount(), .5);
+        Assert.assertEquals(0.39, user1.getPaymentAmount(), .01);
+        Assert.assertEquals(0.39, user2.getPaymentAmount(), .01);
+        Assert.assertEquals(0.39, user3.getPaymentAmount(), .01);
     }
 
 }

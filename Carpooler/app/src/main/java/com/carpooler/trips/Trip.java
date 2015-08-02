@@ -146,15 +146,24 @@ public class Trip {
     public void splitFuelCost(int distance_in_km) {
         double pricePerMile = getFuelPrice()/getHostVehicle().getMPG();
         double distance_in_miles = distance_in_km / METERS_PER_MILE;
-        double fuel_split = (Math.round(pricePerMile * distance_in_miles) * 100.0) / 100.0;
-        Iterator<CarpoolUser> users = getCarpoolUsers().iterator();
-        while (users.hasNext()) {
-            CarpoolUser user = users.next();
+        double fuel_cost = (Math.round(pricePerMile * distance_in_miles) * 100.0) / 100.0;
+        //Update fuel total of trip
+        tripData.setFuelTotal(tripData.getFuelTotal() + fuel_cost);
+        Iterator<CarpoolUser> usersCount = getCarpoolUsers().iterator();
+        int pickedUpUserCount = 0;
+        while (usersCount.hasNext()) {
+            CarpoolUser user = usersCount.next();
+            if (user.canNavigateDropoff()) {
+                pickedUpUserCount++;
+            }
+        }
+        double fuel_split = (Math.round(fuel_cost/pickedUpUserCount) * 100.0) / 100.0;
+        Iterator<CarpoolUser> usersPayment = getCarpoolUsers().iterator();
+        while (usersPayment.hasNext()) {
+            CarpoolUser user = usersPayment.next();
             if (user.canNavigateDropoff()) {
                 //Update each user's payment amount
                 user.setPaymentAmount(user.getPaymentAmount() + fuel_split);
-                //Update fuel total of trip
-                tripData.setFuelTotal(tripData.getFuelTotal() + fuel_split);
             }
         }
     }
