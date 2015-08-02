@@ -248,7 +248,7 @@ public class TripCompleteFragment extends Fragment implements MenuItem.OnMenuIte
         public void doSuccess(TripData data) {
             mTrip = new Trip(data, mCallback);
 
-            tvDistance.setText("117");//TODO update with actual distance
+            tvDistance.setText(Integer.toString(mTrip.getTotalDistance()));
             tvFuel.setText(NumberFormat.getCurrencyInstance().format(mTrip.getFuelTotal()));
 
             if (mFragType.equals(TripCompleteTypeEnum.USER)) {
