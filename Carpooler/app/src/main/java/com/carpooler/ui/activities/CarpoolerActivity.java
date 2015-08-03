@@ -224,6 +224,7 @@ public class CarpoolerActivity extends AppCompatActivity implements FragmentDraw
     @Override
     protected void onActivityResult(int requestCode, int responseCode,
                                     Intent intent) {
+        super.onActivityResult(requestCode, responseCode, intent);
         if (requestCode == GPlusSignIn) {
             mIntentInProgress = false;
             if (!mGoogleApiClient.isConnecting()) {

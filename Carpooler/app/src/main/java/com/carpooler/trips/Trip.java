@@ -34,8 +34,6 @@ public class Trip {
     // populated for logged in carpool user
     private CarpoolUser loggedInUser;
     private boolean loggedInUserChecked = false;
-    private Vehicle vehicle;
-    private double fuel_price = 0.0;
     private static final double METERS_PER_MILE = 1609.34;
 
     private CarpoolUser nextPickupUser;
@@ -62,7 +60,7 @@ public class Trip {
 
         @Override
         protected Void doInBackground(Void... params) {
-            fuel_price = new FuelPrice().getFuelUnitPrice(geoPoint);
+            tripData.setFuelPrice(new FuelPrice().getFuelUnitPrice(geoPoint));
             return null;
         }
     }
@@ -72,7 +70,7 @@ public class Trip {
     }
 
     public double getFuelPrice() {
-        return fuel_price;
+        return tripData.getFuelPrice();
     }
 
     private void setLoggedInUser(){
@@ -148,40 +146,29 @@ public class Trip {
         }
     }
 
-    // TODO: Need to build new unit test for this
     public void splitFuelCost(int distance_in_km) {
-        double pricePerMile = fuel_price/getVehicle().getMPG();
+        double pricePerMile = getFuelPrice()/getHostVehicle().getMPG();
         double distance_in_miles = distance_in_km / METERS_PER_MILE;
-        double fuel_split = (Math.round(pricePerMile * distance_in_miles) * 100.0) / 100.0;
-        Iterator<CarpoolUser> users = getCarpoolUsers().iterator();
-        while (users.hasNext()) {
-            CarpoolUser user = users.next();
-            if (user.getStatus() == CarpoolUserStatus.PICKED_UP) {
+        double fuel_cost = (Math.round(pricePerMile * distance_in_miles) * 100.0) / 100.0;
+        //Update fuel total of trip
+        tripData.setFuelTotal(tripData.getFuelTotal() + fuel_cost);
+        Iterator<CarpoolUser> usersCount = getCarpoolUsers().iterator();
+        int pickedUpUserCount = 0;
+        while (usersCount.hasNext()) {
+            CarpoolUser user = usersCount.next();
+            if (user.canNavigateDropoff()) {
+                pickedUpUserCount++;
+            }
+        }
+        double fuel_split = (Math.round(fuel_cost/pickedUpUserCount) * 100.0) / 100.0;
+        Iterator<CarpoolUser> usersPayment = getCarpoolUsers().iterator();
+        while (usersPayment.hasNext()) {
+            CarpoolUser user = usersPayment.next();
+            if (user.canNavigateDropoff()) {
+                //Update each user's payment amount
                 user.setPaymentAmount(user.getPaymentAmount() + fuel_split);
             }
         }
-    }
-
-    // TODO: Remove this as it does not perform the desired function. Replaced by above method.
-    /**
-     * Splits the total fuel cost evenly among the list of CarpoolUsers
-     * for each trip segment and adds to current fuel split
-     * @param cost - the total fuel cost for the current trip segment
-     * @return fuel_split - the fuel split for the current trip segment
-     */
-    public double splitFuelCost(double cost) {
-        //Update total of trip
-        tripData.setFuelTotal(tripData.getFuelTotal() + cost);
-
-        //Split total and update users
-        int userCount = 0;
-        for(CarpoolUserData user : tripData.getUsers()) {
-            if(user.getStatus() == CarpoolUserStatus.PICKED_UP)
-                userCount++;
-        }
-        if(userCount > 0)
-            tripData.setFuelSplit(Math.round((tripData.getFuelSplit()+ cost/userCount)*100.0)/100.0);
-        return tripData.getFuelSplit();
     }
 
     public void completeTrip(){
@@ -214,9 +201,9 @@ public class Trip {
         List<Address> destinations = new ArrayList<>();
         while (getCarpoolUsers().iterator().hasNext()) {
             CarpoolUser user = getCarpoolUsers().iterator().next();
-            if (user.getStatus() == CarpoolUserStatus.CONFIRMED_FOR_PICKUP) {
+            if (user.canNavigatePickup()) {
                 destinations.add(user.getPickupLocation());
-            } else if (user.getStatus() == CarpoolUserStatus.PICKED_UP) {
+            } else if (user.canNavigateDropoff()) {
                 destinations.add(user.getDropoffLocation());
             }
         }
@@ -279,6 +266,14 @@ public class Trip {
         }
     }
 
+    public int getTotalDistance() {
+        return tripData.getTotalDistance();
+    }
+
+    public void setTotalDistance(int totalDistance) {
+        tripData.setTotalDistance(totalDistance);
+    }
+
     public void setStartLocation(String searchAddress, AddressErrorCallback addressErrorCallback) throws RemoteException {
         setAddress(searchAddress, addressErrorCallback, false);
     }
@@ -334,15 +329,13 @@ public class Trip {
         if (isCompleted() && isLoggedInUserInCarpool()){
             CarpoolUser user = getLoggedInCarpoolUser();
 //            if (getTripId().equals("AU5fMY2mtHTBJzAXf60c")) {//TODO remove, just for testing paying host
-//                tripData.setFuelSplit(0);
 //                tripData.setFuelTotal(0);
 //                for(CarpoolUserData carpoolUser : tripData.getUsers()) {//Pikcup everyone
 //                    carpoolUser.setStatus(CarpoolUserStatus.PICKED_UP);
-//                    carpoolUser.setPaymentAmount(0);
+//                    carpoolUser.setPaymentAmount(30);
 //                }
-//                user.setPaymentAmount(splitFuelCost(60));//Complete the journey and split gas
 //                for(CarpoolUserData carpoolUser : tripData.getUsers()) {//Everyone gets out
-//                    carpoolUser.setStatus(CarpoolUserStatus.DROPPED_OFF);
+//                    carpoolUser.setStatus(CarpoolUserStatus.CONFIRMED_DROPPED_OFF);
 //                }
 //                setTolls(7.50);//Set and split tolls
 //                saveTrip();
@@ -564,19 +557,14 @@ public class Trip {
 
     /**
      * Sets the vehicle to be associated with this trip
-     * @param vehicle - the trip vehicle
+     * @param hostVehicle - the trip vehicle
      */
-    public void setVehicle(Vehicle vehicle) {
-        this.vehicle = vehicle;
-        tripData.setHostVehicle(vehicle.getPlateNumber());
-        tripData.setOpenSeats(vehicle.getSeats());
+    public void setHostVehicle(Vehicle hostVehicle) {
+        tripData.setHostVehicle(hostVehicle);
+        tripData.setOpenSeats(hostVehicle.getSeats());
     }
 
-    public Vehicle getVehicle() {
-        return vehicle;
-    }
-
-    public String getVehiclePlateNumber() {
+    public Vehicle getHostVehicle() {
         return tripData.getHostVehicle();
     }
 

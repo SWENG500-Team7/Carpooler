@@ -114,8 +114,17 @@ public class UserReviewFragment extends Fragment implements MenuItem.OnMenuItemC
     public void onStart() {
         super.onStart();
 
+        //Reverse rating values
+        int length = Rating.values().length;
+        Rating[] dropdownContent = Rating.values();
+        for (int i = 0; i < length / 2; i++) {
+            Rating temp = dropdownContent[i];
+            dropdownContent[i] = dropdownContent[length - i - 1];
+            dropdownContent[length - i - 1] = temp;
+        }
+
         //Populate spinner
-        mRatingAdapter = new ArrayAdapter<Rating>(getActivity(), android.R.layout.simple_spinner_item, Rating.values());
+        mRatingAdapter = new ArrayAdapter<Rating>(getActivity(), android.R.layout.simple_spinner_item, dropdownContent);
         mRatingAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
         ddRating.setAdapter(mRatingAdapter);
 

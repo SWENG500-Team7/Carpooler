@@ -4,6 +4,7 @@ import android.os.RemoteException;
 
 import com.carpooler.AbstractServiceActivityMockTest;
 import com.carpooler.dao.dto.TripData;
+import com.carpooler.dao.dto.VehicleData;
 import com.carpooler.users.CarpoolUser;
 import com.carpooler.users.CarpoolUserStatus;
 
@@ -16,12 +17,13 @@ import org.junit.Test;
 public class TripTest extends AbstractServiceActivityMockTest {
 
     private Trip trip;
+    private TripData tripData = new TripData();
 
 
     @Override
     public void setup() throws RemoteException {
         super.setup();
-        trip = new Trip(new TripData(),callback);
+        trip = new Trip(tripData,callback);
     }
 
     @Test
@@ -75,13 +77,17 @@ public class TripTest extends AbstractServiceActivityMockTest {
 
     @Test
     public void testSplitFuelCost() {
+        VehicleData vehicleData = new VehicleData();
+        vehicleData.setMPG(30);
+        Vehicle hostVehicle = new Vehicle(vehicleData);
+        trip.setHostVehicle(hostVehicle);
+        tripData.setFuelPrice(3.50);
         CarpoolUser user1 = trip.requestJoinTrip();
         CarpoolUser user2 = trip.requestJoinTrip();
         CarpoolUser user3 = trip.requestJoinTrip();
         trip.confirmCarpoolUser(user1);
         trip.confirmCarpoolUser(user2);
         trip.confirmCarpoolUser(user3);
-        double fuel_cost = 12.00;
         Assert.assertTrue(trip.getCarpoolUsers().hasNext());
         trip.getCarpoolUsers().next();
         Assert.assertTrue(trip.getCarpoolUsers().hasNext());
@@ -90,8 +96,10 @@ public class TripTest extends AbstractServiceActivityMockTest {
         trip.pickupCarpoolUser(user1);
         trip.pickupCarpoolUser(user2);
         trip.pickupCarpoolUser(user3);
-        double fuel_split = trip.splitFuelCost(fuel_cost);
-        Assert.assertEquals(4.00, fuel_split,.5);
+        trip.splitFuelCost(16093);
+        Assert.assertEquals(0.39, user1.getPaymentAmount(), .01);
+        Assert.assertEquals(0.39, user2.getPaymentAmount(), .01);
+        Assert.assertEquals(0.39, user3.getPaymentAmount(), .01);
     }
 
 }

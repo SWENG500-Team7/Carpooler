@@ -63,7 +63,12 @@
 
     <Button
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="32dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="4dp"
+        style="@style/CarpoolerButton"
+        android:background="@color/colorAccent"
         android:text="Search"
         android:id="@+id/btn_search"
         android:layout_alignParentBottom="true"
@@ -72,18 +77,28 @@
         android:enabled="false" />
 
     <Button
-        style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="32dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        style="@style/CarpoolerButton"
+        android:background="@color/colorAccent"
         android:text="Select Date"
         android:id="@+id/btn_dateSelect"
         android:layout_alignTop="@+id/txt_date"
         android:layout_alignStart="@+id/dest_loc" />
 
     <Button
-        style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="32dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        style="@style/CarpoolerButton"
+        android:background="@color/colorAccent"
         android:text="Select Time"
         android:id="@+id/btn_timeSelect"
         android:layout_centerVertical="true"

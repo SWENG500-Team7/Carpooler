@@ -67,7 +67,7 @@ public class TripViewFragment extends AbstractTripView {
         trip.loadVehicleData(new UserLoader.VehicleCallback() {
             @Override
             public String getVehicleId() {
-                return trip.getVehiclePlateNumber();
+                return trip.getHostVehicle().getPlateNumber();
             }
 
             @Override

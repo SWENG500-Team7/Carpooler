@@ -130,7 +130,7 @@ public class TripAddFragment extends Fragment implements MenuItem.OnMenuItemClic
                 goBack();
                 break;
             case R.id.mi_save_trip:
-                trip.getVehicle().setMPG();
+                trip.getHostVehicle().setMPG();
                 saveTrip();
                 setFormEnabled(false);
                 goBack();
@@ -209,7 +209,7 @@ public class TripAddFragment extends Fragment implements MenuItem.OnMenuItemClic
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         if (parent == vehicleSpinner) {
             Vehicle vehicle = vehicleMap.get(vehicleSpinner.getItemAtPosition(position).toString());
-            trip.setVehicle(vehicle);
+            trip.setHostVehicle(vehicle);
         }
     }
 

@@ -5,6 +5,7 @@ import android.util.Log;
 import com.carpooler.dao.annotations.ElasticData;
 import com.carpooler.trips.Trip;
 import com.carpooler.trips.TripStatus;
+import com.carpooler.trips.Vehicle;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,14 +25,15 @@ import io.searchbox.annotations.JestId;
                     + "trip\":{" +
                         "\"properties\":{"
                             + "\"hostId\": {\"type\": \"string\", \"index\":\"not_analyzed\"},"
-                            + "\"hostVehicle\": {\"type\": \"string\", \"index\":\"not_analyzed\"},"
+                            + "\"hostVehicle\": " + VehicleData.MAPPING + ","
                             + "\"status\": {\"type\": \"string\", \"index\":\"not_analyzed\"},"
-                            + "\"fuelSplit\": {\"type\": \"double\"},"
+                            + "\"fuelPrice\": {\"type\": \"double\"},"
                             + "\"fuelTotal\": {\"type\": \"double\"},"
                             + "\"tolls\": {\"type\": \"double\"},"
                             + "\"openSeats\":{\"type\":\"integer\"},"
                             + "\"startTime\": {\"type\": \"date\", \"format\":\"date_time_no_millis\"},"
                             + "\"endTime\": {\"type\": \"date\", \"format\":\"date_time_no_millis\"},"
+                            + "\"totalDistance\": {\"type\": \"int\"},"
                             + "\"startLocation\": " + AddressData.MAPPING + ","
                             + "\"endLocation\": " + AddressData.MAPPING + ","
                             + "\"users\": " + CarpoolUserData.MAPPING
@@ -43,17 +45,18 @@ public class TripData implements DatabaseObject{
     @JestId
     private transient String _id;
     private String hostId;
-    private String hostVehicle;
+    private Vehicle hostVehicle;
     private TripStatus status = TripStatus.OPEN;
     private AddressData startLocation;
     private AddressData endLocation;
     private Date startTime;
     private Date endTime;
     private List<CarpoolUserData> users = new ArrayList<>();
-    private double fuelSplit = 0.00;
+    private double fuelPrice = 0.00;
     private double fuelTotal = 0.00;
     private double tolls = 0.00;
     private int openSeats;
+    private int totalDistance = 0;
 
     public TripStatus getStatus() {
         return status;
@@ -79,8 +82,12 @@ public class TripData implements DatabaseObject{
         this._id = _id;
     }
 
-    public double getFuelSplit() {
-        return fuelSplit;
+    public double getFuelPrice() {
+        return fuelPrice;
+    }
+
+    public void setFuelPrice(double fuelPrice) {
+        this.fuelPrice = fuelPrice;
     }
 
     public double getFuelTotal() {
@@ -97,10 +104,6 @@ public class TripData implements DatabaseObject{
 
     public void setHostId(String hostId) {
         this.hostId = hostId;
-    }
-
-    public void setFuelSplit(double fuelSplit) {
-        this.fuelSplit = fuelSplit;
     }
 
     public void setFuelTotal(double fuelTotal) {
@@ -143,11 +146,11 @@ public class TripData implements DatabaseObject{
         this.endTime = endTime;
     }
 
-    public String getHostVehicle() {
+    public Vehicle getHostVehicle() {
         return hostVehicle;
     }
 
-    public void setHostVehicle(String hostVehicle) {
+    public void setHostVehicle(Vehicle hostVehicle) {
         this.hostVehicle = hostVehicle;
     }
 
@@ -157,6 +160,14 @@ public class TripData implements DatabaseObject{
 
     public void setOpenSeats(int openSeats) {
         this.openSeats = openSeats;
+    }
+
+    public int getTotalDistance() {
+        return totalDistance;
+    }
+
+    public void setTotalDistance(int totalDistance) {
+        this.totalDistance = totalDistance;
     }
 
 }

@@ -216,6 +216,7 @@ public class LocationService {
             }
             int distance = elements.getJSONObject(pos).getJSONObject("distance").getInt("value");
             if (trip != null) {
+                trip.setTotalDistance(trip.getTotalDistance() + distance);
                 trip.splitFuelCost(distance);
             }
         } catch (JSONException e) {
