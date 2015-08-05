@@ -1,18 +1,12 @@
 package com.carpooler.dao;
 
-import android.os.AsyncTask;
-import android.util.Log;
-
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -92,6 +86,9 @@ public class VehicleRestService {
             }
             // calculate average mpg
             return sum/len;
+        }
+        if (sum==0){
+            sum=25;
         }
         return sum;
     }
@@ -192,38 +189,39 @@ public class VehicleRestService {
      */
     private static String[] parseSingleTagForYear(XmlPullParser pParser, String pYear, String pTag) {
         ArrayList<String> itemList = new ArrayList<String>();
-        String value = null;
-        try {
-            int eventType = pParser.getEventType();
+        if (pParser!=null) {
+            String value = null;
+            try {
+                int eventType = pParser.getEventType();
 
-            //Move through document and collect data
-            while (eventType != XmlPullParser.END_DOCUMENT) {
-                String item = null;
+                //Move through document and collect data
+                while (eventType != XmlPullParser.END_DOCUMENT) {
+                    String item = null;
 
-                //Get the value from pTag for when the value for "year" is pYear
-                switch (eventType) {
-                    case XmlPullParser.START_TAG:
-                        item = pParser.getName();
-                        if (item.equals(pTag)) {
-                            value = pParser.nextText();
-                        } else if (item.equals("year") && pParser.nextText().equals(pYear)) {
-                            itemList.add(value);
-                        }
-                        break;
-                    case XmlPullParser.END_TAG:
-                        break;
+                    //Get the value from pTag for when the value for "year" is pYear
+                    switch (eventType) {
+                        case XmlPullParser.START_TAG:
+                            item = pParser.getName();
+                            if (item.equals(pTag)) {
+                                value = pParser.nextText();
+                            } else if (item.equals("year") && pParser.nextText().equals(pYear)) {
+                                itemList.add(value);
+                            }
+                            break;
+                        case XmlPullParser.END_TAG:
+                            break;
+                    }
+
+                    //Iterate through document
+                    pParser.next();
+                    eventType = pParser.getEventType();
                 }
-
-                //Iterate through document
-                pParser.next();
-                eventType = pParser.getEventType();
+            } catch (XmlPullParserException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-
         String[] itemArray = itemList.toArray(new String[itemList.size()]);
         return itemArray;
     }

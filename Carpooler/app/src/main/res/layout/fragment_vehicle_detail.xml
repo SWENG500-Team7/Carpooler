@@ -72,6 +72,24 @@
         android:layout_margin="16dp">
 
         <TextView
+            android:text="@string/vehicle_mpg_label"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/mpg"/>
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="16dp">
+
+        <TextView
             android:text="@string/vehicle_seats_label"
             android:layout_width="50dp"
             android:layout_height="wrap_content"

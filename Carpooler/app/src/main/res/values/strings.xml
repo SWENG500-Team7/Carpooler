@@ -59,6 +59,7 @@
     <string name="vehicle_make_label">Make</string>
     <string name="vehicle_model_label">Model</string>
     <string name="vehicle_seats_label">Seats</string>
+    <string name="vehicle_mpg_label">MPG</string>
     <string name="vehicle_license_label">License Plate Number</string>
     <string name="vehicle_color_label">Color</string>
 

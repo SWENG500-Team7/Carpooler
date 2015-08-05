@@ -1,8 +1,5 @@
 package com.carpooler.trips;
 
-import android.os.AsyncTask;
-
-import com.carpooler.dao.VehicleRestService;
 import com.carpooler.dao.dto.VehicleData;
 
 /**
@@ -63,21 +60,13 @@ public class Vehicle {
         vehicleData.setColor(color);
     }
 
-    private class VehicleMPGRequestor extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            vehicleData.setMPG(VehicleRestService.getMPG(getMake(), getModel(), String.valueOf(getYear())));
-            return null;
-        }
-    }
 
     public int getMPG() {
         return vehicleData.getMPG();
     }
 
-    public void setMPG() {
-        new VehicleMPGRequestor().execute();
+    public void setMPG(int mpg) {
+        vehicleData.setMPG(mpg);
     }
 
     @Override

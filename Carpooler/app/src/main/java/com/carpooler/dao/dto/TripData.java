@@ -1,16 +1,11 @@
 package com.carpooler.dao.dto;
 
-import android.util.Log;
-
 import com.carpooler.dao.annotations.ElasticData;
-import com.carpooler.trips.Trip;
 import com.carpooler.trips.TripStatus;
-import com.carpooler.trips.Vehicle;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Comparator;
 
 import io.searchbox.annotations.JestId;
 
@@ -33,7 +28,7 @@ import io.searchbox.annotations.JestId;
                             + "\"openSeats\":{\"type\":\"integer\"},"
                             + "\"startTime\": {\"type\": \"date\", \"format\":\"date_time_no_millis\"},"
                             + "\"endTime\": {\"type\": \"date\", \"format\":\"date_time_no_millis\"},"
-                            + "\"totalDistance\": {\"type\": \"int\"},"
+                            + "\"totalDistance\": {\"type\": \"integer\"},"
                             + "\"startLocation\": " + AddressData.MAPPING + ","
                             + "\"endLocation\": " + AddressData.MAPPING + ","
                             + "\"users\": " + CarpoolUserData.MAPPING
@@ -45,7 +40,7 @@ public class TripData implements DatabaseObject{
     @JestId
     private transient String _id;
     private String hostId;
-    private Vehicle hostVehicle;
+    private VehicleData hostVehicle;
     private TripStatus status = TripStatus.OPEN;
     private AddressData startLocation;
     private AddressData endLocation;
@@ -146,11 +141,11 @@ public class TripData implements DatabaseObject{
         this.endTime = endTime;
     }
 
-    public Vehicle getHostVehicle() {
+    public VehicleData getHostVehicle() {
         return hostVehicle;
     }
 
-    public void setHostVehicle(Vehicle hostVehicle) {
+    public void setHostVehicle(VehicleData hostVehicle) {
         this.hostVehicle = hostVehicle;
     }
 

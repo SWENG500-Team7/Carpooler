@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.carpooler.R;
 import com.carpooler.dao.VehicleRestService;
@@ -42,6 +41,7 @@ public class VehicleDetailFragment extends Fragment implements MenuItem.OnMenuIt
     private Spinner ddSeats;
     private EditText etPlateNumber;
     private EditText etColor;
+    private TextView tvMpg;
     private MenuItem miEdit;
     private MenuItem miDelete;
     private MenuItem miSave;
@@ -54,7 +54,7 @@ public class VehicleDetailFragment extends Fragment implements MenuItem.OnMenuIt
 
     /* VehicleData menus populated through web services */
     public enum VehicleMenuEnum {
-        YEAR, MAKE, MODEL
+        YEAR, MAKE, MODEL,MPG
     }
 
     /**
@@ -140,6 +140,7 @@ public class VehicleDetailFragment extends Fragment implements MenuItem.OnMenuIt
         ddSeats = (Spinner) rootView.findViewById(R.id.dd_seats);
         etPlateNumber = (EditText) rootView.findViewById(R.id.et_plate_number);
         etColor = (EditText) rootView.findViewById(R.id.et_color);
+        tvMpg = (TextView) rootView.findViewById(R.id.mpg);
 
         //Set selection listeners for dropdowns
         ddYear.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -157,6 +158,19 @@ public class VehicleDetailFragment extends Fragment implements MenuItem.OnMenuIt
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 new LoadVehicleSpinners().execute(VehicleMenuEnum.MODEL);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        ddModel.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                new LoadVehicleSpinners().execute(VehicleMenuEnum.MPG);
             }
 
             @Override
@@ -247,7 +261,7 @@ public class VehicleDetailFragment extends Fragment implements MenuItem.OnMenuIt
         mVehicle.setMake((String) ddMake.getSelectedItem());
         mVehicle.setModel((String) ddModel.getSelectedItem());
         mVehicle.setColor(etColor.getText().toString());
-
+        mVehicle.setMPG(Integer.parseInt(String.valueOf(tvMpg.getText())));
         currentUser.saveUser();
     }
 
@@ -289,6 +303,13 @@ public class VehicleDetailFragment extends Fragment implements MenuItem.OnMenuIt
                     year = (String) ddYear.getSelectedItem();
                     make = (String) ddMake.getSelectedItem();
                     results = VehicleRestService.getModels(year, make);
+                    break;
+                case MPG:
+                    year = (String) ddYear.getSelectedItem();
+                    make = (String) ddMake.getSelectedItem();
+                    model = (String)ddModel.getSelectedItem();
+                    int mpg = VehicleRestService.getMPG(make,model,year);
+                    results = new String[]{String.valueOf(mpg)};
                     break;
             }
 
@@ -342,6 +363,9 @@ public class VehicleDetailFragment extends Fragment implements MenuItem.OnMenuIt
                         //Set flag to false since we're done initializing
                         mInitSpinners = false;
                     }
+                    break;
+                case MPG:
+                    tvMpg.setText(result[0]);
                     break;
             }
         }

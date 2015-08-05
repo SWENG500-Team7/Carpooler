@@ -3,6 +3,7 @@ package com.carpooler.trips;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.RemoteException;
+import android.util.Log;
 
 import com.carpooler.GeoPoint;
 import com.carpooler.dao.DatabaseService;
@@ -542,16 +543,17 @@ public class Trip {
 
         @Override
         public void doError(String message) {
+            Log.e("CreateTripCallback",message);
         }
 
         @Override
         public void doException(Exception exception) {
-
+            Log.e("CreateTripCallback",exception.getMessage());
         }
 
         @Override
         public void doSuccess(String data) {
-
+            Log.e("CreateTripCallback",data);
         }
     }
 
@@ -560,12 +562,12 @@ public class Trip {
      * @param hostVehicle - the trip vehicle
      */
     public void setHostVehicle(Vehicle hostVehicle) {
-        tripData.setHostVehicle(hostVehicle);
+        tripData.setHostVehicle(hostVehicle.getData());
         tripData.setOpenSeats(hostVehicle.getSeats());
     }
 
     public Vehicle getHostVehicle() {
-        return tripData.getHostVehicle();
+        return new Vehicle(tripData.getHostVehicle());
     }
 
     public void loadVehicleData(UserLoader.VehicleCallback callback){
