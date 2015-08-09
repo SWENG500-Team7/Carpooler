@@ -93,7 +93,7 @@ public class CarpoolUser {
     }
 
     public void confirmPickup(){
-        changeStatus(CarpoolUserStatus.PICKED_UP);
+        changeStatus(CarpoolUserStatus.CONFIRMED_PICKED_UP);
     }
 
     public void changeStatus(CarpoolUserStatus nextStatus){
@@ -132,7 +132,7 @@ public class CarpoolUser {
     }
 
     public boolean canConfirmPickup() {
-        return isAllowedNextStaus(CarpoolUserStatus.PICKED_UP);
+        return isAllowedNextStaus(CarpoolUserStatus.CONFIRMED_PICKED_UP);
     }
 
     public boolean canCancelPickup() {
