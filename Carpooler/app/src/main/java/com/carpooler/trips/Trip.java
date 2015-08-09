@@ -227,12 +227,12 @@ public class Trip {
 
         //Split tolls between users
         int numUsers = 0;
-        for(CarpoolUserData carpoolUser : tripData.getUsers()) {
-            if(carpoolUser.getStatus() == CarpoolUserStatus.CONFIRMED_DROPPED_OFF)
+        for(CarpoolUser carpoolUser : getCarpoolUsers()) {
+            if(carpoolUser.isPaymentRequired())
                 numUsers++;
         }
-        for(CarpoolUserData carpoolUser : tripData.getUsers()) {
-            if(carpoolUser.getStatus() == CarpoolUserStatus.CONFIRMED_DROPPED_OFF)
+        for(CarpoolUser carpoolUser : getCarpoolUsers()) {
+            if(carpoolUser.isPaymentRequired())
                 carpoolUser.setPaymentAmount(Math.round((carpoolUser.getPaymentAmount()
                         + tolls/numUsers)*100.0)/100.0);
         }
