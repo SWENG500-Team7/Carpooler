@@ -62,6 +62,7 @@ public class Trip {
         @Override
         protected Void doInBackground(Void... params) {
             tripData.setFuelPrice(new FuelPrice().getFuelUnitPrice(geoPoint));
+            saveTrip();
             return null;
         }
     }
@@ -226,7 +227,7 @@ public class Trip {
         tripData.setTolls(tolls);
 
         //Split tolls between users
-        int numUsers = 0;
+        int numUsers = 1;//1 by default for host
         for(CarpoolUser carpoolUser : getCarpoolUsers()) {
             if(carpoolUser.isPaymentRequired())
                 numUsers++;
@@ -273,8 +274,9 @@ public class Trip {
         return tripData.getTotalDistance();
     }
 
-    public void setTotalDistance(int totalDistance) {
-        tripData.setTotalDistance(totalDistance);
+    public void setTotalDistance(int totalDistanceInKm) {
+        double distance_in_miles = totalDistanceInKm / METERS_PER_MILE;
+        tripData.setTotalDistance((int) Math.round(distance_in_miles));
     }
 
     public void setStartLocation(String searchAddress, AddressErrorCallback addressErrorCallback) throws RemoteException {
