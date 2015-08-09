@@ -9,8 +9,8 @@ import android.os.RemoteException;
 import android.util.Log;
 
 import com.carpooler.dao.DatabaseService;
-import com.carpooler.users.CarpoolUser;
 import com.carpooler.users.Address;
+import com.carpooler.users.CarpoolUser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -154,7 +154,9 @@ public class LocationService {
 
     public void selectNextDestination(Address start, List<Address> destinations, Trip trip, DestinationSelectionCallback callback) {
         mCallback = callback;
-        new DestinationSelector(start, destinations, trip).execute();
+        if (!destinations.isEmpty()) {
+            new DestinationSelector(start, destinations, trip).execute();
+        }
     }
 
     /**

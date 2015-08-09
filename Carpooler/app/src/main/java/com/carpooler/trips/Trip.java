@@ -121,6 +121,7 @@ public class Trip {
     public void pickupCarpoolUser(CarpoolUser user) {
         if (canPickupUser(user)) {
             user.pickup();
+            saveTrip();
         }else{
             throw new IllegalArgumentException("Cannot pickup user");
         }
@@ -129,6 +130,7 @@ public class Trip {
     public void dropoffCarpoolUser(CarpoolUser user) {
         if (canDropOffUser(user)){
             user.dropOff();
+            saveTrip();
         }else{
             throw new IllegalArgumentException("Cannot dropoff user");
         }
@@ -200,8 +202,8 @@ public class Trip {
 
     public List<Address> getDestinations() {
         List<Address> destinations = new ArrayList<>();
-        while (getCarpoolUsers().iterator().hasNext()) {
-            CarpoolUser user = getCarpoolUsers().iterator().next();
+        CarpoolUserIterator carpoolUserIterator = getCarpoolUsers();
+        for (CarpoolUser user:carpoolUserIterator){
             if (user.canNavigatePickup()) {
                 destinations.add(user.getPickupLocation());
             } else if (user.canNavigateDropoff()) {
