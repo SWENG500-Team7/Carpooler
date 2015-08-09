@@ -115,13 +115,15 @@ public class CarpoolUserAdapter extends EmptyAdapter<CarpoolUserAdapter.CarpoolU
             Address startAddress = carpoolUser.getPickupLocation();
             Address endAddress = carpoolUser.getDropoffLocation();
             if (startAddress != null) {
-                startStreet.setText(startAddress.getStreetNumber());
+                startStreet.setText((startAddress.getStreetNumber() == null ? "" : startAddress.getStreetNumber() + " ")
+                        + (startAddress.getStreet() == null ? "" : startAddress.getStreet()));
                 startCity.setText(startAddress.getCity());
                 startState.setText(startAddress.getState());
             }
 
             if (endAddress != null) {
-                endStreet.setText(endAddress.getStreetNumber());
+                endStreet.setText((endAddress.getStreetNumber() == null ? "" : endAddress.getStreetNumber() + " ")
+                        + (endAddress.getStreet() == null ? "" : endAddress.getStreet()));
                 endCity.setText(endAddress.getCity());
                 endState.setText(endAddress.getState());
             }

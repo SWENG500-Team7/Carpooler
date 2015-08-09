@@ -103,8 +103,12 @@ public class FuelPrice {
         try {
             JSONObject jsonObject = new JSONObject(json);
             JSONArray stations = (JSONArray) jsonObject.get(arraykey);
-            for (int i = 0; i < stations.length(); i++) {
-                prices.add(Double.parseDouble(stations.getJSONObject(i).getString(elementkey)));
+            if (stations != null) {
+                for (int i = 0; i < stations.length(); i++) {
+                    prices.add(Double.parseDouble(stations.getJSONObject(i).getString(elementkey)));
+                }
+            } else {
+                prices.add(2.60);
             }
         } catch (JSONException e) {
             e.printStackTrace();
