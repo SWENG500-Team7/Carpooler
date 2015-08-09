@@ -526,6 +526,7 @@ public class Trip {
     public void navigatePickupUser(CarpoolUser carpoolUser) {
         if (canNavigatePickupUser(carpoolUser)){
             carpoolUser.navigatePickup();
+            saveTrip();
         }else{
             throw new IllegalArgumentException("Cannot navigate pickup");
         }
@@ -534,6 +535,7 @@ public class Trip {
     public void navigateDropoff(CarpoolUser carpoolUser) {
         if (canNavigateDropoffUser(carpoolUser)){
             carpoolUser.navigateDropoff();
+            saveTrip();
         }else{
             throw new IllegalArgumentException("Cannot navigate dropoff");
         }
