@@ -399,7 +399,7 @@ public class Trip {
     }
 
     public boolean canAcceptRequest(CarpoolUser carpoolUser) {
-        return isOpenTrip() && isLoggedInUserInCarpool() && carpoolUser.canAcceptRequest();
+        return isOpenTrip() && isLoggedInUser() && carpoolUser.canAcceptRequest();
     }
 
     public void startTrip() {
