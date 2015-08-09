@@ -310,9 +310,16 @@ public class Trip {
     }
 
     public boolean canCompleteTrip(){
-        return isAllowedNextStaus(TripStatus.COMPLETED);
-        // TODO add check for all users dropped off
-    }
+        boolean ret = isAllowedNextStaus(TripStatus.COMPLETED);
+        CarpoolUserIterator carpoolUsers = getCarpoolUsers();
+        for (CarpoolUser user:carpoolUsers){
+            ret = ret && user.isPaymentRequired();
+            if (!ret){
+                break;
+            }
+        }
+        return ret;
+   }
 
     public CarpoolUser getLoggedInCarpoolUser(){
         setLoggedInUser();
