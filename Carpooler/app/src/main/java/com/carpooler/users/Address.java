@@ -27,7 +27,7 @@ public class Address {
         addressData.getLocation().setLat(lat);
     }
     public String getStreetNumber() {
-        return addressData.getStreetNumber();
+        return addressData.getStreetNumber()!=null?addressData.getStreetNumber():"";
     }
 
     public void setStreetNumber(String streetNumber) {
