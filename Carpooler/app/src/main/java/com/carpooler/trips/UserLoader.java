@@ -33,7 +33,7 @@ public class UserLoader implements ResultCallback<People.LoadPeopleResult>{
                 loggedInUser = true;
             } else {
                 user = userCache.get(userId);
-                if (userId==null) {
+                if (user==null) {
                     PendingResult<People.LoadPeopleResult> result = serviceActivityCallback.getPeople().load(serviceActivityCallback.getGoogleApiClient(), userId);
                     result.setResultCallback(this);
                 }
