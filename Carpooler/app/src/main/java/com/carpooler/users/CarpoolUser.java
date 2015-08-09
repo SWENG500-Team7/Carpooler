@@ -120,7 +120,7 @@ public class CarpoolUser {
     }
 
     public boolean canNavigatePickup() {
-        return isAllowedNextStaus(CarpoolUserStatus.PICKED_UP) && getPickupLocation()!=null;
+        return isAllowedNextStaus(CarpoolUserStatus.PENDING_PICK_UP) && getPickupLocation()!=null;
     }
 
     public boolean canAcceptRequest() {
