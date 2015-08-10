@@ -16,6 +16,7 @@ import com.carpooler.users.CarpoolUser;
 import com.carpooler.users.CarpoolUserStatus;
 import com.carpooler.users.User;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -87,6 +88,12 @@ public class Trip {
         }
     }
 
+    private double roundToTwoPlaces(double num) {
+        BigDecimal bigDecimal = new BigDecimal(num);
+        BigDecimal rounded = bigDecimal.setScale(2, BigDecimal.ROUND_UP);
+        return rounded.doubleValue();
+    }
+
     /**
      * Adds a CarpoolUser to the list for this trip
      */
@@ -151,9 +158,11 @@ public class Trip {
     }
 
     public void splitFuelCost(int distance_in_km) {
-        double pricePerMile = getFuelPrice()/getHostVehicle().getMPG();
+        double fuelPrice = getFuelPrice();
+        double mpg = getHostVehicle().getMPG();
+        double pricePerMile = fuelPrice/mpg;
         double distance_in_miles = distance_in_km / METERS_PER_MILE;
-        double fuel_cost = (Math.round(pricePerMile * distance_in_miles) * 100.0) / 100.0;
+        double fuel_cost = roundToTwoPlaces(pricePerMile * distance_in_miles);
         //Update fuel total of trip
         tripData.setFuelTotal(tripData.getFuelTotal() + fuel_cost);
         Iterator<CarpoolUser> usersCount = getCarpoolUsers().iterator();
@@ -164,7 +173,7 @@ public class Trip {
                 pickedUpUserCount++;
             }
         }
-        double fuel_split = (Math.round(fuel_cost/pickedUpUserCount) * 100.0) / 100.0;
+        double fuel_split = roundToTwoPlaces(fuel_cost/(pickedUpUserCount+1));//+1 for host
         Iterator<CarpoolUser> usersPayment = getCarpoolUsers().iterator();
         while (usersPayment.hasNext()) {
             CarpoolUser user = usersPayment.next();

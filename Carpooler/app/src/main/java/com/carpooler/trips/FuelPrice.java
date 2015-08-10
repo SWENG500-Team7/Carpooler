@@ -101,9 +101,9 @@ public class FuelPrice {
     public List<Double> convertJSONStringToPriceList(String json, String arraykey, String elementkey) {
         List<Double> prices = new ArrayList<Double>();
         try {
-            JSONObject jsonObject = new JSONObject(json);
-            JSONArray stations = (JSONArray) jsonObject.get(arraykey);
-            if (stations != null) {
+            if (json != null) {
+                JSONObject jsonObject = new JSONObject(json);
+                JSONArray stations = (JSONArray) jsonObject.get(arraykey);
                 for (int i = 0; i < stations.length(); i++) {
                     prices.add(Double.parseDouble(stations.getJSONObject(i).getString(elementkey)));
                 }
