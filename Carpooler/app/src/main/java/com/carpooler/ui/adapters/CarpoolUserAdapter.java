@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.carpooler.R;
-import com.carpooler.trips.DestinationSelectionCallback;
 import com.carpooler.trips.Trip;
 import com.carpooler.trips.UserLoader;
 import com.carpooler.ui.activities.TripDetailCallback;
@@ -57,7 +56,7 @@ public class CarpoolUserAdapter extends EmptyAdapter<CarpoolUserAdapter.CarpoolU
     }
 
 
-    class CarpoolUserRowHolder extends RecyclerView.ViewHolder implements DestinationSelectionCallback {
+    class CarpoolUserRowHolder extends RecyclerView.ViewHolder {
         private final TextView userName;
         private final ImageView userImage;
         private final TextView startStreet;
@@ -141,11 +140,6 @@ public class CarpoolUserAdapter extends EmptyAdapter<CarpoolUserAdapter.CarpoolU
                 }
             }
         }
-
-        @Override
-        public void onDestinationSelected(Address address) {
-            callback.navigate(address);
-        }
     }
 
     private enum ButtonToggle{
@@ -155,9 +149,10 @@ public class CarpoolUserAdapter extends EmptyAdapter<CarpoolUserAdapter.CarpoolU
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        carpoolUserRowHolder.trip.setCurrentLocation(carpoolUserRowHolder.carpoolUser.getDropoffLocation());
                         carpoolUserRowHolder.trip.dropoffCarpoolUser(carpoolUserRowHolder.carpoolUser);
                         carpoolUserRowHolder.callback.onTripSelected(carpoolUserRowHolder.trip.getTripId());
-                        carpoolUserRowHolder.callback.getLocationService().selectNextDestination(carpoolUserRowHolder.callback.getLocationService().getLastDestination(), carpoolUserRowHolder.trip.getDestinations(), carpoolUserRowHolder.trip, carpoolUserRowHolder);
+//                        carpoolUserRowHolder.callback.getLocationService().selectNextDestination(carpoolUserRowHolder.carpoolUser.getDropoffLocation(), carpoolUserRowHolder.trip.getDestinations(), carpoolUserRowHolder.trip, carpoolUserRowHolder);
                     }
                 });
             }
@@ -204,9 +199,10 @@ public class CarpoolUserAdapter extends EmptyAdapter<CarpoolUserAdapter.CarpoolU
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        carpoolUserRowHolder.trip.setCurrentLocation(carpoolUserRowHolder.carpoolUser.getPickupLocation());
                         carpoolUserRowHolder.trip.pickupCarpoolUser(carpoolUserRowHolder.carpoolUser);
                         carpoolUserRowHolder.callback.onTripSelected(carpoolUserRowHolder.trip.getTripId());
-                        carpoolUserRowHolder.callback.getLocationService().selectNextDestination(carpoolUserRowHolder.callback.getLocationService().getLastDestination(), carpoolUserRowHolder.trip.getDestinations(), carpoolUserRowHolder.trip, carpoolUserRowHolder);
+//                        carpoolUserRowHolder.callback.getLocationService().selectNextDestination(carpoolUserRowHolder.carpoolUser.getPickupLocation(), carpoolUserRowHolder.trip.getDestinations(), carpoolUserRowHolder.trip, carpoolUserRowHolder);
                     }
                 });
 
@@ -230,6 +226,7 @@ public class CarpoolUserAdapter extends EmptyAdapter<CarpoolUserAdapter.CarpoolU
                     @Override
                     public void onClick(View v) {
                         carpoolUserRowHolder.trip.navigatePickupUser(carpoolUserRowHolder.carpoolUser);
+                        carpoolUserRowHolder.callback.getLocationService().startNextTripSegment(carpoolUserRowHolder.trip.getCurrentLocation(), carpoolUserRowHolder.carpoolUser.getPickupLocation(), carpoolUserRowHolder.trip);
                         carpoolUserRowHolder.callback.navigate(carpoolUserRowHolder.carpoolUser.getPickupLocation());
                     }
                 });
@@ -254,6 +251,7 @@ public class CarpoolUserAdapter extends EmptyAdapter<CarpoolUserAdapter.CarpoolU
                     @Override
                     public void onClick(View v) {
                         carpoolUserRowHolder.trip.navigateDropoff(carpoolUserRowHolder.carpoolUser);
+                        carpoolUserRowHolder.callback.getLocationService().startNextTripSegment(carpoolUserRowHolder.trip.getCurrentLocation(), carpoolUserRowHolder.carpoolUser.getDropoffLocation(), carpoolUserRowHolder.trip);
                         carpoolUserRowHolder.callback.navigate(carpoolUserRowHolder.carpoolUser.getDropoffLocation());
                     }
                 });

@@ -1,5 +1,7 @@
 package com.carpooler.dao.dto;
 
+import android.util.Log;
+
 import com.carpooler.dao.annotations.ElasticData;
 import com.carpooler.trips.TripStatus;
 
@@ -31,6 +33,7 @@ import io.searchbox.annotations.JestId;
                             + "\"totalDistance\": {\"type\": \"integer\"},"
                             + "\"startLocation\": " + AddressData.MAPPING + ","
                             + "\"endLocation\": " + AddressData.MAPPING + ","
+                            + "\"currentLocation\": " + AddressData.MAPPING + ","
                             + "\"users\": " + CarpoolUserData.MAPPING
                         + "}"
                     + "}"
@@ -44,6 +47,7 @@ public class TripData implements DatabaseObject{
     private TripStatus status = TripStatus.OPEN;
     private AddressData startLocation;
     private AddressData endLocation;
+    private AddressData currentLocation;
     private Date startTime;
     private Date endTime;
     private List<CarpoolUserData> users = new ArrayList<>();
@@ -123,6 +127,14 @@ public class TripData implements DatabaseObject{
 
     public void setEndLocation(AddressData endLocation) {
         this.endLocation = endLocation;
+    }
+
+    public AddressData getCurrentLocation() {
+        return currentLocation;
+    }
+
+    public void setCurrentLocation(AddressData currentLocation) {
+        this.currentLocation = currentLocation;
     }
 
     public Date getStartTime() {

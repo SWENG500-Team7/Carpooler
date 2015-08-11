@@ -8,20 +8,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.carpooler.R;
-import com.carpooler.trips.DestinationSelectionCallback;
 import com.carpooler.trips.Trip;
 import com.carpooler.trips.UserLoader;
 import com.carpooler.ui.activities.TripDetailCallback;
 import com.carpooler.users.Address;
 import com.carpooler.users.User;
-import com.google.common.collect.Lists;
 
 import java.text.SimpleDateFormat;
 
 /**
  * Created by raymond on 7/12/15.
  */
-public class TripRowHolder extends RecyclerView.ViewHolder implements DestinationSelectionCallback {
+public class TripRowHolder extends RecyclerView.ViewHolder {
     private final ImageView hostImage;
     private final TextView startTime;
     private final TextView openSeats;
@@ -121,11 +119,6 @@ public class TripRowHolder extends RecyclerView.ViewHolder implements Destinatio
         tripId = data.getTripId();
     }
 
-    @Override
-    public void onDestinationSelected(Address address) {
-        callback.navigate(address);
-    }
-
     private enum ButtonToggle{
         START(true, false) {
             @Override
@@ -135,8 +128,9 @@ public class TripRowHolder extends RecyclerView.ViewHolder implements Destinatio
                     public void onClick(View v) {
                         tripRowHolder.trip.startTrip();
                         tripRowHolder.callback.onTripSelected(tripRowHolder.tripId);
+                        tripRowHolder.trip.setCurrentLocation(tripRowHolder.trip.getStartLocation());
                         tripRowHolder.trip.setFuelPrice();
-                        tripRowHolder.callback.getLocationService().selectNextDestination(tripRowHolder.trip.getStartLocation(), tripRowHolder.trip.getDestinations(), tripRowHolder.trip, tripRowHolder);
+//                        tripRowHolder.callback.getLocationService().selectNextDestination(tripRowHolder.trip.getStartLocation(), tripRowHolder.trip.getDestinations(), tripRowHolder.trip, tripRowHolder);
                     }
                 });
             }

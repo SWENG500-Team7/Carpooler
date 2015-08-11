@@ -30,6 +30,10 @@ public class Address {
         return addressData.getStreetNumber()!=null?addressData.getStreetNumber():"";
     }
 
+    public AddressData getAddressData() {
+        return addressData;
+    }
+
     public void setStreetNumber(String streetNumber) {
         addressData.setStreetNumber(streetNumber);
     }

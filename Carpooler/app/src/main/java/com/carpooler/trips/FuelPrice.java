@@ -70,6 +70,7 @@ public class FuelPrice {
             }
         }
 
+        Log.i("FuelPrice", result);
         return result;
     }
 

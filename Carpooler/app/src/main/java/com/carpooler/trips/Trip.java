@@ -62,7 +62,9 @@ public class Trip {
 
         @Override
         protected Void doInBackground(Void... params) {
-            tripData.setFuelPrice(new FuelPrice().getFuelUnitPrice(geoPoint));
+            double price = new FuelPrice().getFuelUnitPrice(geoPoint);
+            Log.i("Trip", "fuelPrice: " + price);
+            tripData.setFuelPrice(price);
             saveTrip();
             return null;
         }
@@ -157,11 +159,15 @@ public class Trip {
         }
     }
 
-    public void splitFuelCost(int distance_in_km) {
+    public void splitFuelCost(int distance_in_meters) {
         double fuelPrice = getFuelPrice();
+        Log.i("Trip", "fuelPrice: " + fuelPrice);
         double mpg = getHostVehicle().getMPG();
+        Log.i("Trip", "mpg: " + mpg);
         double pricePerMile = fuelPrice/mpg;
-        double distance_in_miles = distance_in_km / METERS_PER_MILE;
+        double distance_in_miles = distance_in_meters / METERS_PER_MILE;
+        Log.i("Trip", "distance_in_meters: " + distance_in_meters);
+        Log.i("Trip", "distance_in_miles: " + distance_in_miles);
         double fuel_cost = roundToTwoPlaces(pricePerMile * distance_in_miles);
         //Update fuel total of trip
         tripData.setFuelTotal(tripData.getFuelTotal() + fuel_cost);
@@ -174,6 +180,8 @@ public class Trip {
             }
         }
         double fuel_split = roundToTwoPlaces(fuel_cost/(pickedUpUserCount+1));//+1 for host
+        Log.i("Trip", "fuel_cost: " + fuel_cost);
+        Log.i("Trip", "fuel_split: " + fuel_split);
         Iterator<CarpoolUser> usersPayment = getCarpoolUsers().iterator();
         while (usersPayment.hasNext()) {
             CarpoolUser user = usersPayment.next();
@@ -210,13 +218,27 @@ public class Trip {
         }
     }
 
+    public void setCurrentLocation(Address currentLocation) {
+        tripData.setCurrentLocation(currentLocation.getAddressData());
+    }
+
+    public Address getCurrentLocation() {
+        if(tripData.getCurrentLocation()!=null) {
+            return new Address(tripData.getCurrentLocation());
+        } else {
+            return null;
+        }
+    }
+
     public List<Address> getDestinations() {
         List<Address> destinations = new ArrayList<>();
         CarpoolUserIterator carpoolUserIterator = getCarpoolUsers();
         for (CarpoolUser user:carpoolUserIterator){
-            if (user.canNavigatePickup()) {
+            if (user.canNavigatePickup() || user.canConfirmPickup()) {
+                Log.i("Trip", "pickup user");
                 destinations.add(user.getPickupLocation());
-            } else if (user.canNavigateDropoff()) {
+            } else if (user.canNavigateDropoff() || user.canConfirmDropoff()) {
+                Log.i("Trip", "dropoff user");
                 destinations.add(user.getDropoffLocation());
             }
         }
@@ -283,8 +305,8 @@ public class Trip {
         return tripData.getTotalDistance();
     }
 
-    public void setTotalDistance(int totalDistanceInKm) {
-        double distance_in_miles = totalDistanceInKm / METERS_PER_MILE;
+    public void setTotalDistance(int totalDistanceInMeters) {
+        double distance_in_miles = totalDistanceInMeters / METERS_PER_MILE;
         tripData.setTotalDistance((int) Math.round(distance_in_miles));
     }
 

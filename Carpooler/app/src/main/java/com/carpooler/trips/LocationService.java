@@ -51,7 +51,6 @@ public class LocationService {
     private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 0;
 
     private Location location;
-    private Address last_destination;
 
     public LocationService(Context context, LocationListener listener, DatabaseService.Connection connection) {
         mContext = context;
@@ -125,37 +124,77 @@ public class LocationService {
         connection.geocode(address,callback);
     }
 
-    private class DestinationSelector extends AsyncTask<Void, Void, Void> {
+    private class DestinationHandler extends AsyncTask<Void, Void, Void> {
 
         private Address start;
-        private List<Address> destinations;
+        private Address destination;
         private Trip trip;
 
-        public DestinationSelector(Address start, List<Address> destinations, Trip trip) {
+        public DestinationHandler(Address start, Address destination, Trip trip) {
             this.start = start;
-            this.destinations = destinations;
+            this.destination = destination;
             this.trip = trip;
         }
 
         @Override
         protected Void doInBackground(Void... params) {
-            Address destination = selectNextDestination(start, destinations, trip);
-            last_destination = destination;
-            if (mCallback != null) {
-                mCallback.onDestinationSelected(destination);
-            }
+            handleNextDestination(start, destination, trip);
             return null;
         }
     }
 
-    public Address getLastDestination() {
-        return last_destination;
+    public void startNextTripSegment(Address start, Address destination, Trip trip) {
+        new DestinationHandler(start, destination, trip).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 
-    public void selectNextDestination(Address start, List<Address> destinations, Trip trip, DestinationSelectionCallback callback) {
-        mCallback = callback;
-        if (!destinations.isEmpty()) {
-            new DestinationSelector(start, destinations, trip).execute();
+    /**
+     * Handles the next destination
+     * @param start Address
+     * @param destination Addresses
+     * @param trip Trip
+     */
+    public void handleNextDestination(Address start, Address destination, Trip trip) {
+        String requestUrlString = "https://maps.googleapis.com/maps/api/distancematrix/json?origins="
+                +start.getStreetNumber().replace(" ", "+")+"+"+start.getCity().replace(" ", "+")+"+"+start.getState().replace(" ", "+");
+        requestUrlString = requestUrlString
+                +"&destinations=" + destination.getStreetNumber().replace(" ", "+")+"+"
+                    +destination.getCity().replace(" ", "+")+"+"+destination.getState().replace(" ", "+");
+        Log.i("LocationService", requestUrlString);
+        //Make the connection and get the JSON
+        HttpURLConnection urlConnection = null;
+        ByteArrayOutputStream buffer = null;
+        try {
+            URL requestUrl = new URL(requestUrlString);
+            urlConnection = (HttpURLConnection) requestUrl.openConnection();
+            InputStreamReader in = new InputStreamReader(urlConnection.getInputStream());
+
+            //Ensure all data is read from connection
+            buffer = new ByteArrayOutputStream();
+            int data;
+            while ((data = in.read()) > -1) {
+                buffer.write(data);
+            }
+            in.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
+        }
+        try {
+            String jsonString = buffer.toString();
+            Log.i("LocationService", jsonString);
+            JSONObject json = new JSONObject(jsonString);
+            JSONArray elements = json.getJSONArray("rows").getJSONObject(0).getJSONArray("elements");
+            int distance = elements.getJSONObject(0).getJSONObject("distance").getInt("value");
+            if (trip != null) {
+                trip.setTotalDistance(trip.getTotalDistance() + distance);
+                trip.splitFuelCost(distance);
+                trip.saveTrip();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
