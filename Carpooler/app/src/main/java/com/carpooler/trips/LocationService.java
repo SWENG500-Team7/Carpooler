@@ -155,10 +155,9 @@ public class LocationService {
      */
     public void handleNextDestination(Address start, Address destination, Trip trip) {
         String requestUrlString = "https://maps.googleapis.com/maps/api/distancematrix/json?origins="
-                +start.getStreetNumber().replace(" ", "+")+"+"+start.getCity().replace(" ", "+")+"+"+start.getState().replace(" ", "+");
-        requestUrlString = requestUrlString
+                +start.getStreetNumber().replace(" ", "+")+"+"+start.getCity().replace(" ", "+")+"+"+start.getState().replace(" ", "+")
                 +"&destinations=" + destination.getStreetNumber().replace(" ", "+")+"+"
-                    +destination.getCity().replace(" ", "+")+"+"+destination.getState().replace(" ", "+");
+                +destination.getCity().replace(" ", "+")+"+"+destination.getState().replace(" ", "+");
         Log.i("LocationService", requestUrlString);
         //Make the connection and get the JSON
         HttpURLConnection urlConnection = null;

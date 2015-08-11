@@ -70,7 +70,9 @@ public class FuelPrice {
             }
         }
 
-        Log.i("FuelPrice", result);
+        if(result != null) {
+            Log.i("FuelPrice", result);
+        }
         return result;
     }
 
