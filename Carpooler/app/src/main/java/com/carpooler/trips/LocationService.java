@@ -188,7 +188,7 @@ public class LocationService {
             JSONArray elements = json.getJSONArray("rows").getJSONObject(0).getJSONArray("elements");
             int distance = elements.getJSONObject(0).getJSONObject("distance").getInt("value");
             if (trip != null) {
-                trip.setTotalDistance(trip.getTotalDistance() + distance);
+                trip.setTotalDistance((int) Math.round(trip.getTotalDistance() * Trip.METERS_PER_MILE) + distance);
                 trip.splitFuelCost(distance);
             }
         } catch (JSONException e) {

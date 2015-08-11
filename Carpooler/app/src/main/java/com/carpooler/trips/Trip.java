@@ -36,7 +36,7 @@ public class Trip {
     // populated for logged in carpool user
     private CarpoolUser loggedInUser;
     private boolean loggedInUserChecked = false;
-    private static final double METERS_PER_MILE = 1609.34;
+    protected static final double METERS_PER_MILE = 1609.34;
 
     private CarpoolUser nextPickupUser;
     private CarpoolUser nextDropoffUser;
@@ -303,7 +303,7 @@ public class Trip {
     }
 
     public int getTotalDistance() {
-        return (int) Math.round(tripData.getTotalDistance() * METERS_PER_MILE);
+        return tripData.getTotalDistance();
     }
 
     public void setTotalDistance(int totalDistanceInMeters) {
