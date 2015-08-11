@@ -65,7 +65,7 @@ public class Trip {
             double price = new FuelPrice().getFuelUnitPrice(geoPoint);
             Log.i("Trip", "fuelPrice: " + price);
             tripData.setFuelPrice(price);
-            saveTrip();
+//            saveTrip();
             return null;
         }
     }
@@ -190,6 +190,7 @@ public class Trip {
                 user.setPaymentAmount(user.getPaymentAmount() + fuel_split);
             }
         }
+        saveTrip();
     }
 
     public void completeTrip(){
@@ -302,11 +303,12 @@ public class Trip {
     }
 
     public int getTotalDistance() {
-        return tripData.getTotalDistance();
+        return (int) Math.round(tripData.getTotalDistance() * METERS_PER_MILE);
     }
 
     public void setTotalDistance(int totalDistanceInMeters) {
         double distance_in_miles = totalDistanceInMeters / METERS_PER_MILE;
+        Log.i("Trip", "distance_in_miles: " + distance_in_miles);
         tripData.setTotalDistance((int) Math.round(distance_in_miles));
     }
 

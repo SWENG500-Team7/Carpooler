@@ -240,6 +240,7 @@ public class TripAddFragment extends Fragment implements MenuItem.OnMenuItemClic
         @Override
         protected void setEndLocation(String address, AddressErrorCallback callback) throws RemoteException {
             trip.setEndLocation(address, callback);
+            trip.setFuelPrice();
         }
     }
 }

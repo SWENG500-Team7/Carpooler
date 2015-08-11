@@ -190,7 +190,6 @@ public class LocationService {
             if (trip != null) {
                 trip.setTotalDistance(trip.getTotalDistance() + distance);
                 trip.splitFuelCost(distance);
-                trip.saveTrip();
             }
         } catch (JSONException e) {
             e.printStackTrace();

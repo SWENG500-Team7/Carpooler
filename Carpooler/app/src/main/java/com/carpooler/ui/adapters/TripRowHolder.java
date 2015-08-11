@@ -126,10 +126,9 @@ public class TripRowHolder extends RecyclerView.ViewHolder {
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        tripRowHolder.trip.setCurrentLocation(tripRowHolder.trip.getStartLocation());
                         tripRowHolder.trip.startTrip();
                         tripRowHolder.callback.onTripSelected(tripRowHolder.tripId);
-                        tripRowHolder.trip.setCurrentLocation(tripRowHolder.trip.getStartLocation());
-                        tripRowHolder.trip.setFuelPrice();
 //                        tripRowHolder.callback.getLocationService().selectNextDestination(tripRowHolder.trip.getStartLocation(), tripRowHolder.trip.getDestinations(), tripRowHolder.trip, tripRowHolder);
                     }
                 });
