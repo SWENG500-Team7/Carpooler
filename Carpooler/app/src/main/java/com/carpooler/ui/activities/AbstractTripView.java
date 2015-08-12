@@ -55,7 +55,7 @@ public abstract class AbstractTripView extends Fragment {
     private DatabaseService.GetCallback<TripData> getCallback = new DatabaseService.GetCallback<TripData>() {
         @Override
         public void doError(String message) {
-            Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+            //Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
             postLoadData();
         }
 

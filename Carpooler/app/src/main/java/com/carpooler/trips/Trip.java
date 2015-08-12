@@ -175,7 +175,7 @@ public class Trip {
         int pickedUpUserCount = 0;
         while (usersCount.hasNext()) {
             CarpoolUser user = usersCount.next();
-            if (user.canNavigateDropoff()) {
+            if (user.canNavigateDropoff() || user.canDropoff()) {
                 pickedUpUserCount++;
             }
         }
@@ -185,8 +185,9 @@ public class Trip {
         Iterator<CarpoolUser> usersPayment = getCarpoolUsers().iterator();
         while (usersPayment.hasNext()) {
             CarpoolUser user = usersPayment.next();
-            if (user.canNavigateDropoff()) {
+            if (user.canNavigateDropoff() || user.canDropoff()) {
                 //Update each user's payment amount
+                Log.i("Trip", "adding user split: "+fuel_split);
                 user.setPaymentAmount(user.getPaymentAmount() + fuel_split);
             }
         }
