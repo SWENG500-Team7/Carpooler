@@ -64,6 +64,7 @@ public class CarpoolUserAdapter extends EmptyAdapter<CarpoolUserAdapter.CarpoolU
         private final TextView startState;
         private final TextView endStreet;
         private final TextView endCity;
+        private final TextView userStatus;
         private final TextView endState;
         private final Button dropoffButton;
         private final Button noShowButton;
@@ -87,6 +88,7 @@ public class CarpoolUserAdapter extends EmptyAdapter<CarpoolUserAdapter.CarpoolU
             endStreet = (TextView) itemView.findViewById(R.id.endStreet);
             endCity = (TextView) itemView.findViewById(R.id.endCity);
             endState = (TextView) itemView.findViewById(R.id.endState);
+            userStatus = (TextView) itemView.findViewById(R.id.userStatus);
             dropoffButton = (Button) itemView.findViewById(R.id.dropoffButton);
             noShowButton = (Button) itemView.findViewById(R.id.noShowButton);
             pickupUserButton = (Button) itemView.findViewById(R.id.pickupUserButton);
@@ -126,6 +128,7 @@ public class CarpoolUserAdapter extends EmptyAdapter<CarpoolUserAdapter.CarpoolU
                 endCity.setText(endAddress.getCity());
                 endState.setText(endAddress.getState());
             }
+            userStatus.setText(itemView.getResources().getString(carpoolUser.getStatus().getTextId()));
             for(ButtonToggle buttonToggle:ButtonToggle.values()){
                 Button button = buttonToggle.getButton(this);
                 if (buttonToggle.isValidButton(trip,carpoolUser)){

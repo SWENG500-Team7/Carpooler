@@ -102,6 +102,17 @@
 
     <string name="in_progress_not_found">No Trips In Progress</string>
 
-
+    <string name="user_status_pending">Pending</string>
+    <string name="user_status_pending_pickup">Pending Pickup</string>
+    <string name="user_status_pending_dropoff">Pending Dropoff</string>
+    <string name="user_status_picked_up">Picked Up</string>
+    <string name="user_status_confirmed_picked_up">Confirmed Picked Up</string>
+    <string name="user_status_confirmed_for_pick_up">Confirmed For Pick Up</string>
+    <string name="user_status_rejected_picked_up">Rejected For Pick Up</string>
+    <string name="user_status_dropped_off">Dropped Off</string>
+    <string name="user_status_confirmed_dropped_off">Confirmed Dropped Off</string>
+    <string name="user_status_paid">Paid</string>
+    <string name="user_status_cancelled">Cancelled</string>
+    <string name="user_status_no_show">No Show</string>
 
 </resources>
